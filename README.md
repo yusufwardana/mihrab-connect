@@ -82,6 +82,19 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   punya tombol Simpan + form Tambah petugas (commit 2b52960e,
   terverifikasi live 22 Nov 2026 18:53–18:56 WIB; petugas tes sudah
   dihapus lagi, pengaturan tidak berubah).
+- Finance P0 selesai + terverifikasi live 22 Nov 2026 19:47–19:48 WIB
+  (commit d9d5880f, perbaikan fab16cb0 + 95c70b6f): QRIS per kategori
+  (input + Simpan QRIS di kartu kas, status langsung berubah tanpa
+  reload; Board membaca qris_url) dan Serah Terima 1 klik (form
+  dari → ke + catatan, hanya dari ketua; saldo akhir per kategori
+  dihitung per tanggal serah terima; riwayat + berita acara yang bisa
+  dicetak). Bug saat verifikasi pertama: GET serah terima mengurutkan
+  berdasarkan `created_at` yang tidak ada di tabel itu — diperbaiki
+  (urutan per tanggal saja). Placeholder "Masjid Contoh An-Nur" dan
+  angka 4/3 di Beranda diganti nama asli dan "…" agar tidak tampil
+  angka salah saat data dimuat. Semua data uji dibersihkan (2 baris
+  serah terima uji + URL QRIS uji dihapus; log aktivitas tetap
+  sebagai jejak audit).
 - Board live di Vercel 22 Nov 2026: proyek `mihrab-connect-board`
   (team 0x's projects, git-linked ke repo ini, root `vercel-board`),
   https://mihrab-connect-board-0xs-projects-798a67b4.vercel.app —
