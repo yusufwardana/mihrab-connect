@@ -42,14 +42,26 @@ Palet: hijau gelap, emas lembut, putih hangat.
 | --- | --- |
 | `docs/konsep-brand.md` | Konsep brand MIHRAB CONNECT (makna nama, positioning, 4 pilar, persona, suara, visual). |
 | `docs/scope-board.md` | Dokumen scope Mihrab Connect Board (masuk/tidak masuk scope, batas teknis, kriteria selesai). |
+| `docs/backend-spec.md` | Spesifikasi backend (model data, alur persetujuan, endpoint API, matriks izin, perilaku offline). |
 | `docs/masjid-board-fitur-dan-usp.md` | Dokumen sumber: fitur utama & USP Masjid Board. |
+| `frontend/masjid-board.html` | Export landing page Masjid Board v2, satu file (gambar inline; font masih dari Google, fallback bila offline). |
+| `frontend/mihrab-connect-board.html` | Export prototipe Board P0, satu file mandiri penuh (font & gambar inline, tanpa dependensi eksternal). |
 
 Dokumen PDF (7 halaman konsep brand, 5 halaman scope) adalah hasil render
 dari dokumen-dokumen di atas dan tersimpan di workspace; repo ini menyimpan
 sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
 
+## Keputusan izin yang sudah dikunci (22 Nov 2026)
+
+- Ketua BOLEH mencatat kas lewat dashboard saja (tidak lewat WhatsApp).
+- Bendahara BOLEH mengirim kiriman WhatsApp bila nomornya terdaftar;
+  kiriman tetap menunggu persetujuan ketua sebelum tayang.
+
 ## Status
 
 - Landing page Masjid Board v2 sudah publik.
-- Prototipe Board P0 (layar TV) sedang dibangun.
+- Prototipe Board P0 (layar TV) selesai, lolos audit; temuan audit
+  (panel simulasi di TV, overlay sholat, font offline) sudah diperbaiki.
+- Spesifikasi backend selesai (10 halaman).
 - Branding final menunggu penilaian konsultan KI.
+- Keputusan terbuka: stack, hosting, penyedia WhatsApp, brand final.
