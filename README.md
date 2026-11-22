@@ -164,18 +164,23 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   Ubah; log "Mengubah pengumuman" tercatat. Data uji dibersihkan
   (2 pengumuman uji + 1 baris arsip uji dihapus; pengumuman/arsip
   kembali 0; log tetap sebagai jejak audit).
-- Login Admin khusus selesai dibangun 22 Nov 2026 (belum diverifikasi
-  live): pilih nama pengurus + PIN 6 digit (hash scrypt, bukan teks),
-  sesi HMAC 12 jam via cookie httpOnly, kunci 15 menit setelah 5 PIN
-  salah, Ganti PIN sendiri + Reset PIN oleh ketua. Peran ikut matriks
-  spek: ketua semua layar; bendahara Beranda/Jadwal/Kas/Arsip/Board;
-  marbot Beranda/Jadwal/Board saja. Semua endpoint Admin wajib login;
-  log tercatat atas nama pengurus yang login. Migrasi 002 diterapkan
-  (kolom pin_hash, pin_salt, pin_gagal, pin_terkunci_sampai);
+- Login Admin khusus selesai + terverifikasi live 22 Nov 2026
+  23:02–23:18 WIB: pilih nama pengurus + PIN 6 digit (hash scrypt,
+  bukan teks), sesi HMAC 12 jam via cookie httpOnly, kunci 15 menit
+  setelah 5 PIN salah, Ganti PIN sendiri + Reset PIN oleh ketua. Peran
+  ikut matriks spek: ketua semua layar; bendahara Beranda/Jadwal/Kas/
+  Arsip/Board; marbot Beranda/Jadwal/Board saja. Semua endpoint Admin
+  wajib login; log tercatat atas nama pengurus yang login. Migrasi 002
+  diterapkan (kolom pin_hash, pin_salt, pin_gagal, pin_terkunci_sampai);
   ADMIN_SESSION_SECRET sudah diset di Vercel (Production + Preview).
-  PIN awal 3 pengurus dibuat setelah deploy; login Vercel (SSO)
-  dimatikan HANYA setelah login baru terverifikasi live. Deploy
-  pertama (commit e5cfacc0) GAGAL karena batas 12 function di paket
+  PIN awal 3 pengurus terpasang (diserahkan ke founder 22 Nov 2026
+  untuk dibagikan; ketua bisa reset PIN dari layar Pengurus). Login
+  Vercel (SSO) DIMATIKAN 22 Nov 2026 23:19 WIB setelah login baru
+  terverifikasi — Admin kini publik dengan login PIN sebagai satu-satunya
+  penjaga. Dua cacat UI ditemukan saat verifikasi pertama dan sudah
+  diperbaiki + diverifikasi ulang: dashboard sempat berkedip sebelum
+  login, dan error PIN salah sempat muncul terlambat di Beranda.
+  Deploy pertama (commit e5cfacc0) GAGAL karena batas 12 function di paket
   Hobby Vercel (18 file api/) — diperbaiki dengan menggabungkan
   endpoint jadi 11 function (dispatcher api/auth.js + api/pengumuman/
   [id]/aksi.js + rewrite di vercel.json), tanpa mengubah URL maupun
