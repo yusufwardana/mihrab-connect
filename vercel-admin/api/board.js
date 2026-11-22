@@ -13,6 +13,17 @@ const { ok, gagal, hanyaMethod } = require("../lib/http");
 const { hariIniWIB, formatTanggalId, hitungJadwalSholat, tanggalHijriyah } = require("../lib/prayer");
 
 module.exports = async (req, res) => {
+  // Board di-deploy di domain Vercel yang berbeda dan memanggil endpoint
+  // baca-publik ini lintas origin -> izinkan CORS untuk semua origin.
+  // Endpoint ini baca-saja (hanya GET); tidak ada data sensitif di paket tayang.
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") {
+    res.statusCode = 204;
+    res.end();
+    return;
+  }
   try {
     if (!hanyaMethod(req, res, ["GET"])) return;
     const sb = supabase();
