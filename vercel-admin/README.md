@@ -23,7 +23,7 @@ vercel-admin/
 │   ├── http.js           # helper respons & baca body JSON
 │   └── prayer.js         # hitung jadwal sholat Kemenag + tanggal Hijriyah
 ├── api/
-│   ├── pengumuman.js                 # GET /api/pengumuman
+│   ├── pengumuman.js                 # GET/POST /api/pengumuman
 │   ├── pengumuman/[id]/setujui.js   # POST /api/pengumuman/:id/setujui
 │   ├── pengumuman/[id]/tolak.js     # POST /api/pengumuman/:id/tolak
 │   ├── kas.js                        # GET/POST/PUT /api/kas
@@ -88,6 +88,7 @@ kategori dari `GET /api/kas`.
 | Endpoint | Tabel | Keterangan |
 | --- | --- | --- |
 | `GET /api/pengumuman` | `pengumuman`, `pengurus` | Semua pengumuman (+ nama/peran pengirim). `?status=menunggu\|tayang\|draft\|selesai`. |
+| `POST /api/pengumuman` | `pengumuman`, `pengurus`, `log_aktivitas` | Buat pengumuman dari dashboard, langsung `tayang` sebagai ketua (lihat deviasi 18). Body `{ isi (wajib), jenis (opsional, default "Pengumuman") }`; isi kosong 400, jenis > 100 karakter 400, tanpa ketua 409. Kembalikan 201 `{ pengumuman }`. |
 | `POST /api/pengumuman/:id/setujui` | `pengumuman`, `pengurus`, `log_aktivitas` | `menunggu` → `tayang`; `disetujui_oleh` = ketua, `disetujui_pada` = now. Hanya status `menunggu` (409 bila bukan). |
 | `POST /api/pengumuman/:id/tolak` | `pengumuman`, `pengurus`, `log_aktivitas` | Lihat catatan “Tolak” di bawah. Hanya status `menunggu`. |
 | `POST /api/pengumuman/:id/akhiri` | `pengumuman`, `arsip`, `pengurus`, `log_aktivitas` | `tayang` → `selesai`; tulis baris arsip (judul = baris pertama isi, maks 200 karakter). Hanya status `tayang` (409 bila bukan). Kembalikan pengumuman + arsip. |
@@ -226,6 +227,12 @@ bagian yang terikat data mengikuti skema.
     layar Arsip. Bila ada baris arsip yang salah, perbaiki langsung
     di database (Supabase) dan catat perbaikannya di log — bukan
     dari Admin.
+18. **Buat pengumuman dari dashboard langsung tayang sebagai ketua.**
+    `POST /api/pengumuman` mengikuti preseden spek backend §4.3
+    (kiriman WhatsApp dari ketua auto-tayang): dashboard hanya
+    dioperasikan ketua, jadi `pengirim_id` = `disetujui_oleh` =
+    ketua dan status langsung `tayang` tanpa antrean persetujuan.
+    Edit pengumuman (PUT) belum dibangun — itu tindak lanjut.
 
 ## Yang sudah diverifikasi (saat build, 22 Nov 2026)
 

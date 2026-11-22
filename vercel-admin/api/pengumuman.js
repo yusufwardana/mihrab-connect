@@ -1,18 +1,90 @@
-// GET /api/pengumuman — daftar pengumuman masjid (antrean + yang tayang).
-// Query opsional: ?status=menunggu|tayang|draft|selesai (tanpa filter = semua).
-// Tabel: pengumuman (+ pengurus untuk nama/peran/nomor pengirim).
+// GET/POST /api/pengumuman — daftar pengumuman masjid (antrean + yang tayang),
+// dan buat pengumuman baru dari dashboard (langsung tayang sebagai ketua).
+// GET query opsional: ?status=menunggu|tayang|draft|selesai (tanpa filter = semua).
+// POST body: { isi (wajib), jenis (opsional, default "Pengumuman") } ->
+//   201 { pengumuman }. Buat dari dashboard langsung berstatus 'tayang'
+//   (preseden spek backend §4.3: kiriman dari ketua auto-tayang; dashboard
+//   hanya dioperasikan ketua). Tabel: pengumuman (+ pengurus untuk
+//   nama/peran/nomor pengirim), log_aktivitas.
 "use strict";
 
-const { supabase, getMasjidId, getPengurusMap } = require("../lib/supabase");
-const { ok, gagal, hanyaMethod } = require("../lib/http");
+const { supabase, getMasjidId, getKetua, getPengurusMap, tulisLog } = require("../lib/supabase");
+const { ok, dibuat, gagal, hanyaMethod, bacaJson, salahInput, konflik } = require("../lib/http");
 
 const STATUS_VALID = ["draft", "menunggu", "tayang", "selesai"];
 
+function judulDariIsi(isi) {
+  var t = String(isi || "").split("\n")[0].trim();
+  if (!t) return "(tanpa judul)";
+  return t.length > 200 ? t.slice(0, 200) : t;
+}
+
+function bentukPengumuman(p, pengurusMap) {
+  const pengirim = p.pengirim_id ? pengurusMap[p.pengirim_id] || null : null;
+  return {
+    id: p.id,
+    jenis: p.jenis,
+    isi: p.isi,
+    status: p.status,
+    sumber: p.sumber,
+    pengirim: pengirim
+      ? {
+          id: pengirim.id,
+          nama: pengirim.nama,
+          peran: pengirim.peran,
+          no_whatsapp: pengirim.no_whatsapp,
+        }
+      : null,
+    disetujui_oleh: p.disetujui_oleh,
+    disetujui_pada: p.disetujui_pada,
+    created_at: p.created_at,
+  };
+}
+
+async function buatPengumuman(req, res, sb, masjidId) {
+  const body = await bacaJson(req);
+  const isi = String((body && body.isi) || "").trim();
+  if (!isi) throw salahInput("Isi pengumuman wajib diisi");
+  var jenis = String((body && body.jenis) || "").trim() || "Pengumuman";
+  if (jenis.length > 100) throw salahInput("Jenis terlalu panjang (maks 100 karakter)");
+
+  const ketua = await getKetua(sb, masjidId);
+  if (!ketua) throw konflik("Belum ada pengurus dengan peran ketua di database");
+
+  const sekarang = new Date().toISOString();
+  const { data, error } = await sb
+    .from("pengumuman")
+    .insert({
+      masjid_id: masjidId,
+      isi,
+      jenis,
+      sumber: "dashboard",
+      pengirim_id: ketua.id,
+      status: "tayang",
+      disetujui_oleh: ketua.id,
+      disetujui_pada: sekarang,
+    })
+    .select("id, isi, jenis, status, sumber, pengirim_id, disetujui_oleh, disetujui_pada, created_at")
+    .single();
+  if (error) throw error;
+
+  await tulisLog(sb, {
+    masjidId,
+    pengurusId: ketua.id,
+    aksi: "Menambah pengumuman",
+    detail: jenis + ': "' + judulDariIsi(isi) + '" — dibuat dari dashboard, langsung tayang di Board',
+  });
+
+  const pengurusMap = await getPengurusMap(sb, masjidId);
+  dibuat(res, { pengumuman: bentukPengumuman(data, pengurusMap) });
+}
+
 module.exports = async (req, res) => {
   try {
-    if (!hanyaMethod(req, res, ["GET"])) return;
+    if (!hanyaMethod(req, res, ["GET", "POST"])) return;
     const sb = supabase();
     const masjidId = await getMasjidId(sb);
+    if (req.method === "POST") return buatPengumuman(req, res, sb, masjidId);
 
     let q = sb
       .from("pengumuman")
@@ -34,27 +106,7 @@ module.exports = async (req, res) => {
     if (error) throw error;
 
     const pengurusMap = await getPengurusMap(sb, masjidId);
-    const pengumuman = (data || []).map((p) => {
-      const pengirim = p.pengirim_id ? pengurusMap[p.pengirim_id] || null : null;
-      return {
-        id: p.id,
-        jenis: p.jenis,
-        isi: p.isi,
-        status: p.status,
-        sumber: p.sumber,
-        pengirim: pengirim
-          ? {
-              id: pengirim.id,
-              nama: pengirim.nama,
-              peran: pengirim.peran,
-              no_whatsapp: pengirim.no_whatsapp,
-            }
-          : null,
-        disetujui_oleh: p.disetujui_oleh,
-        disetujui_pada: p.disetujui_pada,
-        created_at: p.created_at,
-      };
-    });
+    const pengumuman = (data || []).map((p) => bentukPengumuman(p, pengurusMap));
 
     ok(res, {
       pengumuman,

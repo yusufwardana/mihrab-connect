@@ -472,6 +472,29 @@
               <h2 id="h-persetujuan">Antrean Persetujuan</h2>
               <p>Kiriman WhatsApp dari nomor pengurus terdaftar masuk sebagai draf, lalu menunggu persetujuan ketua sebelum tayang. Kiriman ketua dapat auto-tayang. Nomor yang tidak terdaftar ditolak otomatis dan tidak membuat draf apa pun. Kas tidak pernah bisa diubah lewat jalur ini.</p>
             </div>
+            <div class="card section-gap">
+              <h3>Buat pengumuman</h3>
+              <p class="sub">Dibuat dari dashboard sebagai ketua — langsung tayang di Board tanpa antrean persetujuan.</p>
+              <form data-buat-form>
+                <div class="field">
+                  <label for="buat-isi">Isi pengumuman</label>
+                  <textarea id="buat-isi" data-buat-isi rows="4" placeholder="Tulis isi pengumuman…" required></textarea>
+                </div>
+                <div class="field">
+                  <label for="buat-jenis">Jenis</label>
+                  <select id="buat-jenis" data-buat-jenis>
+                    <option>Pengumuman</option>
+                    <option>Kegiatan</option>
+                    <option>Keuangan</option>
+                    <option>Berita duka</option>
+                    <option>Jadwal</option>
+                  </select>
+                </div>
+                <div class="queue-actions">
+                  <button type="submit" class="btn primary">Tayangkan</button>
+                </div>
+              </form>
+            </div>
             <div class="queue-list" data-queue-list></div>
           </section>
 
@@ -1241,6 +1264,32 @@
           if (btn) btn.disabled = false;
         }
       }
+      async function buatPengumuman(e) {
+        e.preventDefault();
+        var isiEl = document.querySelector("[data-buat-isi]");
+        var jenisEl = document.querySelector("[data-buat-jenis]");
+        var isi = isiEl.value.trim();
+        if (!isi) { tampilkanError("Isi pengumuman wajib diisi."); return; }
+        var btn = e.target.querySelector("button[type='submit']");
+        if (btn) btn.disabled = true;
+        try {
+          await api("/api/pengumuman", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ isi: isi, jenis: jenisEl.value }),
+          });
+          isiEl.value = "";
+          jenisEl.value = "Pengumuman";
+          sembunyikanError();
+          await muatSemua();
+          tampilkanSukses("Pengumuman ditayangkan ke Board.");
+        } catch (err) {
+          tampilkanError("Gagal membuat pengumuman: " + err.message);
+        } finally {
+          if (btn) btn.disabled = false;
+        }
+      }
+      document.querySelector("[data-buat-form]").addEventListener("submit", buatPengumuman);
 
       /* ===== Render: jadwal ===== */
       function renderTimes() {
