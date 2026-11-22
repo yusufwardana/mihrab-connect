@@ -586,7 +586,7 @@
       //   pengumuman_tayang:[], ringkasan_kas:{per_kategori,total}, qris:[],
       //   event:[], countdown_berikutnya, murotal, tanggal:{masehi,hijriyah} }
       // jadwal.waktu = null bila koordinat masjid belum diisi -> JANGAN tampilkan jam palsu.
-      var API_URL = "https://mihrab-connect-admin-0xs-projects-798a67b4.vercel.app/api/board";
+      var API_URL = "/api/board"; // same-origin: Board memakai function sendiri (api/board.js) agar tidak terhalang login Vercel Admin.
       var POLL_MS = 60000;      // sinkronisasi ulang tiap 60 detik
       var SHOLAT_MINUTES = 12;  // durasi tampilan mode sholat setelah iqomah
       var MUROTAL_BEFORE = 10;  // jendela murotal: 10 menit sebelum adzan

@@ -1,8 +1,8 @@
-# Mihrab Connect Board — Live (Vercel statis)
+# Mihrab Connect Board — Live (Vercel)
 
-Papan informasi digital TV (16:9) yang tersambung ke data live. Tanpa
-framework, tanpa serverless functions: satu file HTML statis di `public/`
-yang mengambil paket tayang dari Admin.
+Papan informasi digital TV (16:9) yang tersambung ke data live. Satu file
+HTML statis di `public/` + satu function baca-saja `api/board.js` yang
+mengambil paket tayang dari Supabase.
 
 Sumber: prototipe Board P0 (`../frontend/mihrab-connect-board.html`) yang
 diubah lewat skrip transformasi (`/tmp/transform-board.py`, skrip live di
@@ -16,8 +16,12 @@ dihapus, data layer diganti `fetch()` ke API.
 
 ```
 vercel-board/
-├── vercel.json      # static murni dari public/ (tanpa functions)
+├── package.json     # dependensi: @supabase/supabase-js (untuk api/board.js)
+├── vercel.json      # static dari public/, /api/* ke functions
 ├── README.md        # file ini
+├── lib/             # klien Supabase + hitung jadwal (salinan dari vercel-admin)
+├── api/
+│   └── board.js     # GET /api/board (paket tayang) — salinan dari vercel-admin
 └── public/
     └── index.html   # Board live (font/gambar inline, ~944 KB)
 ```
@@ -25,13 +29,17 @@ vercel-board/
 ## Sumber data
 
 ```
-GET https://mihrab-connect-admin-0xs-projects-798a67b4.vercel.app/api/board
+GET /api/board   (same-origin, function di proyek ini)
 ```
 
-Endpoint baca-saja di proyek Vercel Admin; CORS sudah dibuka di
-`../vercel-admin/api/board.js` (`Access-Control-Allow-Origin: *` + tangani
-`OPTIONS`) karena Board di-deploy di domain yang berbeda. Bentuk respons
-yang dipakai (lihat `api/board.js`):
+Kenapa bukan langsung ke proyek Admin: Admin dilindungi Vercel
+Authentication (login Vercel), jadi browser TV tanpa login tidak bisa
+memanggil `https://mihrab-connect-admin-…/api/board` — permintaan akan
+dialihkan ke halaman login sebelum sampai ke function. Karena itu Board
+memiliki `api/board.js` sendiri yang membaca Supabase langsung dengan
+service-role key (env var server, tidak pernah ke browser). CORS di
+`../vercel-admin/api/board.js` tetap ada untuk pemakaian lain, tetapi
+Board live tidak memakainya.
 
 ```json
 {
@@ -87,7 +95,8 @@ yang dipakai (lihat `api/board.js`):
 1. Import repo GitHub `yusufwardana/mihrab-connect` sebagai proyek baru
    (mis. `mihrab-connect-board`), **Root Directory: `vercel-board`**.
 2. Framework Preset: **Other**. Build Command: kosong. Output: `public`.
-3. **Tidak perlu environment variable.**
+3. Tambah Environment Variables `SUPABASE_URL` dan
+   `SUPABASE_SERVICE_ROLE_KEY` (Production) — sama seperti proyek Admin.
 4. Deploy. Board tampil di `/`.
 
 Penting: proyek Board harus **terpisah dari Admin** dan **tanpa Vercel
@@ -124,11 +133,10 @@ vercel --prod
   live baru dicek sintaksnya (`node --check`) dan semua id elemen
   terverifikasi ada. Setelah deploy, uji: Board memuat nama masjid
   asli, chip DATA jadi TERBARU, dan polling 60 detik berjalan.
-- **Jadwal masih null sampai koordinat masjid diisi.** Seed Supabase
-  (`koordinat_lat/lng`) masih `null`, jadi `jadwal.waktu` dari
-  `/api/board` masih `null` dan Board akan menampilkan pemberitahuan
-  jadwal, bukan jam. Isi koordinat di tabel `masjid` (atau lewat
-  endpoint profil yang belum dibuat) sebelum uji tampilan jadwal.
+- **Jadwal tampil setelah koordinat masjid diisi.** Koordinat contoh
+  Jakarta (-6.2088, 106.8456) sudah diisi di tabel `masjid` 22 Nov 2026,
+  jadi `jadwal.waktu` dari `/api/board` mengembalikan jam sholat nyata.
+  Ganti dengan koordinat Masjid Al Furqon saat pilot.
 - **Jadwal petugas Jumat belum ada di `/api/board`.** Endpoint hanya
   mengembalikan paket tayang tanpa `jadwal_petugas`, jadi slide Jumat
   menampilkan waktu khutbah + “—” untuk Khatib/Imam/Muadzin.
