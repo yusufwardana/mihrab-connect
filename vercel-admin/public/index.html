@@ -527,6 +527,36 @@
                   <tbody data-petugas-tbody></tbody>
                 </table>
               </div>
+              <form data-petugas-form class="settings-grid" style="margin-top:14px">
+                <div class="field">
+                  <label for="ptg-tanggal">Tanggal</label>
+                  <input type="date" id="ptg-tanggal" required />
+                </div>
+                <div class="field">
+                  <label for="ptg-peran">Jenis</label>
+                  <select id="ptg-peran">
+                    <option value="imam">Imam</option>
+                    <option value="muadzin">Muadzin</option>
+                    <option value="khatib">Khatib</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="ptg-nama">Nama petugas</label>
+                  <input type="text" id="ptg-nama" placeholder="Nama petugas" required />
+                </div>
+                <div class="field">
+                  <label>&nbsp;</label>
+                  <button type="submit" class="btn primary">Tambah petugas</button>
+                </div>
+              </form>
+              <p class="hint">Petugas baru langsung tersimpan dan tampil di tabel di atas serta di Board pada mode Jumat.</p>
+            </div>
+
+            <div class="card section-gap">
+              <h3>Simpan Pengaturan</h3>
+              <p class="sub">Simpan semua perubahan di layar ini sekaligus — koreksi menit, offset Hijriyah, durasi iqomah, dan murotal. (Tiap kontrol juga tersimpan otomatis saat diubah.)</p>
+              <button type="button" class="btn primary" data-jadwal-simpan>Simpan pengaturan jadwal</button>
+              <span class="hint" data-jadwal-status role="status"></span>
             </div>
           </section>
 
@@ -997,8 +1027,10 @@
           renderBoardTimes();
           renderBoardSlide();
           await api("/api/log").then(function (d) { state.log = d.log || []; renderLog(); }).catch(function () {});
+          return true;
         } catch (e) {
           tampilkanError("Gagal menyimpan pengaturan jadwal: " + e.message);
+          return false;
         }
       }
       function renderJadwal() {
@@ -1257,6 +1289,64 @@
       document.querySelector("[data-koreksi-menit]").addEventListener("change", function () {
         var v = parseInt(this.value, 10);
         if (!isNaN(v)) simpanJadwal({ koreksi_menit: v });
+      });
+      document.querySelector("[data-jadwal-simpan]").addEventListener("click", async function () {
+        var btn = this;
+        var status = document.querySelector("[data-jadwal-status]");
+        var patch = {};
+        var koreksi = document.querySelector("[data-koreksi-menit]");
+        if (koreksi) { var kv = parseInt(koreksi.value, 10); if (!isNaN(kv)) patch.koreksi_menit = kv; }
+        var off = document.getElementById("set-offset-hijriyah");
+        if (off) { var ov = parseInt(off.value, 10); if (!isNaN(ov)) patch.offset_hijriyah = ov; }
+        var iq = {};
+        document.querySelectorAll("[data-iqomah]").forEach(function (inp) {
+          var v = parseInt(inp.value, 10);
+          if (!isNaN(v)) iq[inp.getAttribute("data-iqomah")] = v;
+        });
+        if (Object.keys(iq).length) patch.iqomah = iq;
+        var mur = document.getElementById("set-murotal");
+        if (mur) patch.murotal = { aktif: mur.selectedIndex === 0 };
+        if (btn) btn.disabled = true;
+        try {
+          if (await simpanJadwal(patch)) {
+            if (status) {
+              var kini = new Date();
+              status.textContent = "Tersimpan " + String(kini.getHours()).padStart(2, "0") + ":" + String(kini.getMinutes()).padStart(2, "0") + " WIB";
+            }
+          }
+        } finally {
+          if (btn) btn.disabled = false;
+        }
+      });
+      document.querySelector("[data-petugas-form]").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        var tanggal = document.getElementById("ptg-tanggal").value;
+        var peran = document.getElementById("ptg-peran").value;
+        var nama = document.getElementById("ptg-nama").value.trim();
+        if (!tanggal || !/^\d{4}-\d{2}-\d{2}$/.test(tanggal) || isNaN(Date.parse(tanggal)) || !nama) {
+          tampilkanError("Isi tanggal dan nama petugas dengan benar.");
+          return;
+        }
+        var daftar = (state.jadwal && state.jadwal.petugas ? state.jadwal.petugas : []).map(function (p) {
+          return { peran: p.peran, nama: p.nama, tanggal: p.tanggal };
+        });
+        daftar.push({ peran: peran, nama: nama, tanggal: tanggal });
+        var btn = e.target.querySelector("button[type='submit']");
+        if (btn) btn.disabled = true;
+        try {
+          if (await simpanJadwal({ petugas: daftar })) {
+            document.getElementById("ptg-tanggal").value = "";
+            document.getElementById("ptg-nama").value = "";
+            sembunyikanError();
+            var status = document.querySelector("[data-jadwal-status]");
+            if (status) {
+              var kini = new Date();
+              status.textContent = "Petugas ditambahkan — tersimpan " + String(kini.getHours()).padStart(2, "0") + ":" + String(kini.getMinutes()).padStart(2, "0") + " WIB";
+            }
+          }
+        } finally {
+          if (btn) btn.disabled = false;
+        }
       });
 
       function renderSemua() {
