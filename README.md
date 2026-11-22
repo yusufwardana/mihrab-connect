@@ -44,6 +44,7 @@ Palet: hijau gelap, emas lembut, putih hangat.
 | `docs/scope-board.md` | Dokumen scope Mihrab Connect Board (masuk/tidak masuk scope, batas teknis, kriteria selesai). |
 | `docs/backend-spec.md` | Spesifikasi backend (model data, alur persetujuan, endpoint API, matriks izin, perilaku offline). |
 | `docs/masjid-board-fitur-dan-usp.md` | Dokumen sumber: fitur utama & USP Masjid Board. |
+| `docs/supabase-schema.sql` | Skema Supabase (Postgres) dari spek backend — 14 tabel, RLS starter, data contoh. |
 | `frontend/masjid-board.html` | Export landing page Masjid Board v2, satu file (gambar inline; font masih dari Google, fallback bila offline). |
 | `frontend/mihrab-connect-board.html` | Export prototipe Board P0, satu file mandiri penuh (font & gambar inline, tanpa dependensi eksternal). |
 | `frontend/mihrab-connect-admin.html` | Export prototipe Admin P0, satu file (font masih dari Google, fallback bila offline; tanpa backend nyata). |
@@ -70,7 +71,8 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   jawaban wawancara kosong dan nama marbot pengirim WA belum tertulis
   (lihat `docs/hasil-validasi-al-furqon.md`).
 - Prototipe Admin P0 selesai 22 Nov 2026 (6 layar, data contoh, tanpa
-  backend nyata); proyek Supabase belum dibuat.
+  backend nyata); skema Supabase siap di `docs/supabase-schema.sql`,
+  proyek Supabase sedang dibuat.
 - Branding final menunggu penilaian konsultan KI.
 - Stack Admin dikunci 22 Nov 2026: Vercel + Supabase (tier gratis),
   hosting ikut Vercel.
