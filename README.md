@@ -106,6 +106,27 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   konfirmasi dua langkah di tombol ("Hapus" → "Yakin hapus?").
   Data uji dibersihkan (3 baris event/kajian uji dihapus; yang
   tersisa hanya 2 event seed: Ramadan 1448 H dan Idul Fitri 1448 H).
+- Archive P0 selesai + terverifikasi live 22 Nov 2026 20:38–21:02 WIB
+  (commit 6baa1a02, perbaikan routing a1ccfffd, banner sukses
+  ef94ccda): layar Arsip di Admin (daftar arsip tayangan dengan cari
+  teks + filter jenis; Log Aktivitas dengan cari teks) dan GET
+  /api/arsip (baris tersimpan + event yang tanggalnya sudah lewat
+  sebagai turunan bacaan, bukan baris tersimpan); "Akhiri tayang"
+  untuk pengumuman tayang (tayang → selesai + tulis baris arsip +
+  log); kajian tayang → selesai otomatis masuk arsip. Bug saat
+  verifikasi pertama: Setujui DAN Akhiri tayang sama-sama ditolak
+  HTTP 405 — bukan salah kodenya, tapi rewrite lama di
+  vercel-admin/vercel.json (`/api/:path*` → `/api/:path*`) menelan
+  rute dinamis `[id]` sehingga permintaan dilempar ke index.html
+  statis yang menolak POST; diperbaiki jadi satu fallback SPA yang
+  mengecualikan `/api` (`/((?!api/).*)` → `/index.html`), dan semua
+  rute `[id]` (setujui/tolak/akhiri) kini bekerja. Pelajaran: rute
+  `[id]` belum pernah diuji live sebelum Archive P0 — semua rute
+  dinamis harus diuji sekali saat dibuat. Temuan kecil: Setujui/Tolak
+  tidak menampilkan banner sukses (hanya memuat ulang) — diperbaiki
+  di ef94ccda. Data uji dibersihkan (2 pengumuman uji + 1 kajian uji
+  + 2 baris arsip uji dihapus; arsip/pengumuman/kajian kembali 0;
+  log aktivitas tetap sebagai jejak audit).
 - Board live di Vercel 22 Nov 2026: proyek `mihrab-connect-board`
   (team 0x's projects, git-linked ke repo ini, root `vercel-board`),
   https://mihrab-connect-board-0xs-projects-798a67b4.vercel.app —
