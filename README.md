@@ -88,12 +88,12 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   publik tanpa login (SSO protection dimatikan); data dari function
   `/api/board` sendiri di proyek itu (bukan dari domain Admin, karena
   Admin dilindungi login Vercel); panel simulasi dihapus, data dari
-  Supabase, poll 60 detik. Data pilot terisi 22 Nov 2026 19:15 WIB:
-  Masjid Al Furqon, Jl. Jenderal Sudirman, Mlopoharjo, Wuryantoro,
-  Wonogiri 57661, koordinat -7.90424, 110.85946; Ketua Sarino dan
-  Bendahara Gondes (keduanya WA 083871374743, terdaftar); pengurus
-  contoh + transaksi uji Rp1.000 dihapus. Marbot Paijo (WA yang sama)
-  ditambahkan 22 Nov 2026 19:28 WIB — pengurus pilot lengkap.
+  Supabase, poll 60 detik. Data pilot terisi 22 Nov 2026 19:15 WIB,
+  dikoreksi 19:29 WIB dari shareloc user: Masjid Jami' Abdul Latief
+  Al Furqon, Ploso, Mlopoharjo, Wuryantoro, Wonogiri 57661, koordinat
+  -7.89367, 110.84866; Ketua Sarino, Bendahara Gondes, Marbot Paijo
+  (ketiganya WA 083871374743, terdaftar); pengurus contoh + transaksi
+  uji Rp1.000 dihapus.
 - Stack Admin dikunci 22 Nov 2026: Vercel + Supabase (tier gratis),
   hosting ikut Vercel.
 - Keputusan terbuka: penyedia WhatsApp, brand final.
