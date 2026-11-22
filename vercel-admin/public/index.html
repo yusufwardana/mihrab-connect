@@ -622,6 +622,33 @@
                 </table>
               </div>
             </div>
+
+            <div class="card section-gap">
+              <h3>Serah Terima</h3>
+              <p class="sub">Serah terima pengurus dalam 1 klik — hanya ketua. Saldo akhir dibekukan per tanggal serah terima, dan berita acara bisa dicetak.</p>
+              <form data-serah-form>
+                <div class="form-row">
+                  <div class="field">
+                    <label for="st-dari">Dari (ketua)</label>
+                    <select id="st-dari"></select>
+                  </div>
+                  <div class="field">
+                    <label for="st-ke">Ke</label>
+                    <select id="st-ke"></select>
+                  </div>
+                </div>
+                <div class="field" style="margin-top:12px">
+                  <label for="st-catatan">Catatan (opsional)</label>
+                  <input type="text" id="st-catatan" placeholder="cth. Serah terima jabatan ketua periode 2026" />
+                </div>
+                <div style="margin-top:14px">
+                  <button type="submit" class="btn primary">Catat serah terima</button>
+                </div>
+              </form>
+              <h3 style="margin-top:20px">Riwayat Serah Terima</h3>
+              <ul class="mini-list" data-serah-list></ul>
+              <div data-berita-acara></div>
+            </div>
           </section>
 
           <!-- ================= PENGURUS ================= -->
@@ -749,6 +776,8 @@
         pengurus: [],
         log: [],
         board: null,
+        serahTerima: [],
+        baDipilihId: null,
         apiOk: {},
       };
       var slideIdx = 0, slideTimer = null;
@@ -831,8 +860,9 @@
         var hasil = await Promise.allSettled([
           api("/api/pengumuman"), api("/api/kas"), api("/api/jadwal"),
           api("/api/pengurus"), api("/api/log"), api("/api/board"),
+          api("/api/serah-terima"),
         ]);
-        var nama = ["pengumuman", "kas", "jadwal", "pengurus", "log", "board"];
+        var nama = ["pengumuman", "kas", "jadwal", "pengurus", "log", "board", "serah-terima"];
         var gagal = [];
         hasil.forEach(function (h, i) {
           state.apiOk[nama[i]] = h.status === "fulfilled";
@@ -843,6 +873,7 @@
             if (nama[i] === "pengurus") state.pengurus = h.value.pengurus || [];
             if (nama[i] === "log") state.log = h.value.log || [];
             if (nama[i] === "board") { state.board = h.value; state.masjid = h.value.masjid || null; }
+            if (nama[i] === "serah-terima") state.serahTerima = h.value.serah_terima || [];
           } else {
             gagal.push(nama[i] + ": " + (h.reason && h.reason.message ? h.reason.message : "gagal"));
           }
@@ -1111,8 +1142,31 @@
           grid.innerHTML = k.kategori.length ? k.kategori.map(function (kat) {
             return "<div class='card'><h3>" + esc(kat.nama) + "</h3>" +
               "<div class='kas-total'><span class='amount'>" + rupiah(kat.saldo) + "</span></div>" +
-              "<p class='sub'>Saldo kategori · " + (kat.qris_url ? "QRIS aktif" : "QRIS belum diatur") + "</p></div>";
+              "<p class='sub'>Saldo kategori · " + (kat.qris_url ? "QRIS aktif" : "QRIS belum diatur") + "</p>" +
+              "<div class='field' style='margin-top:10px'><label for='qris-" + esc(kat.id) + "'>Tautan QRIS</label>" +
+              "<input type='url' id='qris-" + esc(kat.id) + "' data-qris='" + esc(kat.id) + "' value='" + esc(kat.qris_url || "") + "' placeholder='https://…' /></div>" +
+              "<div style='margin-top:8px'><button type='button' class='btn ghost' data-qris-simpan='" + esc(kat.id) + "'>Simpan QRIS</button></div></div>";
           }).join("") : "<p class='empty-note'>Belum ada kategori kas.</p>";
+          grid.querySelectorAll("[data-qris-simpan]").forEach(function (btn) {
+            btn.addEventListener("click", async function () {
+              var id = btn.getAttribute("data-qris-simpan");
+              var inp = grid.querySelector("[data-qris='" + id + "']");
+              var nilai = inp ? inp.value.trim() : "";
+              btn.disabled = true;
+              try {
+                await api("/api/kas", {
+                  method: "PUT",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ kategori_id: id, qris_url: nilai || null }),
+                });
+                sembunyikanError();
+                await muatSemua();
+              } catch (err) {
+                tampilkanError("Gagal menyimpan QRIS: " + err.message);
+              }
+              btn.disabled = false;
+            });
+          });
         }
         var ring = document.querySelector("[data-kas-ringkasan]");
         if (ring) {
@@ -1171,6 +1225,92 @@
           await muatSemua();
         } catch (err) {
           tampilkanError("Gagal mencatat transaksi kas: " + err.message);
+        }
+        if (btn) btn.disabled = false;
+      });
+
+      /* ===== Render: serah terima ===== */
+      function renderSerahTerima() {
+        var daftar = state.serahTerima || [];
+        var pengurus = state.pengurus || [];
+        ["st-dari", "st-ke"].forEach(function (id) {
+          var sel = document.getElementById(id);
+          if (!sel) return;
+          var cur = sel.value;
+          sel.innerHTML = pengurus.map(function (p) {
+            return "<option value='" + esc(p.id) + "'>" + esc(p.nama) + " (" + esc(labelPeran(p.peran)) + ")</option>";
+          }).join("");
+          if (cur && pengurus.some(function (p) { return p.id === cur; })) sel.value = cur;
+        });
+        var list = document.querySelector("[data-serah-list]");
+        if (list) {
+          list.innerHTML = daftar.length ? daftar.map(function (s) {
+            var dari = s.dari ? s.dari.nama + " (" + labelPeran(s.dari.peran) + ")" : "—";
+            var ke = s.ke ? s.ke.nama + " (" + labelPeran(s.ke.peran) + ")" : "—";
+            return "<li><span class='grow'><strong>" + esc(formatTanggalPanjang(s.tanggal)) + "</strong><br /><span class='meta'>" + esc(dari) + " → " + esc(ke) + "</span></span><strong>" + rupiah(s.saldo_akhir ? s.saldo_akhir.total : null) + "</strong>" +
+              "<button type='button' class='btn ghost' data-ba='" + esc(s.id) + "'>Lihat berita acara</button></li>";
+          }).join("") : "<li class='empty-note'>Belum ada serah terima.</li>";
+          list.querySelectorAll("[data-ba]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              state.baDipilihId = btn.getAttribute("data-ba");
+              renderBeritaAcara();
+              var wadah = document.querySelector("[data-berita-acara]");
+              if (wadah) wadah.scrollIntoView({ behavior: "smooth", block: "nearest" });
+            });
+          });
+        }
+        renderBeritaAcara();
+      }
+      function renderBeritaAcara() {
+        var wadah = document.querySelector("[data-berita-acara]");
+        if (!wadah) return;
+        var s = null;
+        (state.serahTerima || []).forEach(function (x) { if (x.id === state.baDipilihId) s = x; });
+        if (!s) { wadah.innerHTML = ""; return; }
+        var dari = s.dari ? s.dari.nama + " (" + labelPeran(s.dari.peran) + ")" : "—";
+        var ke = s.ke ? s.ke.nama + " (" + labelPeran(s.ke.peran) + ")" : "—";
+        var saldo = s.saldo_akhir || { per_kategori: [], total: null };
+        wadah.innerHTML =
+          "<div class='card' style='margin-top:16px'><h3>Berita Acara Serah Terima</h3>" +
+          "<p class='sub'>" + esc(namaMasjid()) + " · " + esc(formatTanggalPanjang(s.tanggal)) + "</p>" +
+          "<p>Dari: <strong>" + esc(dari) + "</strong><br />Ke: <strong>" + esc(ke) + "</strong></p>" +
+          "<h3 style='margin-top:12px'>Saldo Akhir</h3>" +
+          "<ul class='mini-list'>" + (saldo.per_kategori.length ? saldo.per_kategori.map(function (k) {
+            return "<li><span class='grow'>" + esc(k.nama) + "</span><strong>" + rupiah(k.saldo) + "</strong></li>";
+          }).join("") : "<li class='empty-note'>Belum ada kategori kas.</li>") +
+          "<li><span class='grow'><strong>Total</strong></span><strong>" + rupiah(saldo.total) + "</strong></li></ul>" +
+          "<h3 style='margin-top:12px'>Pengurus Saat Itu</h3>" +
+          "<ul class='mini-list'>" + ((s.pengurus || []).length ? s.pengurus.map(function (p) {
+            return "<li><span class='grow'>" + esc(p.nama) + "</span><span class='meta'>" + esc(labelPeran(p.peran)) + "</span></li>";
+          }).join("") : "<li class='empty-note'>Belum ada pengurus.</li>") + "</ul>" +
+          (s.catatan ? "<p class='sub' style='margin-top:12px'>Catatan: " + esc(s.catatan) + "</p>" : "") +
+          "<div style='margin-top:14px;display:flex;gap:8px'><button type='button' class='btn primary' data-cetak-ba>Cetak / Simpan PDF</button>" +
+          "<button type='button' class='btn ghost' data-tutup-ba>Tutup</button></div></div>";
+        var cetak = wadah.querySelector("[data-cetak-ba]");
+        if (cetak) cetak.addEventListener("click", function () { window.print(); });
+        var tutup = wadah.querySelector("[data-tutup-ba]");
+        if (tutup) tutup.addEventListener("click", function () { state.baDipilihId = null; renderBeritaAcara(); });
+      }
+      document.querySelector("[data-serah-form]").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        var dari = document.getElementById("st-dari").value;
+        var ke = document.getElementById("st-ke").value;
+        var catatan = document.getElementById("st-catatan").value.trim();
+        if (!dari || !ke) { tampilkanError("Pilih pengurus asal dan pengurus tujuan."); return; }
+        if (dari === ke) { tampilkanError("Pengurus asal dan pengurus tujuan tidak boleh sama."); return; }
+        var btn = e.target.querySelector("button[type='submit']");
+        if (btn) btn.disabled = true;
+        try {
+          await api("/api/serah-terima", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ dari_pengurus_id: dari, ke_pengurus_id: ke, catatan: catatan || undefined }),
+          });
+          document.getElementById("st-catatan").value = "";
+          sembunyikanError();
+          await muatSemua();
+        } catch (err) {
+          tampilkanError("Gagal mencatat serah terima: " + err.message);
         }
         if (btn) btn.disabled = false;
       });
@@ -1351,7 +1491,7 @@
 
       function renderSemua() {
         renderHitungan(); renderTayangList(); renderLog(); renderAntrean();
-        renderJadwal(); renderKas(); renderPengurus(); renderBoardTimes(); renderBoardSlide();
+        renderJadwal(); renderKas(); renderSerahTerima(); renderPengurus(); renderBoardTimes(); renderBoardSlide();
       }
 
       /* Placeholder "Memuat…" sebelum data pertama tiba. */

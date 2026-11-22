@@ -4,6 +4,8 @@
 //   { jenis: "masuk"|"keluar", kategori_id: uuid, jumlah: number >= 0,
 //     keterangan: string, tanggal?: "YYYY-MM-DD",
 //     dicatat_oleh?: uuid pengurus (peran ketua/bendahara; default: ketua) }
+// PUT  /api/kas — atur QRIS per kategori. Body:
+//   { kategori_id: uuid, qris_url: null|"" (hapus QRIS) | "https://…" }
 // Menulis baris ke log_aktivitas.
 // Tabel: kas_kategori, kas_transaksi, pengurus, log_aktivitas.
 "use strict";
@@ -152,7 +154,64 @@ module.exports = async (req, res) => {
       return;
     }
 
-    hanyaMethod(req, res, ["GET", "POST"]);
+    if (req.method === "PUT") {
+      if (!hanyaMethod(req, res, ["PUT"])) return;
+      const body = await bacaJson(req);
+
+      if (!body.kategori_id || typeof body.kategori_id !== "string") {
+        throw salahInput("kategori_id wajib diisi");
+      }
+      const { data: kat, error: katErr } = await sb
+        .from("kas_kategori")
+        .select("id, nama, qris_url")
+        .eq("id", body.kategori_id)
+        .eq("masjid_id", masjidId)
+        .maybeSingle();
+      if (katErr) throw katErr;
+      if (!kat) throw tidakKetemu("Kategori kas tidak ditemukan");
+
+      // qris_url: null / string kosong = hapus QRIS; selain itu harus URL https.
+      let qrisUrl = null;
+      if (body.qris_url !== undefined && body.qris_url !== null) {
+        if (typeof body.qris_url !== "string") {
+          throw salahInput("qris_url harus teks URL https atau kosong");
+        }
+        const v = body.qris_url.trim();
+        if (v !== "") {
+          let u = null;
+          try { u = new URL(v); } catch (e) { u = null; }
+          if (!u || u.protocol !== "https:") {
+            throw salahInput("qris_url harus URL https yang valid (atau kosong untuk menghapus QRIS)");
+          }
+          if (v.length > 2000) throw salahInput("qris_url terlalu panjang");
+          qrisUrl = v;
+        }
+      }
+
+      const { data: diubah, error: updErr } = await sb
+        .from("kas_kategori")
+        .update({ qris_url: qrisUrl })
+        .eq("id", kat.id)
+        .eq("masjid_id", masjidId)
+        .select("id, nama, qris_url")
+        .single();
+      if (updErr) throw updErr;
+
+      const ketua = await getKetua(sb, masjidId);
+      await tulisLog(sb, {
+        masjidId,
+        pengurusId: ketua ? ketua.id : null,
+        aksi: "Mengubah QRIS kategori",
+        detail:
+          "kas_kategori | " + kat.nama + " | qris_url=" +
+          (qrisUrl ? qrisUrl.slice(0, 200) : "dihapus"),
+      });
+
+      ok(res, { kategori: diubah });
+      return;
+    }
+
+    hanyaMethod(req, res, ["GET", "POST", "PUT"]);
   } catch (err) {
     gagal(res, err);
   }

@@ -26,7 +26,8 @@ vercel-admin/
 │   ├── pengumuman.js                 # GET /api/pengumuman
 │   ├── pengumuman/[id]/setujui.js   # POST /api/pengumuman/:id/setujui
 │   ├── pengumuman/[id]/tolak.js     # POST /api/pengumuman/:id/tolak
-│   ├── kas.js                        # GET/POST /api/kas
+│   ├── kas.js                        # GET/POST/PUT /api/kas
+│   ├── serah-terima.js               # GET/POST /api/serah-terima
 │   ├── jadwal.js                     # GET/PUT /api/jadwal
 │   ├── pengurus.js                   # GET /api/pengurus
 │   ├── log.js                        # GET /api/log
@@ -90,14 +91,17 @@ kategori dari `GET /api/kas`.
 | `POST /api/pengumuman/:id/tolak` | `pengumuman`, `pengurus`, `log_aktivitas` | Lihat catatan “Tolak” di bawah. Hanya status `menunggu`. |
 | `GET /api/kas` | `kas_kategori`, `kas_transaksi`, `pengurus` | Kategori + transaksi (100 terakhir) + saldo per kategori. Saldo `null` bila kategori belum punya transaksi. |
 | `POST /api/kas` | `kas_transaksi`, `kas_kategori`, `pengurus`, `log_aktivitas` | Dashboard saja. Validasi: `jenis` masuk/keluar, `jumlah` angka ≥ 0, `kategori_id` ada, `keterangan` wajib. Pencatat harus ketua/bendahara (default: ketua). |
+| `PUT /api/kas` | `kas_kategori`, `log_aktivitas` | Atur QRIS per kategori: `{kategori_id, qris_url}`. `qris_url` `null`/kosong = hapus QRIS; selain itu harus URL `https` yang valid (400 bila bukan). Kembalikan kategori yang diubah. |
+| `GET /api/serah-terima` | `serah_terima`, `kas_kategori`, `kas_transaksi`, `pengurus`, `masjid` | Daftar (tanggal terbaru dulu, maks 50). Tiap item berisi dari/ke (nama + peran), tanggal, catatan, `saldo_akhir` per kategori + total (dihitung dari transaksi dengan `tanggal <= tanggal` serah terima — saldo beku per tanggal), dan daftar pengurus saat ini. |
+| `POST /api/serah-terima` | `serah_terima`, `pengurus`, `log_aktivitas` | Catat serah terima: `{dari_pengurus_id, ke_pengurus_id, catatan?, tanggal?}` (tanggal default hari ini WIB). Validasi: kedua pengurus ada untuk masjid ini, dari ≠ ke, **dari harus ketua** (matriks izin spek). Kembalikan baris yang dibuat + snapshot saldo yang sama seperti GET. |
 | `GET /api/jadwal` | `masjid`, `jadwal_settings`, `iqomah_durations`, `jadwal_petugas`, `murotal_settings` | Settings + iqomah + petugas + murotal + jadwal sholat terhitung + tanggal Masehi/Hijriyah. |
 | `PUT /api/jadwal` | sama + `log_aktivitas` | Ubah `koreksi_menit` (-60..60), `offset_hijriyah` (-2..2), `iqomah` {waktu: 0..30}, `petugas` (array, ganti seluruh daftar), `murotal.aktif`. |
 | `GET /api/pengurus` | `pengurus` | Daftar pengurus + nomor WhatsApp terdaftar. |
 | `GET /api/log` | `log_aktivitas`, `pengurus` | 50 terakhir (`?limit=` maks 100). |
 | `GET /api/board` | `masjid`, `jadwal_settings`, `iqomah_durations`, `pengumuman`, `pengurus`, `kas_kategori`, `kas_transaksi`, `event`, `murotal_settings` | Paket tayang: hanya pengumuman `tayang`, ringkasan kas (bukan detail transaksi), QRIS, countdown event, murotal. Baca-saja. |
 
-Setiap aksi tulis (setujui / tolak / tambah kas / ubah jadwal) menulis
-satu baris ke `log_aktivitas` (`sumber: "dashboard"`).
+Setiap aksi tulis (setujui / tolak / tambah kas / ubah jadwal / ubah QRIS /
+serah terima) menulis satu baris ke `log_aktivitas` (`sumber: "dashboard"`).
 
 ## Penyimpangan dari prototipe & skema (sengaja, dicatat di sini)
 
@@ -162,10 +166,20 @@ bagian yang terikat data mengikuti skema.
     tidak mengisi `pengumuman`, `kas_transaksi`, `jadwal_petugas`, dan
     `log_aktivitas`, jadi layar-layar itu menampilkan keadaan kosong
     (“Antrean kosong”, “Belum ada transaksi”, dsb.) — bukan data contoh.
+12. **Saldo akhir serah terima tidak disimpan di tabel.** Skema
+    `serah_terima` tidak punya kolom snapshot, dan skema tidak diubah
+    untuk Finance P0. `GET/POST /api/serah-terima` menghitung saldo
+    akhir dari `kas_transaksi` dengan `tanggal <= tanggal` serah
+    terima (maks 5.000 transaksi yang dibaca). Transaksi tidak pernah
+    dihapus, jadi angka beku itu stabil. Berita acara adalah tampilan
+    di Admin (bukan file): tombol “Cetak / Simpan PDF” memanggil
+    `window.print()` — pengguna memilih “Save as PDF” di dialog
+    browser. UI serah terima ada di layar Kas; layar Pengurus & Peran
+    tetap display-only.
 
 ## Yang sudah diverifikasi (saat build, 22 Nov 2026)
 
-- `npm run check` — `node --check` lolos untuk 8 file `api/*`, 3 file
+- `npm run check` — `node --check` lolos untuk 9 file `api/*`, 3 file
   `lib/*`, dan script inline `public/index.html`.
 - `npm install` berhasil (`@supabase/supabase-js` 2.119.2).
 - Fungsi murni `lib/prayer.js` diuji langsung: jadwal Kemenag Jakarta
