@@ -377,6 +377,10 @@
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></svg>
             Kas
           </button>
+          <button type="button" data-nav="event">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M3 10h18"/></svg>
+            Event
+          </button>
           <button type="button" data-nav="pengurus">
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.2 3.4-5 6.5-5s5.7 1.8 6.5 5"/><path d="M16 5.5a3.5 3.5 0 0 1 0 6.5"/><path d="M17.5 15.3c2 .6 3.4 2.1 4 4.7"/></svg>
             Pengurus &amp; Peran
@@ -407,6 +411,7 @@
           <strong>TERHUBUNG — DATA DARI SUPABASE.</strong> Semua data di halaman ini dibaca dari database proyek mihrab-connect lewat API Vercel. Perubahan yang dibuat di sini (persetujuan, koreksi jadwal, catat kas) langsung tersimpan dan tercatat di log aktivitas.
         </div>
         <div class="proto-banner" role="alert" data-api-error hidden style="background:var(--red-soft);border-color:var(--red);color:var(--red)"></div>
+        <div class="proto-banner" role="status" data-api-sukses hidden style="background:var(--green-soft);border-color:var(--green);color:var(--green)"></div>
         <main class="content">
 
           <!-- ================= BERANDA ================= -->
@@ -651,6 +656,71 @@
             </div>
           </section>
 
+          <!-- ================= EVENT ================= -->
+          <section class="view" id="view-event" aria-labelledby="h-event">
+            <div class="view-head">
+              <h2 id="h-event">Event</h2>
+              <p>Hari besar, event internal, dan kajian. Event yang tampil countdown langsung masuk hitung mundur di Board; kajian berstatus tayang tampil sebagai slide agenda di Board.</p>
+            </div>
+
+            <div class="card">
+              <h3>Hari Besar &amp; Event</h3>
+              <p class="sub">Tambah hari besar (Ramadan, Idul Fitri, …) atau event internal (kajian akbar, bakti sosial). Event yang tanggalnya sudah lewat tampil sebagai “Selesai” dan tidak lagi masuk countdown Board.</p>
+              <form data-event-form>
+                <div class="form-row">
+                  <div class="field">
+                    <label for="ev-nama">Nama event</label>
+                    <input type="text" id="ev-nama" placeholder="cth. Ramadan 1449 H" maxlength="200" required />
+                  </div>
+                  <div class="field">
+                    <label for="ev-tanggal">Tanggal</label>
+                    <input type="date" id="ev-tanggal" required />
+                  </div>
+                </div>
+                <div class="field" style="margin-top:12px">
+                  <label><input type="checkbox" id="ev-countdown" checked /> Tampilkan di countdown Board</label>
+                </div>
+                <div style="margin-top:14px">
+                  <button type="submit" class="btn primary">Tambah event</button>
+                </div>
+              </form>
+              <h3 style="margin-top:20px">Daftar Event</h3>
+              <ul class="mini-list" data-event-list></ul>
+            </div>
+
+            <div class="card section-gap">
+              <h3>Kajian &amp; Kegiatan</h3>
+              <p class="sub">Kajian berstatus tayang tampil sebagai slide agenda di Board. Pola berulang (harian/mingguan/bulanan) belum didukung — tiap tanggal dibuat sebagai satu kajian.</p>
+              <form data-kajian-form>
+                <div class="form-row">
+                  <div class="field">
+                    <label for="kj-judul">Judul kajian</label>
+                    <input type="text" id="kj-judul" placeholder="cth. Kajian Subuh Ahad" maxlength="200" required />
+                  </div>
+                  <div class="field">
+                    <label for="kj-tanggal">Tanggal</label>
+                    <input type="date" id="kj-tanggal" required />
+                  </div>
+                </div>
+                <div class="form-row" style="margin-top:12px">
+                  <div class="field">
+                    <label for="kj-waktu">Jam (opsional)</label>
+                    <input type="time" id="kj-waktu" />
+                  </div>
+                  <div class="field">
+                    <label for="kj-pemateri">Pemateri (opsional)</label>
+                    <input type="text" id="kj-pemateri" placeholder="cth. Ustaz Ahmad" maxlength="200" />
+                  </div>
+                </div>
+                <div style="margin-top:14px">
+                  <button type="submit" class="btn primary">Tambah kajian</button>
+                </div>
+              </form>
+              <h3 style="margin-top:20px">Daftar Kajian</h3>
+              <ul class="mini-list" data-kajian-list></ul>
+            </div>
+          </section>
+
           <!-- ================= PENGURUS ================= -->
           <section class="view" id="view-pengurus" aria-labelledby="h-pengurus">
             <div class="view-head">
@@ -751,6 +821,10 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></svg>
         Kas
       </button>
+      <button type="button" data-nav="event">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M3 10h18"/></svg>
+        Event
+      </button>
       <button type="button" data-nav="pengurus">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.2 3.4-5 6.5-5s5.7 1.8 6.5 5"/><path d="M16 5.5a3.5 3.5 0 0 1 0 6.5"/><path d="M17.5 15.3c2 .6 3.4 2.1 4 4.7"/></svg>
         Pengurus
@@ -777,6 +851,7 @@
         log: [],
         board: null,
         serahTerima: [],
+        eventData: { event: [], kajian: [] },
         baDipilihId: null,
         apiOk: {},
       };
@@ -850,9 +925,21 @@
         if (!el) return;
         el.textContent = pesan;
         el.hidden = false;
+        sembunyikanSukses();
       }
       function sembunyikanError() {
         var el = document.querySelector("[data-api-error]");
+        if (el) el.hidden = true;
+      }
+      function tampilkanSukses(pesan) {
+        var el = document.querySelector("[data-api-sukses]");
+        if (!el) return;
+        el.textContent = pesan;
+        el.hidden = false;
+        sembunyikanError();
+      }
+      function sembunyikanSukses() {
+        var el = document.querySelector("[data-api-sukses]");
         if (el) el.hidden = true;
       }
 
@@ -860,9 +947,9 @@
         var hasil = await Promise.allSettled([
           api("/api/pengumuman"), api("/api/kas"), api("/api/jadwal"),
           api("/api/pengurus"), api("/api/log"), api("/api/board"),
-          api("/api/serah-terima"),
+          api("/api/serah-terima"), api("/api/event"),
         ]);
-        var nama = ["pengumuman", "kas", "jadwal", "pengurus", "log", "board", "serah-terima"];
+        var nama = ["pengumuman", "kas", "jadwal", "pengurus", "log", "board", "serah-terima", "event"];
         var gagal = [];
         hasil.forEach(function (h, i) {
           state.apiOk[nama[i]] = h.status === "fulfilled";
@@ -874,6 +961,7 @@
             if (nama[i] === "log") state.log = h.value.log || [];
             if (nama[i] === "board") { state.board = h.value; state.masjid = h.value.masjid || null; }
             if (nama[i] === "serah-terima") state.serahTerima = h.value.serah_terima || [];
+            if (nama[i] === "event") state.eventData = { event: h.value.event || [], kajian: h.value.kajian || [] };
           } else {
             gagal.push(nama[i] + ": " + (h.reason && h.reason.message ? h.reason.message : "gagal"));
           }
@@ -1323,6 +1411,159 @@
         if (btn) btn.disabled = false;
       });
 
+      /* ===== Render: event ===== */
+      function labelStatusKajian(s) {
+        var m = { draf: "Draf", tayang: "Tayang", selesai: "Selesai" };
+        return m[s] || s;
+      }
+      // Satu jalur untuk semua mutasi Event: perbarui state dari respons
+      // (pola QRIS), lalu muat ulang dari server dan tampilkan pesan sukses.
+      async function kirimEvent(method, body, pesanSukses, pesanGagal, btn) {
+        if (btn) btn.disabled = true;
+        try {
+          var hasil = await api("/api/event", {
+            method: method,
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          sembunyikanError();
+          if (hasil && hasil.event && state.eventData) {
+            var adaEv = false;
+            state.eventData.event.forEach(function (e, k) {
+              if (e.id === hasil.event.id) { state.eventData.event[k] = hasil.event; adaEv = true; }
+            });
+            if (!adaEv) state.eventData.event.push(hasil.event);
+            renderEvent();
+          }
+          if (hasil && hasil.kajian && state.eventData) {
+            var adaKj = false;
+            state.eventData.kajian.forEach(function (k, i) {
+              if (k.id === hasil.kajian.id) { state.eventData.kajian[i] = hasil.kajian; adaKj = true; }
+            });
+            if (!adaKj) state.eventData.kajian.push(hasil.kajian);
+            renderEvent();
+          }
+          if (hasil && hasil.dihapus && state.eventData) {
+            state.eventData.event = state.eventData.event.filter(function (e) { return e.id !== hasil.id; });
+            state.eventData.kajian = state.eventData.kajian.filter(function (k) { return k.id !== hasil.id; });
+            renderEvent();
+          }
+          await muatSemua();
+          tampilkanSukses(pesanSukses);
+          if (btn) btn.disabled = false;
+          return true;
+        } catch (err) {
+          tampilkanError(pesanGagal + ": " + err.message);
+          if (btn) btn.disabled = false;
+          return false;
+        }
+      }
+      function renderEvent() {
+        var d = state.eventData || { event: [], kajian: [] };
+        var daftarEvent = d.event || [];
+        var daftarKajian = d.kajian || [];
+        var listEv = document.querySelector("[data-event-list]");
+        if (listEv) {
+          listEv.innerHTML = daftarEvent.length ? daftarEvent.map(function (ev) {
+            var lencana = ev.selesai ? " <span class='badge draf'>Selesai</span>" : "";
+            var cd = ev.tampil_countdown ? "Countdown aktif" : "Countdown nonaktif";
+            return "<li><span class='grow'><strong>" + esc(ev.nama) + "</strong>" + lencana + "<br /><span class='meta'>" + esc(formatTanggalPanjang(ev.tanggal)) + " · " + esc(cd) + "</span></span>" +
+              "<button type='button' class='btn ghost' data-ev-toggle='" + esc(ev.id) + "' data-ev-cd='" + (ev.tampil_countdown ? "1" : "0") + "'>" + (ev.tampil_countdown ? "Matikan countdown" : "Nyalakan countdown") + "</button>" +
+              "<button type='button' class='btn ghost' data-ev-duplikasi='" + esc(ev.id) + "'>Duplikasi</button>" +
+              "<button type='button' class='btn ghost' data-ev-hapus='" + esc(ev.id) + "' data-ev-nama='" + esc(ev.nama) + "'>Hapus</button></li>";
+          }).join("") : "<li class='empty-note'>Belum ada event.</li>";
+          listEv.querySelectorAll("[data-ev-toggle]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var id = btn.getAttribute("data-ev-toggle");
+              var nyala = btn.getAttribute("data-ev-cd") === "1";
+              kirimEvent("PUT", { target: "event", id: id, tampil_countdown: !nyala },
+                nyala ? "Countdown event dimatikan." : "Countdown event dinyalakan.",
+                "Gagal mengubah countdown event", btn);
+            });
+          });
+          listEv.querySelectorAll("[data-ev-duplikasi]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              kirimEvent("POST", { aksi: "duplikasi-event", id: btn.getAttribute("data-ev-duplikasi") },
+                "Event diduplikasi ke tahun depan.", "Gagal menduplikasi event", btn);
+            });
+          });
+          listEv.querySelectorAll("[data-ev-hapus]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var nama = btn.getAttribute("data-ev-nama") || "event ini";
+              if (!window.confirm("Hapus event \"" + nama + "\"?")) return;
+              kirimEvent("DELETE", { target: "event", id: btn.getAttribute("data-ev-hapus") },
+                "Event dihapus.", "Gagal menghapus event", btn);
+            });
+          });
+        }
+        var listKj = document.querySelector("[data-kajian-list]");
+        if (listKj) {
+          listKj.innerHTML = daftarKajian.length ? daftarKajian.map(function (k) {
+            var meta = formatTanggalPanjang(k.tanggal) + (k.waktu ? " · pukul " + k.waktu : "") + (k.pemateri ? " · " + k.pemateri : "");
+            var aksiStatus = k.status === "draf"
+              ? "<button type='button' class='btn ghost' data-kj-status='" + esc(k.id) + "' data-kj-ke='tayang'>Tayangkan</button>"
+              : k.status === "tayang"
+                ? "<button type='button' class='btn ghost' data-kj-status='" + esc(k.id) + "' data-kj-ke='selesai'>Selesai</button>"
+                : "<button type='button' class='btn ghost' data-kj-status='" + esc(k.id) + "' data-kj-ke='draf'>Draf lagi</button>";
+            return "<li><span class='grow'><strong>" + esc(k.judul) + "</strong> <span class='badge " + (k.status === "tayang" ? "tayang" : "draf") + "'>" + esc(labelStatusKajian(k.status)) + "</span><br /><span class='meta'>" + esc(meta) + "</span></span>" +
+              aksiStatus +
+              "<button type='button' class='btn ghost' data-kj-hapus='" + esc(k.id) + "' data-kj-judul='" + esc(k.judul) + "'>Hapus</button></li>";
+          }).join("") : "<li class='empty-note'>Belum ada kajian.</li>";
+          listKj.querySelectorAll("[data-kj-status]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var ke = btn.getAttribute("data-kj-ke");
+              kirimEvent("PUT", { target: "kajian", id: btn.getAttribute("data-kj-status"), status: ke },
+                ke === "tayang" ? "Kajian ditayangkan ke Board." : ke === "selesai" ? "Kajian ditandai selesai." : "Kajian dikembalikan ke draf.",
+                "Gagal mengubah status kajian", btn);
+            });
+          });
+          listKj.querySelectorAll("[data-kj-hapus]").forEach(function (btn) {
+            btn.addEventListener("click", function () {
+              var judul = btn.getAttribute("data-kj-judul") || "kajian ini";
+              if (!window.confirm("Hapus kajian \"" + judul + "\"?")) return;
+              kirimEvent("DELETE", { target: "kajian", id: btn.getAttribute("data-kj-hapus") },
+                "Kajian dihapus.", "Gagal menghapus kajian", btn);
+            });
+          });
+        }
+      }
+      document.querySelector("[data-event-form]").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        var nama = document.getElementById("ev-nama").value.trim();
+        var tanggal = document.getElementById("ev-tanggal").value;
+        var tampil = document.getElementById("ev-countdown").checked;
+        if (!nama || !tanggal || !/^\d{4}-\d{2}-\d{2}$/.test(tanggal) || isNaN(Date.parse(tanggal))) {
+          tampilkanError("Isi nama dan tanggal event dengan benar.");
+          return;
+        }
+        var btn = e.target.querySelector("button[type='submit']");
+        var okTambah = await kirimEvent("POST", { aksi: "tambah-event", nama: nama, tanggal: tanggal, tampil_countdown: tampil },
+          "Event ditambahkan.", "Gagal menambah event", btn);
+        if (!okTambah) return;
+        document.getElementById("ev-nama").value = "";
+        document.getElementById("ev-tanggal").value = "";
+        document.getElementById("ev-countdown").checked = true;
+      });
+      document.querySelector("[data-kajian-form]").addEventListener("submit", async function (e) {
+        e.preventDefault();
+        var judul = document.getElementById("kj-judul").value.trim();
+        var tanggal = document.getElementById("kj-tanggal").value;
+        var waktu = document.getElementById("kj-waktu").value;
+        var pemateri = document.getElementById("kj-pemateri").value.trim();
+        if (!judul || !tanggal || !/^\d{4}-\d{2}-\d{2}$/.test(tanggal) || isNaN(Date.parse(tanggal))) {
+          tampilkanError("Isi judul dan tanggal kajian dengan benar.");
+          return;
+        }
+        var btn = e.target.querySelector("button[type='submit']");
+        var okTambah = await kirimEvent("POST", { aksi: "tambah-kajian", judul: judul, tanggal: tanggal, waktu: waktu || undefined, pemateri: pemateri || undefined },
+          "Kajian ditambahkan sebagai draf.", "Gagal menambah kajian", btn);
+        if (!okTambah) return;
+        document.getElementById("kj-judul").value = "";
+        document.getElementById("kj-tanggal").value = "";
+        document.getElementById("kj-waktu").value = "";
+        document.getElementById("kj-pemateri").value = "";
+      });
+
       /* ===== Render: pengurus ===== */
       function renderPengurus() {
         var tb = document.querySelector("[data-pengurus-tbody]");
@@ -1499,7 +1740,7 @@
 
       function renderSemua() {
         renderHitungan(); renderTayangList(); renderLog(); renderAntrean();
-        renderJadwal(); renderKas(); renderSerahTerima(); renderPengurus(); renderBoardTimes(); renderBoardSlide();
+        renderJadwal(); renderKas(); renderSerahTerima(); renderEvent(); renderPengurus(); renderBoardTimes(); renderBoardSlide();
       }
 
       /* Placeholder "Memuat…" sebelum data pertama tiba. */

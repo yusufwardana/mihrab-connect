@@ -28,12 +28,13 @@ vercel-admin/
 │   ├── pengumuman/[id]/tolak.js     # POST /api/pengumuman/:id/tolak
 │   ├── kas.js                        # GET/POST/PUT /api/kas
 │   ├── serah-terima.js               # GET/POST /api/serah-terima
+│   ├── event.js                      # GET/POST/PUT/DELETE /api/event
 │   ├── jadwal.js                     # GET/PUT /api/jadwal
 │   ├── pengurus.js                   # GET /api/pengurus
 │   ├── log.js                        # GET /api/log
 │   └── board.js                      # GET /api/board (paket tayang)
 └── public/
-    └── index.html        # Admin (6 layar), data dari /api/*, tanpa data contoh
+    └── index.html        # Admin (7 layar), data dari /api/*, tanpa data contoh
 ```
 
 ## Environment variables (diatur di Vercel, bukan di file)
@@ -94,6 +95,10 @@ kategori dari `GET /api/kas`.
 | `PUT /api/kas` | `kas_kategori`, `log_aktivitas` | Atur QRIS per kategori: `{kategori_id, qris_url}`. `qris_url` `null`/kosong = hapus QRIS; selain itu harus URL `https` yang valid (400 bila bukan). Kembalikan kategori yang diubah. |
 | `GET /api/serah-terima` | `serah_terima`, `kas_kategori`, `kas_transaksi`, `pengurus`, `masjid` | Daftar (tanggal terbaru dulu, maks 50). Tiap item berisi dari/ke (nama + peran), tanggal, catatan, `saldo_akhir` per kategori + total (dihitung dari transaksi dengan `tanggal <= tanggal` serah terima — saldo beku per tanggal), dan daftar pengurus saat ini. |
 | `POST /api/serah-terima` | `serah_terima`, `pengurus`, `log_aktivitas` | Catat serah terima: `{dari_pengurus_id, ke_pengurus_id, catatan?, tanggal?}` (tanggal default hari ini WIB). Validasi: kedua pengurus ada untuk masjid ini, dari ≠ ke, **dari harus ketua** (matriks izin spek). Kembalikan baris yang dibuat + snapshot saldo yang sama seperti GET. |
+| `GET /api/event` | `event`, `kajian`, `masjid` | Daftar event (tanggal naik, tiap item membawa penanda `selesai` bila tanggal sudah lewat WIB) + kajian (tanggal naik, lalu `created_at`). |
+| `POST /api/event` | `event`, `kajian`, `log_aktivitas` | Aksi lewat body `aksi`: `tambah-event` `{nama, tanggal, tampil_countdown?}`; `tambah-kajian` `{judul, tanggal, waktu?, pemateri?}` (status awal `draf`); `duplikasi-event` `{id}` (salin event, tanggal +1 tahun). Kembalikan baris yang dibuat (201). |
+| `PUT /api/event` | `event`, `kajian`, `log_aktivitas` | Body `{target: "event"\|"kajian", id, ...}`. Event: `nama?`, `tanggal?`, `tampil_countdown?`. Kajian: `judul?`, `tanggal?`, `waktu?`, `pemateri?`, `status?` (hanya `draf`/`tayang`/`selesai`, 400 bila lain). Target harus milik masjid ini (404 bila tidak ada). Kembalikan baris yang diubah. |
+| `DELETE /api/event` | `event`, `kajian`, `log_aktivitas` | Body `{target: "event"\|"kajian", id}`. Hapus baris (404 bila tidak ada). Kembalikan `{dihapus: true, id}`. |
 | `GET /api/jadwal` | `masjid`, `jadwal_settings`, `iqomah_durations`, `jadwal_petugas`, `murotal_settings` | Settings + iqomah + petugas + murotal + jadwal sholat terhitung + tanggal Masehi/Hijriyah. |
 | `PUT /api/jadwal` | sama + `log_aktivitas` | Ubah `koreksi_menit` (-60..60), `offset_hijriyah` (-2..2), `iqomah` {waktu: 0..30}, `petugas` (array, ganti seluruh daftar), `murotal.aktif`. |
 | `GET /api/pengurus` | `pengurus` | Daftar pengurus + nomor WhatsApp terdaftar. |
@@ -101,7 +106,8 @@ kategori dari `GET /api/kas`.
 | `GET /api/board` | `masjid`, `jadwal_settings`, `iqomah_durations`, `pengumuman`, `pengurus`, `kas_kategori`, `kas_transaksi`, `event`, `murotal_settings` | Paket tayang: hanya pengumuman `tayang`, ringkasan kas (bukan detail transaksi), QRIS, countdown event, murotal. Baca-saja. |
 
 Setiap aksi tulis (setujui / tolak / tambah kas / ubah jadwal / ubah QRIS /
-serah terima) menulis satu baris ke `log_aktivitas` (`sumber: "dashboard"`).
+serah terima / tambah-ubah-hapus event & kajian) menulis satu baris ke
+`log_aktivitas` (`sumber: "dashboard"`).
 
 ## Penyimpangan dari prototipe & skema (sengaja, dicatat di sini)
 
@@ -179,18 +185,38 @@ bagian yang terikat data mengikuti skema.
     `created_at`** (berbeda dengan tabel lain) — riwayat diurutkan
     per `tanggal` saja; jangan tambah `.order("created_at")` di
     endpoint ini (pernah merusak GET, diperbaiki 22 Nov 2026).
+13. **Pola berulang kajian belum didukung.** Spesifikasi backend menyebut
+    pola sekali/harian/mingguan/bulanan, tetapi skema `kajian` tidak
+    punya kolom pola — tiap tanggal dibuat sebagai satu kajian (form
+    tambah kajian di layar Event menyatakan ini). Bila pola diperlukan,
+    perlu migrasi (mis. `alter table kajian add column pola text not
+    null default 'sekali' check (pola in
+    ('sekali','harian','mingguan','bulanan'))`) + logika perluasan
+    jadwal di `api/event.js` dan tampilan di Board.
+14. **Tabel `event` tidak punya kolom `created_at`.** Seperti
+    `serah_terima`: urutan daftar di `api/event.js` selalu per
+    `tanggal` saja — jangan tambah `.order("created_at")` untuk tabel
+    ini. Duplikasi event memakai tanggal +1 tahun (29 Feb menjadi
+    28 Feb bila tahun tujuan bukan kabisat).
+15. **Hapus event/kajian memakai `confirm()` browser.** Admin belum
+    punya pola hapus sebelumnya, jadi tidak ada dialog khusus.
+    Penghapusan langsung menghapus baris dan tercatat di
+    `log_aktivitas` (`aksi: "Menghapus event"` / `"Menghapus kajian"`).
+    Pesan sukses singkat tampil di banner hijau `[data-api-sukses]`
+    (baru di Event P0); banner error `[data-api-error]` menyembunyikan
+    banner sukses dan sebaliknya.
 
 ## Yang sudah diverifikasi (saat build, 22 Nov 2026)
 
-- `npm run check` — `node --check` lolos untuk 9 file `api/*`, 3 file
+- `npm run check` — `node --check` lolos untuk 10 file `api/*`, 3 file
   `lib/*`, dan script inline `public/index.html`.
 - `npm install` berhasil (`@supabase/supabase-js` 2.119.2).
 - Fungsi murni `lib/prayer.js` diuji langsung: jadwal Kemenag Jakarta
   22 Nov 2026 (lihat butir 4 di atas) dan tanggal Hijriyah pada
   1 Jan 2026 (12 Rajab 1447 H) & 1 Mar 2025 (1 Ramadan 1446 H) cocok
   dengan kalender resmi.
-- Struktur `public/index.html`: 6 layar (beranda, persetujuan, jadwal,
-  kas, pengurus, board) utuh; semua `data-*` yang dipakai script ada;
+- Struktur `public/index.html`: 7 layar (beranda, persetujuan, jadwal,
+  kas, event, pengurus, board) utuh; semua `data-*` yang dipakai script ada;
   tidak ada lagi nama/nomor/jadwal/angka contoh hardcoded (dicek
   otomatis saat transformasi).
 
