@@ -51,6 +51,7 @@ Board live tidak memakainya.
   "qris": [{ "kategori", "qris_url": null | "https://…" }],
   "event": [{ "id", "nama", "tanggal": "YYYY-MM-DD" }],
   "countdown_berikutnya": { "id", "nama", "tanggal" } | null,
+  "kajian": [{ "id", "judul", "tanggal": "YYYY-MM-DD", "waktu": "HH:MM" | null, "pemateri": "…" | null }],
   "murotal": { "surah", "qari", "durasi_menit", "volume", "aktif" } | null,
   "tanggal": { "masehi": "…", "hijriyah": "…" }
 }
@@ -87,6 +88,11 @@ Board live tidak memakainya.
 - Slide poster memakai pengumuman tayang pertama (judul = baris pertama
   `isi`, maks 80 karakter). Bila tidak ada, slide menampilkan nama
   masjid + “Belum ada pengumuman tayang.”
+- **Slide kajian:** hanya kajian status `tayang` dengan tanggal hari ini
+  atau sesudahnya (maks 5) yang masuk payload `kajian`. Slide menampilkan
+  kajian terdekat (judul, tanggal, jam, pemateri) dan hanya ada di rotasi
+  bila daftar tidak kosong — bila kosong, rotasi tetap 3 slide dan tidak
+  ada teks contoh yang tampil.
 
 ## Cara deploy
 

@@ -324,6 +324,9 @@
       .qris-cell p{ margin:.45em 0 0; font-size:.8em; font-weight:700; letter-spacing:.06em; color:var(--warm); line-height:1.35; }
       .qris-cell p small{ display:block; color:var(--warm-dim); font-weight:600; letter-spacing:.1em; font-size:.82em; }
       .slide-note{ margin-top:.8em; font-size:.8em; line-height:1.5; color:var(--warm-dim); }
+      /* slide kajian */
+      .slide-kajian h3{ margin:.55em 0 0; font-size:1.7em; font-weight:600; line-height:1.15; color:var(--warm); }
+      .slide-kajian .kaj-meta{ margin-top:.6em; font-size:1.05em; line-height:1.55; color:var(--warm-dim); }
       /* slide jumat */
       .petugas{ margin-top:.9em; display:flex; flex-direction:column; }
       .petugas-row{
@@ -549,8 +552,15 @@
                   </div>
                   <p class="slide-note" id="fridayNote">Pada mode Jumat, hitung mundur iqomah mati dan diganti informasi khutbah serta petugas Jumat.</p>
                 </article>
+                <!-- Slide 4: kajian berikutnya (hanya bila ada kajian tayang mendatang) -->
+                <article class="slide slide-kajian" id="slideKajian" aria-label="Slide kajian berikutnya" style="display:none">
+                  <span class="tag">KAJIAN BERIKUTNYA</span>
+                  <h3 class="serif" id="kajianTitle">—</h3>
+                  <p class="kaj-meta" id="kajianMeta"></p>
+                  <p class="kaj-meta" id="kajianText"></p>
+                </article>
               </div>
-              <div class="slide-dots" id="slideDots" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+              <div class="slide-dots" id="slideDots" aria-hidden="true"><i class="on"></i><i></i><i></i><i id="dotKajian" style="display:none"></i></div>
             </div>
           </div>
 
@@ -584,7 +594,7 @@
       // GET /api/board di proyek Vercel Admin (domain berbeda -> butuh CORS di sisi API).
       // Respons: { masjid, jadwal:{metode,koreksi_menit,offset_hijriyah,waktu},
       //   pengumuman_tayang:[], ringkasan_kas:{per_kategori,total}, qris:[],
-      //   event:[], countdown_berikutnya, murotal, tanggal:{masehi,hijriyah} }
+      //   event:[], countdown_berikutnya, kajian:[], murotal, tanggal:{masehi,hijriyah} }
       // jadwal.waktu = null bila koordinat masjid belum diisi -> JANGAN tampilkan jam palsu.
       var API_URL = "/api/board"; // same-origin: Board memakai function sendiri (api/board.js) agar tidak terhalang login Vercel Admin.
       var POLL_MS = 60000;      // sinkronisasi ulang tiap 60 detik
@@ -613,6 +623,7 @@
           elPosterMeta = $("posterMeta"), elPosterText = $("posterText");
       var elKasRows = $("kasRows"), elKasNote = $("kasNote");
       var elFridayNote = $("fridayNote");
+      var elKajianTitle = $("kajianTitle"), elKajianMeta = $("kajianMeta"), elKajianText = $("kajianText");
       var elSchedNote = $("schedNote");
 
       /* ---------- Util ---------- */
@@ -711,6 +722,7 @@
         buildPoster();
         buildFriday();
         buildEvent();
+        buildKajian();
       }
 
       function buildSchedule(){
@@ -847,12 +859,45 @@
         lastEventKey = cb.tanggal;
       }
 
+      /* Slide agenda: kajian tayang berikutnya. Hanya tampil bila payload
+         membawa kajian tayang mendatang; bila tidak ada, slide + dot-nya
+         disembunyikan dan dikeluarkan dari rotasi (lihat slidesAktif). */
+      function buildKajian(){
+        var slide = $("slideKajian"), dot = $("dotKajian");
+        var daftar = (payload && payload.kajian) || [];
+        if (!daftar.length){
+          if (slide){ slide.style.display = "none"; slide.classList.remove("active"); }
+          if (dot){ dot.style.display = "none"; dot.classList.remove("on"); }
+          return;
+        }
+        var k = daftar[0];
+        var parts = String(k.tanggal).split("-");
+        var tgl = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+        elKajianTitle.textContent = k.judul;
+        elKajianMeta.textContent = fmtTanggalId(tgl) + (k.waktu ? " · Pukul " + k.waktu + " WIB" : "");
+        elKajianText.textContent = (k.pemateri ? "Pemateri: " + k.pemateri : "") +
+          (daftar.length > 1 ? ((k.pemateri ? " · " : "") + "+" + (daftar.length - 1) + " kajian lagi") : "");
+        if (slide) slide.style.display = "";
+        if (dot) dot.style.display = "";
+      }
+
       /* ---------- Rotasi slide ---------- */
-      var slides = Array.prototype.slice.call(document.querySelectorAll("#slideStage .slide"));
-      var dots = Array.prototype.slice.call(document.querySelectorAll("#slideDots i"));
       var slideIdx = 0, slideTimer = null;
+      /* Daftar slide/dot dihitung tiap kali dari DOM — slide yang sedang
+         disembunyikan (display:none, mis. slide kajian bila tidak ada
+         kajian tayang) tidak ikut rotasi. */
+      function slidesAktif(){
+        return Array.prototype.slice.call(document.querySelectorAll("#slideStage .slide")).filter(function(s){ return s.style.display !== "none"; });
+      }
+      function dotsAktif(){
+        return Array.prototype.slice.call(document.querySelectorAll("#slideDots i")).filter(function(d){ return d.style.display !== "none"; });
+      }
       function showSlide(i){
+        var slides = slidesAktif(), dots = dotsAktif();
+        if (!slides.length) return;
         slideIdx = ((i % slides.length) + slides.length) % slides.length;
+        Array.prototype.slice.call(document.querySelectorAll("#slideStage .slide")).forEach(function(s){ s.classList.remove("active"); });
+        Array.prototype.slice.call(document.querySelectorAll("#slideDots i")).forEach(function(d){ d.classList.remove("on"); });
         slides.forEach(function(s, k){ s.classList.toggle("active", k === slideIdx); });
         dots.forEach(function(d, k){ d.classList.toggle("on", k === slideIdx); });
       }

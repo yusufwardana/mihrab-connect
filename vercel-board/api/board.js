@@ -2,10 +2,11 @@
 // Satu paket terkini (sesuai GET /board/paket-tayang di spesifikasi backend):
 // profil masjid, pengaturan + jadwal sholat terhitung, pengumuman berstatus
 // TAYANG saja, ringkasan kas (saldo per kategori + total, bukan detail
-// transaksi), QRIS per kategori, event countdown aktif, pengaturan murotal.
+// transaksi), QRIS per kategori, event countdown aktif, kajian tayang
+// mendatang (maks 5, untuk slide agenda), pengaturan murotal.
 // Endpoint ini baca-saja; Board tidak pernah menulis lewat sini.
 // Tabel: masjid, jadwal_settings, iqomah_durations, pengumuman, pengurus,
-//        kas_kategori, kas_transaksi, event, murotal_settings.
+//        kas_kategori, kas_transaksi, event, kajian, murotal_settings.
 "use strict";
 
 const { supabase, getMasjid, getPengurusMap } = require("../lib/supabase");
@@ -33,7 +34,7 @@ module.exports = async (req, res) => {
     const hariIniStr =
       hariIni.tahun + "-" + String(hariIni.bulan).padStart(2, "0") + "-" + String(hariIni.hari).padStart(2, "0");
 
-    const [set, iq, tayang, kat, trx, evt, mur] = await Promise.all([
+    const [set, iq, tayang, kat, trx, evt, mur, kj] = await Promise.all([
       sb.from("jadwal_settings").select("metode, koreksi_menit, offset_hijriyah").eq("masjid_id", masjidId).maybeSingle(),
       sb.from("iqomah_durations").select("waktu, durasi_menit").eq("masjid_id", masjidId),
       sb.from("pengumuman")
@@ -45,8 +46,9 @@ module.exports = async (req, res) => {
       sb.from("kas_transaksi").select("kategori_id, jenis, jumlah").eq("masjid_id", masjidId),
       sb.from("event").select("id, nama, tanggal, tampil_countdown").eq("masjid_id", masjidId).eq("tampil_countdown", true).order("tanggal", { ascending: true }),
       sb.from("murotal_settings").select("surah, qari, durasi_menit, volume, aktif").eq("masjid_id", masjidId).maybeSingle(),
+      sb.from("kajian").select("id, judul, tanggal, waktu, pemateri").eq("masjid_id", masjidId).eq("status", "tayang").gte("tanggal", hariIniStr).order("tanggal", { ascending: true }).limit(5),
     ]);
-    for (const r of [set, iq, tayang, kat, trx, evt, mur]) if (r.error) throw r.error;
+    for (const r of [set, iq, tayang, kat, trx, evt, mur, kj]) if (r.error) throw r.error;
 
     const settings = set.data || { metode: "Kemenag", koreksi_menit: 0, offset_hijriyah: 0 };
     const waktuMentah = hitungJadwalSholat({
@@ -96,6 +98,15 @@ module.exports = async (req, res) => {
     const events = (evt.data || []).map((e) => ({ id: e.id, nama: e.nama, tanggal: e.tanggal }));
     const countdownBerikutnya = events.find((e) => e.tanggal >= hariIniStr) || null;
 
+    // Kajian tayang mendatang saja (status tayang, tanggal >= hari ini).
+    const kajian = (kj.data || []).map((k) => ({
+      id: k.id,
+      judul: k.judul,
+      tanggal: k.tanggal,
+      waktu: k.waktu,
+      pemateri: k.pemateri,
+    }));
+
     ok(res, {
       masjid: {
         nama: masjid.nama,
@@ -117,6 +128,7 @@ module.exports = async (req, res) => {
       qris,
       event: events,
       countdown_berikutnya: countdownBerikutnya,
+      kajian,
       murotal: mur.data || null,
       tanggal: {
         masehi: formatTanggalId(hariIni),
