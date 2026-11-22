@@ -63,6 +63,7 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
 - Prototipe Board P0 (layar TV) selesai, lolos audit; temuan audit
   (panel simulasi di TV, overlay sholat, font offline) sudah diperbaiki.
 - Spesifikasi backend selesai (10 halaman).
+- Kit validasi untuk Masjid Al Furqon disetujui founder 22 Nov 2026.
 - Branding final menunggu penilaian konsultan KI.
 - Stack Admin dikunci 22 Nov 2026: Vercel + Supabase (tier gratis),
   hosting ikut Vercel.
