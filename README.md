@@ -92,7 +92,8 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   Masjid Al Furqon, Jl. Jenderal Sudirman, Mlopoharjo, Wuryantoro,
   Wonogiri 57661, koordinat -7.90424, 110.85946; Ketua Sarino dan
   Bendahara Gondes (keduanya WA 083871374743, terdaftar); pengurus
-  contoh + transaksi uji Rp1.000 dihapus. Marbot masih belum ada.
+  contoh + transaksi uji Rp1.000 dihapus. Marbot Paijo (WA yang sama)
+  ditambahkan 22 Nov 2026 19:28 WIB — pengurus pilot lengkap.
 - Stack Admin dikunci 22 Nov 2026: Vercel + Supabase (tier gratis),
   hosting ikut Vercel.
 - Keputusan terbuka: penyedia WhatsApp, brand final.
