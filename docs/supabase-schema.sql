@@ -99,7 +99,8 @@ create table if not exists kas_kategori (
   id uuid primary key default gen_random_uuid(),
   masjid_id uuid not null references masjid(id) on delete cascade,
   nama text not null,
-  qris_url text
+  qris_url text,
+  created_at timestamptz not null default now()
 );
 
 -- jenis: masuk | keluar. Kas hanya dicatat dari dashboard (bukan WhatsApp).
