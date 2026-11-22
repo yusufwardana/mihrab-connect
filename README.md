@@ -70,11 +70,15 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   ditandatangani pengurus Sarino — lolos pilot secara formal, tetapi
   jawaban wawancara kosong dan nama marbot pengirim WA belum tertulis
   (lihat `docs/hasil-validasi-al-furqon.md`).
-- Prototipe Admin P0 selesai 22 Nov 2026 (6 layar, data contoh, tanpa
-  backend nyata). Proyek Supabase **mihrab-connect** dibuat 22 Nov 2026
-  (Singapura, tier gratis, ref `rxslkuavzquhfqpycthb`); skema v2 dari
-  `docs/supabase-schema.sql` diterapkan dan terverifikasi — 14 tabel
-  di schema `public` beserta RLS starter dan data contoh.
+- Admin tersambung Supabase + deploy Vercel 22 Nov 2026: proyek
+  `mihrab-connect-admin` (team 0x's projects, git-linked ke repo ini,
+  root `vercel-admin`, auto-deploy tiap push),
+  https://mihrab-connect-admin-0xs-projects-798a67b4.vercel.app;
+  env `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` terpasang. Verifikasi
+  live: 6 endpoint GET 200 dari data nyata, POST kas Rp1.000 (uji)
+  tercatat + masuk log. Perlu login Vercel untuk membuka (Vercel
+  Authentication aktif). Migrasi `kas_kategori.created_at` diterapkan
+  22 Nov 2026 (API butuh kolom itu untuk urutan).
 - Branding final menunggu penilaian konsultan KI.
 - Stack Admin dikunci 22 Nov 2026: Vercel + Supabase (tier gratis),
   hosting ikut Vercel.
