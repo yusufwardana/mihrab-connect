@@ -175,7 +175,10 @@ bagian yang terikat data mengikuti skema.
     di Admin (bukan file): tombol “Cetak / Simpan PDF” memanggil
     `window.print()` — pengguna memilih “Save as PDF” di dialog
     browser. UI serah terima ada di layar Kas; layar Pengurus & Peran
-    tetap display-only.
+    tetap display-only. Tabel `serah_terima` juga **tidak punya kolom
+    `created_at`** (berbeda dengan tabel lain) — riwayat diurutkan
+    per `tanggal` saja; jangan tambah `.order("created_at")` di
+    endpoint ini (pernah merusak GET, diperbaiki 22 Nov 2026).
 
 ## Yang sudah diverifikasi (saat build, 22 Nov 2026)
 
