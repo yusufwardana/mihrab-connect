@@ -64,4 +64,6 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   (panel simulasi di TV, overlay sholat, font offline) sudah diperbaiki.
 - Spesifikasi backend selesai (10 halaman).
 - Branding final menunggu penilaian konsultan KI.
-- Keputusan terbuka: stack, hosting, penyedia WhatsApp, brand final.
+- Stack Admin dikunci 22 Nov 2026: Vercel + Supabase (tier gratis),
+  hosting ikut Vercel.
+- Keputusan terbuka: penyedia WhatsApp, brand final.
