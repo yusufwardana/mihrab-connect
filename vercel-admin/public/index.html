@@ -311,6 +311,11 @@
       /* ---------- Layar login ---------- */
       #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
       #login-screen[hidden] { display: none; }
+      /* Status boot: tampil selama sesi belum diketahui (sebelum cekSesi()
+         selesai). Disembunyikan begitu layar login atau dashboard tampil —
+         dashboard TIDAK tampil sebelum sesi dipastikan. */
+      #boot-status { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; color: var(--muted); }
+      #boot-status[hidden] { display: none; }
       .login-card { width: 100%; max-width: 420px; }
       .login-card .arabic { font-size: 2rem; color: var(--green); text-align: center; }
       .login-card h1 { text-align: center; margin: 6px 0 4px; font-size: 1.4rem; }
@@ -362,6 +367,11 @@
     </style>
   </head>
   <body>
+    <!-- Status boot: satu-satunya yang tampil sebelum sesi diketahui.
+         Layar login (hidden) dan dashboard (.app, display:none) baru
+         tampil setelah cekSesi() memastikan ada/tidak ada sesi. -->
+    <div id="boot-status" role="status">Memeriksa sesi…</div>
+
     <!-- ============ LAYAR LOGIN (tampil bila belum ada sesi) ============ -->
     <div id="login-screen" hidden>
       <div class="card login-card">
@@ -386,7 +396,7 @@
       </div>
     </div>
 
-    <div class="app">
+    <div class="app" style="display:none">
       <!-- ============ SIDEBAR (desktop) ============ -->
       <aside class="sidebar">
         <div class="brand">
@@ -439,7 +449,6 @@
         <header class="topbar">
           <div class="masjid" data-masjid-nama>
             Masjid Jami' Abdul Latief Al Furqon
-            <small>Akun lembaga (DKM) — bukan akun pribadi pengurus</small>
           </div>
           <div class="spacer"></div>
           <span class="saya-info" data-saya-info></span>
@@ -946,8 +955,9 @@
       </div>
     </div>
 
-    <!-- ============ MOBILE NAV ============ -->
-    <nav class="mobilebar" aria-label="Navigasi utama">
+    <!-- ============ MOBILE NAV (di luar .app: ikut disembunyikan
+         sebelum sesi dipastikan, lihat tampilkanLogin/tampilkanApp) ============ -->
+    <nav class="mobilebar" style="display:none" aria-label="Navigasi utama">
       <button type="button" data-nav="beranda" aria-current="page">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg>
         Beranda
@@ -2177,20 +2187,60 @@
       }
 
       /* ===== Auth: sesi, layar login, ganti PIN, reset PIN ===== */
+      function sembunyikanBoot() {
+        document.getElementById("boot-status").hidden = true;
+      }
+      function tampilkanMobilebar(tampil) {
+        var mb = document.querySelector(".mobilebar");
+        if (mb) mb.style.display = tampil ? "" : "none";
+      }
+      /* Layar awal dari URL (mis. /arsip atau #arsip): hanya dibaca saat
+         boot, tidak pernah ditulis — pindah layar tidak mengubah URL.
+         Nama yang tidak dikenal mengembalikan null (→ beranda). */
+      function viewDariUrl() {
+        var p = (window.location.pathname || "/").replace(/^\/+|\/+$/g, "");
+        var seg = p.split("/")[0];
+        if (seg && document.getElementById("view-" + seg)) return seg;
+        var h = (window.location.hash || "").replace(/^#/, "");
+        if (h && document.getElementById("view-" + h)) return h;
+        return null;
+      }
+      /* Error login tampil DI layar login ([data-login-error]), bukan di
+         banner dashboard — banner itu tersembunyi saat layar login tampil,
+         jadi pesan gagal login tidak terlihat lalu muncul terlambat di
+         dashboard setelah login sukses. */
+      function tampilkanLoginError(pesan) {
+        var e = document.querySelector("[data-login-error]");
+        if (!e) return;
+        e.textContent = pesan;
+        e.hidden = false;
+      }
+      function sembunyikanLoginError() {
+        var e = document.querySelector("[data-login-error]");
+        if (e) { e.hidden = true; e.textContent = ""; }
+      }
       function tampilkanLogin(pesan) {
         state.saya = null;
+        sembunyikanBoot();
+        sembunyikanError();
+        sembunyikanSukses();
+        tampilkanMobilebar(false);
         document.getElementById("login-screen").hidden = false;
         document.querySelector(".app").style.display = "none";
-        if (pesan) {
-          var e = document.querySelector("[data-login-error]");
-          e.textContent = pesan;
-          e.hidden = false;
-        }
+        sembunyikanLoginError();
+        if (pesan) tampilkanLoginError(pesan);
       }
       function tampilkanApp() {
+        sembunyikanBoot();
+        sembunyikanLoginError();
+        sembunyikanError();
+        sembunyikanSukses();
         document.getElementById("login-screen").hidden = true;
         document.querySelector(".app").style.display = "";
-        navigasi("beranda");
+        tampilkanMobilebar(true);
+        // Layar awal dari URL (mis. /arsip): navigasi() memetakan layar
+        // terlarang ke #view-terbatas, bukan diam-diam ke Beranda.
+        navigasi(viewDariUrl() || "beranda");
       }
       async function cekSesi() {
         try {
@@ -2217,8 +2267,7 @@
       document.querySelector("[data-login-form]").addEventListener("submit", async function (ev) {
         ev.preventDefault();
         var btn = document.querySelector("[data-login-masuk]");
-        var err = document.querySelector("[data-login-error]");
-        err.hidden = true;
+        sembunyikanLoginError();
         btn.disabled = true;
         try {
           var r = await api("/api/auth/login", {
@@ -2233,7 +2282,7 @@
           tampilkanApp();
           await muatSemua();
         } catch (e) {
-          tampilkanError("Nama atau PIN salah.");
+          tampilkanLoginError("Nama atau PIN salah.");
         } finally {
           btn.disabled = false;
         }

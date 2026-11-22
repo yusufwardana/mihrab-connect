@@ -315,6 +315,57 @@ bagian yang terikat data mengikuti skema.
     harus ≤ 12.** Bila butuh endpoint baru, masukkan ke dispatcher
     yang sudah ada (auth / pengumuman / event) atau buat dispatcher
     baru dengan rewrite yang sama polanya.
+25. **Boot, error login, dan layar terlarang (perbaikan UI, 22 Nov
+    2026).** Tiga cacat dari verifikasi live; semuanya murni UI/boot
+    (`public/index.html` saja, tanpa perubahan API/lib/URL/peran):
+    - **Boot tidak lagi menampilkan dashboard sebelum sesi
+      dipastikan.** Sebelumnya `.app` tampil sejak first paint (tidak
+      ada `display:none` awal) dan baru disembunyikan di
+      `tampilkanLogin()` setelah `GET /api/auth/saya` gagal — jadi
+      sebelum login terlihat shell dashboard lengkap (semua nav, nama
+      masjid, label "Akun lembaga (DKM)", placeholder "Memuat log
+      aktivitas…"). Kini `.app` dan `.mobilebar` (mobilebar berada DI
+      LUAR `.app`, jadi harus disembunyikan terpisah) mulai dengan
+      `display:none`, dan satu-satunya yang tampil saat boot adalah
+      status netral `#boot-status` ("Memeriksa sesi…"). Dashboard +
+      `muatSemua()` hanya jalan setelah sesi dipastikan
+      (`tampilkanApp()`); bila 401 → `#login-screen`. Label kecil
+      "Akun lembaga (DKM) — bukan akun pribadi pengurus" dihapus dari
+      topbar: klaimnya sudah salah sejak ada akun per pengurus, dan
+      label itulah yang tampil sebagai pengganti nama pengguna saat
+      belum login. (`muatSemua()` sendiri tidak pernah terpanggil
+      sebelum sesi — hanya shell statis yang bocor.)
+    - **Error gagal login tampil di layar login, bukan di banner
+      dashboard.** Sebelumnya handler submit login memanggil
+      `tampilkanError("Nama atau PIN salah.")` yang menulis ke
+      `[data-api-error]` di dalam `.app` yang tersembunyi — pesan
+      tidak terlihat saat login gagal, lalu muncul terlambat di
+      Beranda setelah login sukses berikutnya (sampai `muatSemua()`
+      selesai dan menyembunyikannya). Kini gagal login memakai elemen
+      khusus `[data-login-error]` di `#login-screen` (sudah ada di
+      HTML, sebelumnya tidak pernah dipakai handler login).
+      `tampilkanApp()` dan `tampilkanLogin()` selalu membersihkan
+      banner dashboard (`[data-api-error]`/`[data-api-sukses]`) dan
+      error login, jadi tidak ada pesan yang bisa bocor antar-layar.
+      Error Ganti PIN tetap memakai banner dashboard — benar, karena
+      layar PIN ada di dalam dashboard.
+    - **Layar terlarang di load awal menampilkan
+      `#view-terbatas`.** `navigasi()` sudah benar memetakan layar di
+      luar peran ke `view-terbatas` untuk klik di dalam aplikasi,
+      tetapi aplikasi sama sekali tidak membaca URL (tidak ada
+      penanganan `location`/`hash`), jadi membuka langsung `/arsip`
+      sebagai marbot selalu mendarat di Beranda tanpa pesan. Kini
+      `tampilkanApp()` membaca layar awal dari URL lewat
+      `viewDariUrl()` (segmen path pertama, atau hash, mis. `/arsip` /
+      `#arsip`) dan melewatkannya ke `navigasi()` — layar terlarang →
+      `#view-terbatas`, nama tak dikenal → Beranda. URL tidak pernah
+      ditulis saat pindah layar.
+    Verifikasi saat perbaikan: script inline lolos `node --check`;
+    uji logika lokal 30 cek lolos (harness DOM tiruan + stub fetch di
+    `/tmp/admin-boot-test.js`, tidak ikut repo): urutan
+    boot → 401 → login gagal → login sukses → logout → login ketua,
+    termasuk marbot buka `/arsip` → `#view-terbatas` dan ketua buka
+    `/` → Beranda. Uji live di browser belum dilakukan.
 
 ## Yang belum dilakukan (login Admin — langkah parent setelah build)
 
