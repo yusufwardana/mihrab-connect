@@ -13,6 +13,8 @@
 //   kajian: { judul?, tanggal?, waktu?, pemateri?, status? } (status hanya draf/tayang/selesai) -> 200 { kajian }
 // DELETE /api/event — body { target: "event"|"kajian", id } -> 200 { dihapus: true, id }
 // Semua mutasi menulis baris ke log_aktivitas.
+// PUT kajian tayang -> selesai juga menulis baris ke tabel `arsip`
+// (jenis 'kajian'; Archive P0). Transisi draf -> selesai tidak menulis arsip.
 // Tabel: event, kajian, log_aktivitas. TANPA perubahan skema.
 // Tabel `event` TIDAK punya kolom created_at — urutan selalu per tanggal,
 // jangan tambah .order("created_at") di sini. Tabel `kajian` punya
@@ -270,7 +272,8 @@ module.exports = async (req, res) => {
         if (Object.keys(patch).length === 0) {
           throw salahInput("Tidak ada perubahan yang diberikan");
         }
-        await ambilKajian(sb, masjidId, body.id);
+        const sebelum = await ambilKajian(sb, masjidId, body.id);
+        const statusSebelum = sebelum.status;
         const { data, error } = await sb
           .from("kajian")
           .update(patch)
@@ -279,6 +282,21 @@ module.exports = async (req, res) => {
           .select("id, judul, tanggal, waktu, pemateri, poster_url, status")
           .single();
         if (error) throw error;
+        // Kajian tayang -> selesai juga masuk arsip (Archive P0).
+        // Transisi draf -> selesai tidak menulis arsip (tidak pernah tayang).
+        if (statusSebelum === "tayang" && data.status === "selesai") {
+          const konten = [data.tanggal, data.waktu ? "pukul " + data.waktu : null, data.pemateri || null]
+            .filter(Boolean)
+            .join(" · ");
+          const { error: arsErr } = await sb.from("arsip").insert({
+            masjid_id: masjidId,
+            jenis: "kajian",
+            judul: data.judul,
+            konten: konten || null,
+            tanggal: data.tanggal,
+          });
+          if (arsErr) throw arsErr;
+        }
         await tulisLog(sb, {
           masjidId,
           pengurusId: ketua ? ketua.id : null,

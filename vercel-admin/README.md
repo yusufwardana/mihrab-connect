@@ -90,6 +90,7 @@ kategori dari `GET /api/kas`.
 | `GET /api/pengumuman` | `pengumuman`, `pengurus` | Semua pengumuman (+ nama/peran pengirim). `?status=menunggu\|tayang\|draft\|selesai`. |
 | `POST /api/pengumuman/:id/setujui` | `pengumuman`, `pengurus`, `log_aktivitas` | `menunggu` → `tayang`; `disetujui_oleh` = ketua, `disetujui_pada` = now. Hanya status `menunggu` (409 bila bukan). |
 | `POST /api/pengumuman/:id/tolak` | `pengumuman`, `pengurus`, `log_aktivitas` | Lihat catatan “Tolak” di bawah. Hanya status `menunggu`. |
+| `POST /api/pengumuman/:id/akhiri` | `pengumuman`, `arsip`, `pengurus`, `log_aktivitas` | `tayang` → `selesai`; tulis baris arsip (judul = baris pertama isi, maks 200 karakter). Hanya status `tayang` (409 bila bukan). Kembalikan pengumuman + arsip. |
 | `GET /api/kas` | `kas_kategori`, `kas_transaksi`, `pengurus` | Kategori + transaksi (100 terakhir) + saldo per kategori. Saldo `null` bila kategori belum punya transaksi. |
 | `POST /api/kas` | `kas_transaksi`, `kas_kategori`, `pengurus`, `log_aktivitas` | Dashboard saja. Validasi: `jenis` masuk/keluar, `jumlah` angka ≥ 0, `kategori_id` ada, `keterangan` wajib. Pencatat harus ketua/bendahara (default: ketua). |
 | `PUT /api/kas` | `kas_kategori`, `log_aktivitas` | Atur QRIS per kategori: `{kategori_id, qris_url}`. `qris_url` `null`/kosong = hapus QRIS; selain itu harus URL `https` yang valid (400 bila bukan). Kembalikan kategori yang diubah. |
@@ -97,17 +98,18 @@ kategori dari `GET /api/kas`.
 | `POST /api/serah-terima` | `serah_terima`, `pengurus`, `log_aktivitas` | Catat serah terima: `{dari_pengurus_id, ke_pengurus_id, catatan?, tanggal?}` (tanggal default hari ini WIB). Validasi: kedua pengurus ada untuk masjid ini, dari ≠ ke, **dari harus ketua** (matriks izin spek). Kembalikan baris yang dibuat + snapshot saldo yang sama seperti GET. |
 | `GET /api/event` | `event`, `kajian`, `masjid` | Daftar event (tanggal naik, tiap item membawa penanda `selesai` bila tanggal sudah lewat WIB) + kajian (tanggal naik, lalu `created_at`). |
 | `POST /api/event` | `event`, `kajian`, `log_aktivitas` | Aksi lewat body `aksi`: `tambah-event` `{nama, tanggal, tampil_countdown?}`; `tambah-kajian` `{judul, tanggal, waktu?, pemateri?}` (status awal `draf`); `duplikasi-event` `{id}` (salin event, tanggal +1 tahun). Kembalikan baris yang dibuat (201). |
-| `PUT /api/event` | `event`, `kajian`, `log_aktivitas` | Body `{target: "event"\|"kajian", id, ...}`. Event: `nama?`, `tanggal?`, `tampil_countdown?`. Kajian: `judul?`, `tanggal?`, `waktu?`, `pemateri?`, `status?` (hanya `draf`/`tayang`/`selesai`, 400 bila lain). Target harus milik masjid ini (404 bila tidak ada). Kembalikan baris yang diubah. |
+| `PUT /api/event` | `event`, `kajian`, `arsip`, `log_aktivitas` | Body `{target: "event"\|"kajian", id, ...}`. Event: `nama?`, `tanggal?`, `tampil_countdown?`. Kajian: `judul?`, `tanggal?`, `waktu?`, `pemateri?`, `status?` (hanya `draf`/`tayang`/`selesai`, 400 bila lain). Kajian `tayang` → `selesai` juga menulis baris arsip (`jenis: 'kajian'`). Target harus milik masjid ini (404 bila tidak ada). Kembalikan baris yang diubah. |
 | `DELETE /api/event` | `event`, `kajian`, `log_aktivitas` | Body `{target: "event"\|"kajian", id}`. Hapus baris (404 bila tidak ada). Kembalikan `{dihapus: true, id}`. |
 | `GET /api/jadwal` | `masjid`, `jadwal_settings`, `iqomah_durations`, `jadwal_petugas`, `murotal_settings` | Settings + iqomah + petugas + murotal + jadwal sholat terhitung + tanggal Masehi/Hijriyah. |
 | `PUT /api/jadwal` | sama + `log_aktivitas` | Ubah `koreksi_menit` (-60..60), `offset_hijriyah` (-2..2), `iqomah` {waktu: 0..30}, `petugas` (array, ganti seluruh daftar), `murotal.aktif`. |
 | `GET /api/pengurus` | `pengurus` | Daftar pengurus + nomor WhatsApp terdaftar. |
 | `GET /api/log` | `log_aktivitas`, `pengurus` | 50 terakhir (`?limit=` maks 100). |
+| `GET /api/arsip` | `arsip`, `event` | Arsip tersimpan (terbaru dulu) + event yang tanggalnya sudah lewat (turunan bacaan dari tabel `event`, `asal: 'event'`; tidak ditulis ke tabel `arsip`). `?q=` cari judul/konten, `?jenis=pengumuman\|kajian\|event` (400 bila lain), `?limit=` maks 100. |
 | `GET /api/board` | `masjid`, `jadwal_settings`, `iqomah_durations`, `pengumuman`, `pengurus`, `kas_kategori`, `kas_transaksi`, `event`, `murotal_settings` | Paket tayang: hanya pengumuman `tayang`, ringkasan kas (bukan detail transaksi), QRIS, countdown event, murotal. Baca-saja. |
 
-Setiap aksi tulis (setujui / tolak / tambah kas / ubah jadwal / ubah QRIS /
-serah terima / tambah-ubah-hapus event & kajian) menulis satu baris ke
-`log_aktivitas` (`sumber: "dashboard"`).
+Setiap aksi tulis (setujui / tolak / akhiri tayang / tambah kas / ubah jadwal /
+ubah QRIS / serah terima / tambah-ubah-hapus event & kajian) menulis satu
+baris ke `log_aktivitas` (`sumber: "dashboard"`).
 
 ## Penyimpangan dari prototipe & skema (sengaja, dicatat di sini)
 
@@ -208,18 +210,34 @@ bagian yang terikat data mengikuti skema.
     Pesan sukses singkat tampil di banner hijau `[data-api-sukses]`
     (baru di Event P0); banner error `[data-api-error]` menyembunyikan
     banner sukses dan sebaliknya.
+16. **Arsip hanya ditulis pada transisi tayang → selesai.** `POST
+    .../pengumuman/:id/akhiri` menulis baris arsip (`jenis:
+    'pengumuman'`) saat pengumuman tayang diakhiri; PUT kajian
+    `tayang` → `selesai` menulis baris arsip (`jenis: 'kajian'`).
+    Transisi `draf` → `selesai` (termasuk tolak) tidak masuk arsip
+    karena kontennya tidak pernah tayang. Event yang tanggalnya sudah
+    lewat hanya dibaca dari tabel `event` di `GET /api/arsip`
+    (turunan, `asal: 'event'`) — tidak ditulis ke tabel `arsip`.
+    Arsip jadwal petugas & ringkasan kas belum masuk arsip (lanjutan).
+    Tombol "Akhiri tayang" memakai konfirmasi dua langkah yang sama
+    seperti butir 15 ("Akhiri tayang" → "Yakin akhiri?").
+17. **Baris arsip tidak bisa dihapus.** Arsip adalah catatan permanen
+    lembaga; tidak ada endpoint hapus dan tidak ada tombol hapus di
+    layar Arsip. Bila ada baris arsip yang salah, perbaiki langsung
+    di database (Supabase) dan catat perbaikannya di log — bukan
+    dari Admin.
 
 ## Yang sudah diverifikasi (saat build, 22 Nov 2026)
 
-- `npm run check` — `node --check` lolos untuk 10 file `api/*`, 3 file
+- `npm run check` — `node --check` lolos untuk 12 file `api/*`, 3 file
   `lib/*`, dan script inline `public/index.html`.
 - `npm install` berhasil (`@supabase/supabase-js` 2.119.2).
 - Fungsi murni `lib/prayer.js` diuji langsung: jadwal Kemenag Jakarta
   22 Nov 2026 (lihat butir 4 di atas) dan tanggal Hijriyah pada
   1 Jan 2026 (12 Rajab 1447 H) & 1 Mar 2025 (1 Ramadan 1446 H) cocok
   dengan kalender resmi.
-- Struktur `public/index.html`: 7 layar (beranda, persetujuan, jadwal,
-  kas, event, pengurus, board) utuh; semua `data-*` yang dipakai script ada;
+- Struktur `public/index.html`: 8 layar (beranda, persetujuan, jadwal,
+  kas, event, arsip, pengurus, board) utuh; semua `data-*` yang dipakai script ada;
   tidak ada lagi nama/nomor/jadwal/angka contoh hardcoded (dicek
   otomatis saat transformasi).
 

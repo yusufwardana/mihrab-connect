@@ -381,6 +381,10 @@
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M3 10h18"/></svg>
             Event
           </button>
+          <button type="button" data-nav="arsip">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="5" rx="1"/><path d="M5 8v11h14V8"/><path d="M10 12h4"/></svg>
+            Arsip
+          </button>
           <button type="button" data-nav="pengurus">
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.2 3.4-5 6.5-5s5.7 1.8 6.5 5"/><path d="M16 5.5a3.5 3.5 0 0 1 0 6.5"/><path d="M17.5 15.3c2 .6 3.4 2.1 4 4.7"/></svg>
             Pengurus &amp; Peran
@@ -721,6 +725,45 @@
             </div>
           </section>
 
+          <!-- ================= ARSIP ================= -->
+          <section class="view" id="view-arsip" aria-labelledby="h-arsip">
+            <div class="view-head">
+              <h2 id="h-arsip">Arsip</h2>
+              <p>Konten yang masa tayangnya sudah berakhir tersimpan di sini dan dapat dicari lagi. Arsip adalah catatan permanen — tidak bisa dihapus.</p>
+            </div>
+
+            <div class="card">
+              <h3>Arsip Tayangan</h3>
+              <p class="sub">Pengumuman dan kajian yang sudah selesai tayang, serta event yang tanggalnya sudah lewat.</p>
+              <div class="form-row">
+                <div class="field">
+                  <label for="arsip-cari">Cari arsip</label>
+                  <input type="search" id="arsip-cari" data-arsip-cari placeholder="Cari judul atau isi…" />
+                </div>
+                <div class="field">
+                  <label for="arsip-jenis">Jenis</label>
+                  <select id="arsip-jenis" data-arsip-jenis>
+                    <option value="">Semua jenis</option>
+                    <option value="pengumuman">Pengumuman</option>
+                    <option value="kajian">Kajian</option>
+                    <option value="event">Event</option>
+                  </select>
+                </div>
+              </div>
+              <ul class="mini-list" data-arsip-list></ul>
+            </div>
+
+            <div class="card section-gap">
+              <h3>Log Aktivitas</h3>
+              <p class="sub">Siapa, kapan, dari mana, dan apa yang diubah — semua aksi tulis di Admin tercatat di sini.</p>
+              <div class="field">
+                <label for="log-cari">Cari log</label>
+                <input type="search" id="log-cari" data-log-cari placeholder="Cari nama, aksi, atau kata kunci…" />
+              </div>
+              <ul class="mini-list" data-arsip-log-list></ul>
+            </div>
+          </section>
+
           <!-- ================= PENGURUS ================= -->
           <section class="view" id="view-pengurus" aria-labelledby="h-pengurus">
             <div class="view-head">
@@ -825,6 +868,10 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="M3 10h18"/></svg>
         Event
       </button>
+      <button type="button" data-nav="arsip">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="5" rx="1"/><path d="M5 8v11h14V8"/><path d="M10 12h4"/></svg>
+        Arsip
+      </button>
       <button type="button" data-nav="pengurus">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.2 3.4-5 6.5-5s5.7 1.8 6.5 5"/><path d="M16 5.5a3.5 3.5 0 0 1 0 6.5"/><path d="M17.5 15.3c2 .6 3.4 2.1 4 4.7"/></svg>
         Pengurus
@@ -852,6 +899,7 @@
         board: null,
         serahTerima: [],
         eventData: { event: [], kajian: [] },
+        arsip: [],
         baDipilihId: null,
         apiOk: {},
       };
@@ -947,9 +995,9 @@
         var hasil = await Promise.allSettled([
           api("/api/pengumuman"), api("/api/kas"), api("/api/jadwal"),
           api("/api/pengurus"), api("/api/log"), api("/api/board"),
-          api("/api/serah-terima"), api("/api/event"),
+          api("/api/serah-terima"), api("/api/event"), api("/api/arsip"),
         ]);
-        var nama = ["pengumuman", "kas", "jadwal", "pengurus", "log", "board", "serah-terima", "event"];
+        var nama = ["pengumuman", "kas", "jadwal", "pengurus", "log", "board", "serah-terima", "event", "arsip"];
         var gagal = [];
         hasil.forEach(function (h, i) {
           state.apiOk[nama[i]] = h.status === "fulfilled";
@@ -962,6 +1010,7 @@
             if (nama[i] === "board") { state.board = h.value; state.masjid = h.value.masjid || null; }
             if (nama[i] === "serah-terima") state.serahTerima = h.value.serah_terima || [];
             if (nama[i] === "event") state.eventData = { event: h.value.event || [], kajian: h.value.kajian || [] };
+            if (nama[i] === "arsip") state.arsip = h.value.arsip || [];
           } else {
             gagal.push(nama[i] + ": " + (h.reason && h.reason.message ? h.reason.message : "gagal"));
           }
@@ -1049,6 +1098,54 @@
         document.querySelectorAll("[data-log-list]").forEach(function (el) { el.innerHTML = html; });
       }
 
+      /* ===== Render: arsip & log aktivitas (layar Arsip) ===== */
+      var arsipCari = "", arsipJenis = "", logCari = "";
+      function labelJenisArsip(jenis) {
+        var m = { pengumuman: "Pengumuman", kajian: "Kajian", event: "Event" };
+        return m[jenis] || jenis;
+      }
+      function renderArsip() {
+        var list = document.querySelector("[data-arsip-list]");
+        if (!list) return;
+        var q = arsipCari.trim().toLowerCase();
+        var daftar = (state.arsip || []).filter(function (a) {
+          if (arsipJenis && a.jenis !== arsipJenis) return false;
+          if (q && ((a.judul || "") + " " + (a.konten || "")).toLowerCase().indexOf(q) === -1) return false;
+          return true;
+        });
+        var kosong = (q || arsipJenis)
+          ? "<li class='empty-note'>Tidak ada arsip yang cocok dengan pencarian.</li>"
+          : "<li class='empty-note'>Belum ada arsip.</li>";
+        list.innerHTML = daftar.length ? daftar.map(function (a) {
+          var badge = a.jenis === "event" ? "menunggu" : a.jenis === "kajian" ? "tayang" : "draf";
+          var tgl = a.tanggal ? formatTanggalPanjang(a.tanggal)
+            : a.created_at ? formatTanggalPanjang(a.created_at) : "—";
+          var ringkas = a.konten ? (a.konten.length > 140 ? a.konten.slice(0, 140) + "…" : a.konten) : "";
+          return "<li><span class='grow'><strong>" + esc(a.judul) + "</strong> <span class='badge " + badge + "'>" + esc(labelJenisArsip(a.jenis)) + "</span><br /><span class='meta'>" + esc(tgl) + (a.asal === "event" ? " · dari daftar event" : "") + "</span>" + (ringkas ? "<br />" + esc(ringkas) : "") + "</span></li>";
+        }).join("") : kosong;
+      }
+      function renderArsipLog() {
+        var list = document.querySelector("[data-arsip-log-list]");
+        if (!list) return;
+        var q = logCari.trim().toLowerCase();
+        var daftar = (state.log || []).filter(function (l) {
+          if (!q) return true;
+          return ((l.siapa || "") + " " + (l.apa || "") + " " + (l.kapan || "")).toLowerCase().indexOf(q) !== -1;
+        });
+        var kosong = q
+          ? "<li class='empty-note'>Tidak ada log yang cocok dengan pencarian.</li>"
+          : "<li class='empty-note'>Belum ada aktivitas.</li>";
+        list.innerHTML = daftar.length ? daftar.map(function (l) {
+          return "<li><span class='l-time'>" + esc(formatWaktuWIB(l.kapan)) + "</span><span class='l-what'><strong>" + esc(l.siapa) + "</strong> · via " + esc(l.dari) + " — " + esc(l.apa) + "</span></li>";
+        }).join("") : kosong;
+      }
+      var inputArsipCari = document.querySelector("[data-arsip-cari]");
+      if (inputArsipCari) inputArsipCari.addEventListener("input", function () { arsipCari = inputArsipCari.value; renderArsip(); });
+      var pilihArsipJenis = document.querySelector("[data-arsip-jenis]");
+      if (pilihArsipJenis) pilihArsipJenis.addEventListener("change", function () { arsipJenis = pilihArsipJenis.value; renderArsip(); });
+      var inputLogCari = document.querySelector("[data-log-cari]");
+      if (inputLogCari) inputLogCari.addEventListener("input", function () { logCari = inputLogCari.value; renderArsipLog(); });
+
       /* ===== Render: antrean persetujuan ===== */
       function badgeStatus(p) {
         if (p.status === "menunggu") return "<span class='badge menunggu'>Menunggu persetujuan</span>";
@@ -1078,6 +1175,10 @@
               "<button type='button' class='btn primary' data-setujui='" + esc(p.id) + "'>Setujui &amp; tayangkan</button>" +
               "<button type='button' class='btn danger-ghost' data-tolak='" + esc(p.id) + "'>Tolak kiriman</button></div>";
           }
+          if (p.status === "tayang") {
+            actions = "<div class='queue-actions'>" +
+              "<button type='button' class='btn ghost' data-akhiri='" + esc(p.id) + "'>Akhiri tayang</button></div>";
+          }
           if (autoTayang) {
             note = "<div class='queue-note'>Auto-tayang: pengirim adalah ketua dengan pengaturan kiriman tanpa persetujuan. Tetap tercatat di log aktivitas.</div>";
           }
@@ -1104,6 +1205,18 @@
         list.querySelectorAll("[data-tolak]").forEach(function (b) {
           b.addEventListener("click", function () { putuskan(b.getAttribute("data-tolak"), false, b); });
         });
+        list.querySelectorAll("[data-akhiri]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            // Konfirmasi dua langkah (bukan window.confirm): klik pertama
+            // mempersenjatai tombol, klik kedua mengakhiri tayang.
+            if (b.getAttribute("data-armed") !== "1") {
+              b.setAttribute("data-armed", "1");
+              b.textContent = "Yakin akhiri?";
+              return;
+            }
+            akhiriTayang(b.getAttribute("data-akhiri"), b);
+          });
+        });
       }
       async function putuskan(id, setuju, btn) {
         if (btn) btn.disabled = true;
@@ -1113,6 +1226,17 @@
           await muatSemua();
         } catch (e) {
           tampilkanError("Gagal " + (setuju ? "menyetujui" : "menolak") + " kiriman: " + e.message);
+          if (btn) btn.disabled = false;
+        }
+      }
+      async function akhiriTayang(id, btn) {
+        if (btn) btn.disabled = true;
+        try {
+          await api("/api/pengumuman/" + encodeURIComponent(id) + "/akhiri", { method: "POST" });
+          await muatSemua();
+          tampilkanSukses("Masa tayang diakhiri — konten masuk arsip.");
+        } catch (e) {
+          tampilkanError("Gagal mengakhiri tayang: " + e.message);
           if (btn) btn.disabled = false;
         }
       }
@@ -1751,6 +1875,7 @@
       function renderSemua() {
         renderHitungan(); renderTayangList(); renderLog(); renderAntrean();
         renderJadwal(); renderKas(); renderSerahTerima(); renderEvent(); renderPengurus(); renderBoardTimes(); renderBoardSlide();
+        renderArsip(); renderArsipLog();
       }
 
       /* Placeholder "Memuat…" sebelum data pertama tiba. */
