@@ -22,14 +22,14 @@ Kandidat brand induk untuk papan informasi masjid. Produk pertama:
 
 ## Struktur produk
 
-| Produk | Peran |
-| --- | --- |
-| Mihrab Connect Board | Papan informasi digital. Produk pertama. Fokus repo ini. |
-| Mihrab Connect Admin | Dashboard pengelolaan. |
-| Mihrab Connect Finance | Keuangan dan kas. |
-| Mihrab Connect Community | Jamaah dan komunikasi. |
-| Mihrab Connect Event | Kajian dan kegiatan. |
-| Mihrab Connect Archive | Arsip dan dokumentasi. |
+| Produk | Peran | Status (22 Nov 2026) |
+| --- | --- | --- |
+| Mihrab Connect Board | Papan informasi digital. Produk pertama. Fokus repo ini. | Live, P0 selesai |
+| Mihrab Connect Admin | Dashboard pengelolaan. | Live, 8 layar |
+| Mihrab Connect Finance | Keuangan dan kas. | P0 selesai (QRIS + Serah Terima) |
+| Mihrab Connect Community | Jamaah dan komunikasi. | Dilewati user 22 Nov — menunggu nomor WA |
+| Mihrab Connect Event | Kajian dan kegiatan. | P0 selesai |
+| Mihrab Connect Archive | Arsip dan dokumentasi. | P0 selesai |
 
 Tagline utama: **"Atur dari dashboard, kirim dari WhatsApp. Ganti pengurus,
 data tetap di masjid."**
@@ -44,7 +44,10 @@ Palet: hijau gelap, emas lembut, putih hangat.
 | `docs/scope-board.md` | Dokumen scope Mihrab Connect Board (masuk/tidak masuk scope, batas teknis, kriteria selesai). |
 | `docs/backend-spec.md` | Spesifikasi backend (model data, alur persetujuan, endpoint API, matriks izin, perilaku offline). |
 | `docs/masjid-board-fitur-dan-usp.md` | Dokumen sumber: fitur utama & USP Masjid Board. |
+| `docs/hasil-validasi-al-furqon.md` | Transkripsi setia hasil validasi di Masjid Al Furqon (22 Nov 2026). |
 | `docs/supabase-schema.sql` | Skema Supabase (Postgres) dari spek backend — 14 tabel, RLS starter, data contoh. |
+| `vercel-admin/` | Kode Admin live (Vercel, root `vercel-admin`): 12 file `api/`, 3 file `lib/`, `public/index.html`, `vercel.json`, README dengan daftar deviasi. |
+| `vercel-board/` | Kode Board live (Vercel, root `vercel-board`): `api/board.js`, `lib/`, `public/index.html`, `vercel.json`. |
 | `frontend/masjid-board.html` | Export landing page Masjid Board v2, satu file (gambar inline; font masih dari Google, fallback bila offline). |
 | `frontend/mihrab-connect-board.html` | Export prototipe Board P0, satu file mandiri penuh (font & gambar inline, tanpa dependensi eksternal). |
 | `frontend/mihrab-connect-admin.html` | Export prototipe Admin P0, satu file (font masih dari Google, fallback bila offline; tanpa backend nyata). |
@@ -82,9 +85,11 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   `mihrab-connect-admin` (team 0x's projects, git-linked ke repo ini,
   root `vercel-admin`, auto-deploy tiap push),
   https://mihrab-connect-admin-0xs-projects-798a67b4.vercel.app;
-  env `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` terpasang. Verifikasi
-  live: 6 endpoint GET 200 dari data nyata, POST kas Rp1.000 (uji)
-  tercatat + masuk log. Perlu login Vercel untuk membuka (Vercel
+  env `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` terpasang. Layar:
+  Beranda, Board, Jadwal, Kas, Pengurus, Persetujuan, Event, Arsip.
+  API (12 file): pengumuman (GET/POST + setujui/tolak/akhiri),
+  kas (GET/POST/PUT QRIS), serah-terima, event, jadwal, pengurus,
+  log, arsip, board. Perlu login Vercel untuk membuka (Vercel
   Authentication aktif). Migrasi `kas_kategori.created_at` diterapkan
   22 Nov 2026 (API butuh kolom itu untuk urutan). Layar Jadwal kini
   punya tombol Simpan + form Tambah petugas (commit 2b52960e,
@@ -161,6 +166,25 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   -7.89367, 110.84866; Ketua Sarino, Bendahara Gondes, Marbot Paijo
   (ketiganya WA 083871374743, terdaftar); pengurus contoh + transaksi
   uji Rp1.000 dihapus.
+- WhatsApp: penyedia dikunci 22 Nov 2026 (Meta Cloud API langsung,
+  resmi; Rp0 di volume pilot) — lihat "Keputusan izin" di atas.
+  Nomor HP baru khusus masjid BELUM ADA (per 22 Nov 2026 21:30 WIB);
+  webhook + endpoint intake/notifikasi belum dibangun, menunggu nomor
+  + akun Meta Business + kartu pembayaran. Perhatian saat beli SIM:
+  jangan didaftarkan di aplikasi WhatsApp biasa (nomor Cloud API
+  harus belum pernah terdaftar di WA).
+- Community DILEWATI user 22 Nov 2026 20:22 WIB ("Lewati Community,
+  ke Archive"): fungsi intinya (kirim WhatsApp + notifikasi) terblokir
+  penyedia — kini penyedia sudah dipilih, tetapi Community tetap belum
+  dibangun; yang sudah ada hanya sisi persetujuan (draft → antrean →
+  tayang). Dibuka lagi bila nomor WA sudah ada.
 - Stack Admin dikunci 22 Nov 2026: Vercel + Supabase (tier gratis),
   hosting ikut Vercel.
 - Keputusan terbuka: brand final.
+- Menunggu / belum dikerjakan: PUT edit pengumuman; instalasi TV
+  Board di Masjid Al Furqon (masjid setuju pasang, belum tercatat
+  terpasang); login Admin khusus (saat ini hanya login Vercel);
+  perketat RLS Supabase per-peran sebelum dipakai jamaah; celah bukti
+  validasi (satu contoh insiden tercatat, lingkari LOLOS PILOT di
+  formulir, tanggal tanda tangan Sarino, fitur paling dibutuhkan +
+  keberatan terbesar).
