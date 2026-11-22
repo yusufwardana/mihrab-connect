@@ -95,6 +95,17 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   angka salah saat data dimuat. Semua data uji dibersihkan (2 baris
   serah terima uji + URL QRIS uji dihapus; log aktivitas tetap
   sebagai jejak audit).
+- Event P0 selesai + terverifikasi live 22 Nov 2026 20:09–20:18 WIB
+  (commit da71ab2f Admin + 5c258c6b Board, perbaikan hapus 646d380a):
+  layar Event di Admin (hari besar & event: tambah/ubah/saklar
+  countdown/duplikasi ke tahun depan/hapus; kajian: tambah/ubah/status
+  draf → tayang → selesai) dan slide "Kajian Berikutnya" di Board
+  (muncul bila ada kajian tayang, rotasi jadi 4 slide). Bug saat
+  verifikasi pertama: hapus memakai `window.confirm()` yang tidak
+  muncul di browser sehingga hapus tidak pernah jalan — diganti
+  konfirmasi dua langkah di tombol ("Hapus" → "Yakin hapus?").
+  Data uji dibersihkan (3 baris event/kajian uji dihapus; yang
+  tersisa hanya 2 event seed: Ramadan 1448 H dan Idul Fitri 1448 H).
 - Board live di Vercel 22 Nov 2026: proyek `mihrab-connect-board`
   (team 0x's projects, git-linked ke repo ini, root `vercel-board`),
   https://mihrab-connect-board-0xs-projects-798a67b4.vercel.app —
