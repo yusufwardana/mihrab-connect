@@ -127,6 +127,20 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   di ef94ccda. Data uji dibersihkan (2 pengumuman uji + 1 kajian uji
   + 2 baris arsip uji dihapus; arsip/pengumuman/kajian kembali 0;
   log aktivitas tetap sebagai jejak audit).
+- Buat pengumuman dari dashboard selesai + terverifikasi live 22 Nov
+  2026 21:13–21:14 WIB (commit 2abfdd8b): POST /api/pengumuman (isi
+  wajib, jenis default "Pengumuman") + form "Buat pengumuman" di layar
+  Persetujuan (textarea + select jenis + tombol "Tayangkan"). Dibuat
+  dari dashboard langsung berstatus tayang sebagai ketua (preseden
+  spek §4.3: kiriman ketua auto-tayang; dashboard hanya dioperasikan
+  ketua), dengan catatan jujur di bawah form. Alur penuh terverifikasi
+  live: buat dari form → tampil di Board (slide INFO MASJID + ticker)
+  → Akhiri tayang → masuk Arsip, dengan log "Menambah pengumuman"
+  dan "Mengakhiri tayang". Validasi isi kosong ditahan browser
+  (tooltip native "Please fill out this field"); server juga menolak
+  400. Belum dibangun: PUT edit pengumuman. Data uji dibersihkan
+  (1 pengumuman uji + 1 baris arsip uji dihapus; pengumuman/arsip
+  kembali 0; log tetap sebagai jejak audit).
 - Board live di Vercel 22 Nov 2026: proyek `mihrab-connect-board`
   (team 0x's projects, git-linked ke repo ini, root `vercel-board`),
   https://mihrab-connect-board-0xs-projects-798a67b4.vercel.app —
