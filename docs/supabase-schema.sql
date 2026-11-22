@@ -34,6 +34,12 @@ create table if not exists pengurus (
   peran text not null check (peran in ('ketua','bendahara','marbot','pengawas')),
   no_whatsapp text,
   whatsapp_terdaftar boolean not null default false,
+  -- Login PIN (migrasi 002): hash scrypt + salt; pin_gagal /
+  -- pin_terkunci_sampai = pengunci brute force (5 gagal -> kunci 15 menit).
+  pin_hash text,
+  pin_salt text,
+  pin_gagal int not null default 0,
+  pin_terkunci_sampai timestamptz,
   created_at timestamptz not null default now()
 );
 

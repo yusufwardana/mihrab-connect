@@ -308,6 +308,17 @@
       .section-gap { margin-top: 16px; }
       .empty-note { color: var(--muted); font-size: .9rem; padding: 14px 0 4px; }
 
+      /* ---------- Layar login ---------- */
+      #login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+      #login-screen[hidden] { display: none; }
+      .login-card { width: 100%; max-width: 420px; }
+      .login-card .arabic { font-size: 2rem; color: var(--green); text-align: center; }
+      .login-card h1 { text-align: center; margin: 6px 0 4px; font-size: 1.4rem; }
+      .login-card .sub { text-align: center; }
+      .login-error { color: var(--red); font-weight: 700; font-size: .9rem; margin: 10px 0 0; }
+      .topbar .saya-info { font-size: .88rem; font-weight: 700; color: var(--muted); white-space: nowrap; }
+      .topbar .btn { min-height: 2rem; padding: 4px 10px; font-size: .85rem; }
+
       /* ---------- Mobile ---------- */
       .mobilebar { display: none; }
       @media (max-width: 860px) {
@@ -351,6 +362,30 @@
     </style>
   </head>
   <body>
+    <!-- ============ LAYAR LOGIN (tampil bila belum ada sesi) ============ -->
+    <div id="login-screen" hidden>
+      <div class="card login-card">
+        <div class="arabic" aria-hidden="true">مِحْرَاب</div>
+        <h1>Masuk Admin</h1>
+        <p class="sub">Pilih nama Anda, lalu masukkan PIN 6 digit.</p>
+        <form data-login-form>
+          <div class="field">
+            <label for="login-pengurus">Nama pengurus</label>
+            <select id="login-pengurus" data-login-pengurus></select>
+          </div>
+          <div class="field" style="margin-top:12px">
+            <label for="login-pin">PIN (6 digit)</label>
+            <input type="password" id="login-pin" data-login-pin inputmode="numeric" autocomplete="current-password" maxlength="6" placeholder="••••••" required />
+          </div>
+          <p class="login-error" data-login-error hidden></p>
+          <div style="margin-top:14px">
+            <button type="submit" class="btn primary" data-login-masuk>Masuk</button>
+          </div>
+        </form>
+        <p class="hint" style="margin-top:12px">Belum punya PIN? Minta ketua mengaturnya.</p>
+      </div>
+    </div>
+
     <div class="app">
       <!-- ============ SIDEBAR (desktop) ============ -->
       <aside class="sidebar">
@@ -407,6 +442,9 @@
             <small>Akun lembaga (DKM) — bukan akun pribadi pengurus</small>
           </div>
           <div class="spacer"></div>
+          <span class="saya-info" data-saya-info></span>
+          <button type="button" class="btn ghost" data-ganti-pin>Ganti PIN</button>
+          <button type="button" class="btn ghost" data-keluar>Keluar</button>
           <span class="board-status"><span class="dot" aria-hidden="true"></span> Board tersambung</span>
           <span class="contoh-badge">TERHUBUNG</span>
         </header>
@@ -559,7 +597,7 @@
                   <tbody data-petugas-tbody></tbody>
                 </table>
               </div>
-              <form data-petugas-form class="settings-grid" style="margin-top:14px">
+              <form data-petugas-form data-hanya-ketua class="settings-grid" style="margin-top:14px">
                 <div class="field">
                   <label for="ptg-tanggal">Tanggal</label>
                   <input type="date" id="ptg-tanggal" required />
@@ -584,7 +622,7 @@
               <p class="hint">Petugas baru langsung tersimpan dan tampil di tabel di atas serta di Board pada mode Jumat.</p>
             </div>
 
-            <div class="card section-gap">
+            <div class="card section-gap" data-hanya-ketua>
               <h3>Simpan Pengaturan</h3>
               <p class="sub">Simpan semua perubahan di layar ini sekaligus — koreksi menit, offset Hijriyah, durasi iqomah, dan murotal. (Tiap kontrol juga tersimpan otomatis saat diubah.)</p>
               <button type="button" class="btn primary" data-jadwal-simpan>Simpan pengaturan jadwal</button>
@@ -655,7 +693,7 @@
               </div>
             </div>
 
-            <div class="card section-gap">
+            <div class="card section-gap" data-hanya-ketua>
               <h3>Serah Terima</h3>
               <p class="sub">Serah terima pengurus dalam 1 klik — hanya ketua. Saldo akhir dibekukan per tanggal serah terima, dan berita acara bisa dicetak.</p>
               <form data-serah-form>
@@ -798,7 +836,7 @@
               <h3>Daftar Pengurus</h3>
               <div class="table-wrap">
                 <table class="stack">
-                  <thead><tr><th>Nama</th><th>Peran</th><th>Nomor WhatsApp terdaftar</th><th>Kiriman butuh persetujuan ketua</th><th>Status</th></tr></thead>
+                  <thead><tr><th>Nama</th><th>Peran</th><th>Nomor WhatsApp terdaftar</th><th>Kiriman butuh persetujuan ketua</th><th>Status</th><th>PIN</th></tr></thead>
                   <tbody data-pengurus-tbody></tbody>
                 </table>
               </div>
@@ -864,6 +902,46 @@
             </div>
           </section>
 
+          <!-- ================= GANTI PIN ================= -->
+          <section class="view" id="view-pin" aria-labelledby="h-pin">
+            <div class="view-head">
+              <h2 id="h-pin">Ganti PIN</h2>
+              <p>PIN dipakai untuk masuk Admin. Jangan bagikan PIN Anda ke orang lain.</p>
+            </div>
+            <div class="card">
+              <form data-pin-form>
+                <div class="field">
+                  <label for="pin-lama">PIN lama</label>
+                  <input type="password" id="pin-lama" data-pin-lama inputmode="numeric" autocomplete="current-password" maxlength="6" required />
+                </div>
+                <div class="field" style="margin-top:12px">
+                  <label for="pin-baru">PIN baru (6 digit)</label>
+                  <input type="password" id="pin-baru" data-pin-baru inputmode="numeric" autocomplete="new-password" maxlength="6" required />
+                </div>
+                <div class="field" style="margin-top:12px">
+                  <label for="pin-baru2">Ulangi PIN baru</label>
+                  <input type="password" id="pin-baru2" data-pin-baru2 inputmode="numeric" autocomplete="new-password" maxlength="6" required />
+                </div>
+                <div style="margin-top:14px">
+                  <button type="submit" class="btn primary">Simpan PIN baru</button>
+                  <button type="button" class="btn ghost" data-pin-batal>Kembali ke Beranda</button>
+                </div>
+              </form>
+            </div>
+          </section>
+
+          <!-- ================= TIDAK TERSEDIA UNTUK PERAN ================= -->
+          <section class="view" id="view-terbatas" aria-labelledby="h-terbatas">
+            <div class="view-head">
+              <h2 id="h-terbatas">Tidak tersedia</h2>
+              <p>Layar ini tidak tersedia untuk peran Anda.</p>
+            </div>
+            <div class="card">
+              <p class="sub">Peran Anda tidak boleh membuka layar ini. Kembali ke Beranda untuk layar yang tersedia untuk Anda.</p>
+              <button type="button" class="btn primary" data-nav="beranda">Kembali ke Beranda</button>
+            </div>
+          </section>
+
         </main>
       </div>
     </div>
@@ -913,6 +991,7 @@
          "Ditolak" di UI = selesai + disetujui_pada kosong (penolakan tercatat di log).
          Jumlah kas null tampil "Rp —". */
       var state = {
+        saya: null, // {id, nama, peran} pengurus yang login; null = belum masuk.
         masjid: null,
         pengumuman: [],
         kas: { kategori: [], transaksi: [], total_saldo: 0 },
@@ -930,6 +1009,29 @@
       /* ID pengumuman yang sedang diubah inline di layar Persetujuan
          (null = tidak ada yang sedang diubah). */
       var idEditPengumuman = null;
+
+      /* ===== Peran & layar yang diizinkan (matriks izin spek Bagian 5-6) =====
+         Ketua: semua. Bendahara: beranda, jadwal (lihat), kas, arsip, board.
+         Marbot: beranda, jadwal (lihat), board. Layar lain tidak tersedia
+         untuk peran itu — nav-nya disembunyikan DAN dibuka langsung pun
+         menampilkan pesan (lihat navigasi()). */
+      var LAYAR_PERAN = {
+        beranda: ["ketua", "bendahara", "marbot", "pengawas"],
+        persetujuan: ["ketua"],
+        jadwal: ["ketua", "bendahara", "marbot", "pengawas"],
+        kas: ["ketua", "bendahara"],
+        event: ["ketua"],
+        arsip: ["ketua", "bendahara", "pengawas"],
+        pengurus: ["ketua"],
+        board: ["ketua", "bendahara", "marbot", "pengawas"],
+        pin: ["ketua", "bendahara", "marbot", "pengawas"],
+        terbatas: ["ketua", "bendahara", "marbot", "pengawas"],
+      };
+      function layarDiizinkan(view) {
+        if (!state.saya) return false;
+        var daftar = LAYAR_PERAN[view] || [];
+        return daftar.indexOf(state.saya.peran) !== -1;
+      }
 
       var BULAN_PENDEK = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
       var BULAN_PANJANG = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
@@ -1018,12 +1120,33 @@
       }
 
       async function muatSemua() {
-        var hasil = await Promise.allSettled([
-          api("/api/pengumuman"), api("/api/kas"), api("/api/jadwal"),
-          api("/api/pengurus"), api("/api/log"), api("/api/board"),
-          api("/api/serah-terima"), api("/api/event"), api("/api/arsip"),
-        ]);
-        var nama = ["pengumuman", "kas", "jadwal", "pengurus", "log", "board", "serah-terima", "event", "arsip"];
+        // Hanya ambil endpoint yang boleh dibaca peran ini — endpoint lain
+        // akan 403 (bukan data kosong), jadi jangan diminta sama sekali.
+        var peran = state.saya ? state.saya.peran : null;
+        var semua = ["pengumuman", "kas", "jadwal", "pengurus", "log", "board", "serah-terima", "event", "arsip"];
+        var boleh = peran === "ketua"
+          ? semua
+          : peran === "bendahara"
+            ? ["pengumuman", "kas", "jadwal", "log", "board", "arsip"]
+            : ["pengumuman", "jadwal", "board"];
+        // Kosongkan irisan data yang tidak diambil peran ini (mis. setelah
+        // keluar lalu masuk sebagai peran lain tanpa reload).
+        var kosongkan = {
+          kas: function () { state.kas = { kategori: [], transaksi: [], total_saldo: 0 }; },
+          pengurus: function () { state.pengurus = []; },
+          log: function () { state.log = []; },
+          "serah-terima": function () { state.serahTerima = []; },
+          event: function () { state.eventData = { event: [], kajian: [] }; },
+          arsip: function () { state.arsip = []; },
+        };
+        semua.forEach(function (n) {
+          if (boleh.indexOf(n) === -1) {
+            state.apiOk[n] = true; // bukan gagal — memang tidak diambil.
+            if (kosongkan[n]) kosongkan[n]();
+          }
+        });
+        var hasil = await Promise.allSettled(boleh.map(function (n) { return api("/api/" + n); }));
+        var nama = boleh;
         var gagal = [];
         hasil.forEach(function (h, i) {
           state.apiOk[nama[i]] = h.status === "fulfilled";
@@ -1066,6 +1189,8 @@
 
       /* ===== Navigasi ===== */
       function navigasi(view) {
+        if (!document.getElementById("view-" + view)) view = "beranda";
+        if (state.saya && !layarDiizinkan(view)) view = "terbatas";
         document.querySelectorAll(".view").forEach(function (v) { v.classList.remove("active"); });
         var target = document.getElementById("view-" + view);
         if (target) target.classList.add("active");
@@ -1118,6 +1243,10 @@
       }
 
       function renderLog() {
+        if (state.saya && state.saya.peran === "marbot") {
+          document.querySelectorAll("[data-log-list]").forEach(function (el) { el.innerHTML = "<li class='empty-note'>Log aktivitas hanya tersedia untuk ketua dan bendahara.</li>"; });
+          return;
+        }
         var html = state.log.length ? state.log.slice(0, 8).map(function (l) {
           return "<li><span class='l-time'>" + esc(formatWaktuWIB(l.kapan)) + "</span><span class='l-what'><strong>" + esc(l.siapa) + "</strong> · via " + esc(l.dari) + " — " + esc(l.apa) + "</span></li>";
         }).join("") : "<li class='empty-note'>Belum ada aktivitas tercatat.</li>";
@@ -1429,7 +1558,9 @@
             return ur.indexOf(a.waktu) - ur.indexOf(b.waktu);
           });
           ig.innerHTML = rows.map(function (r) {
-            var disabled = (r.waktu === "jumat" || r.waktu === "tarawih");
+            // Iqomah hanya bisa diubah ketua; jumat/tarawih selalu terkunci
+            // karena durasinya ditentukan mode, bukan pengaturan.
+            var disabled = (r.waktu === "jumat" || r.waktu === "tarawih") || (state.saya && state.saya.peran !== "ketua");
             return "<div class='field'><label for='iqomah-" + esc(r.waktu) + "'>" + esc(label[r.waktu] || r.waktu) + " (menit)</label>" +
               "<input type='number' id='iqomah-" + esc(r.waktu) + "' data-iqomah='" + esc(r.waktu) + "' value='" + r.durasi_menit + "' min='0' max='30' step='1'" + (disabled ? " disabled" : "") + " />" +
               (ket[r.waktu] ? "<p class='hint'>" + esc(ket[r.waktu]) + "</p>" : "") + "</div>";
@@ -1508,9 +1639,13 @@
         }
         var ring = document.querySelector("[data-kas-ringkasan]");
         if (ring) {
-          ring.innerHTML = k.kategori.length ? k.kategori.map(function (kat) {
-            return "<li><span class='grow'>" + esc(kat.nama) + "</span><strong>" + rupiah(kat.saldo) + "</strong></li>";
-          }).join("") : "<li class='empty-note'>Belum ada kategori kas.</li>";
+          if (state.saya && state.saya.peran === "marbot") {
+            ring.innerHTML = "<li class='empty-note'>Ringkasan kas hanya tersedia untuk ketua dan bendahara.</li>";
+          } else {
+            ring.innerHTML = k.kategori.length ? k.kategori.map(function (kat) {
+              return "<li><span class='grow'>" + esc(kat.nama) + "</span><strong>" + rupiah(kat.saldo) + "</strong></li>";
+            }).join("") : "<li class='empty-note'>Belum ada kategori kas.</li>";
+          }
         }
         var tb = document.querySelector("[data-kas-tbody]");
         if (tb) {
@@ -1820,15 +1955,40 @@
       function renderPengurus() {
         var tb = document.querySelector("[data-pengurus-tbody]");
         if (!tb) return;
-        if (!state.apiOk.pengurus) { tb.innerHTML = "<tr><td colspan='5' class='empty-note'>Daftar pengurus tidak dapat dimuat — periksa koneksi ke server.</td></tr>"; return; }
+        if (!state.apiOk.pengurus) { tb.innerHTML = "<tr><td colspan='6' class='empty-note'>Daftar pengurus tidak dapat dimuat — periksa koneksi ke server.</td></tr>"; return; }
         tb.innerHTML = state.pengurus.length ? state.pengurus.map(function (p) {
           var butuh = p.peran === "ketua"
             ? "Tidak — kiriman ketua dapat auto-tayang"
             : "Ya — menunggu persetujuan ketua";
           return "<tr><td data-label='Nama'><span class='role-name'>" + esc(p.nama) + "</span></td><td data-label='Peran'>" + esc(labelPeran(p.peran)) + "</td>" +
             "<td data-label='Nomor WhatsApp'>" + maskNomor(p.no_whatsapp) + "</td><td data-label='Butuh persetujuan'>" + esc(butuh) + "</td>" +
-            "<td data-label='Status'><span class='badge tayang'>Aktif</span></td></tr>";
-        }).join("") : "<tr><td colspan='5' class='empty-note'>Belum ada pengurus.</td></tr>";
+            "<td data-label='Status'><span class='badge tayang'>Aktif</span></td>" +
+            "<td data-label='PIN'><button type='button' class='btn ghost' data-reset-pin='" + esc(p.id) + "' data-nama='" + esc(p.nama) + "'>Reset PIN</button></td></tr>";
+        }).join("") : "<tr><td colspan='6' class='empty-note'>Belum ada pengurus.</td></tr>";
+        // Reset PIN (ketua saja): konfirmasi dua langkah, tanpa window.confirm.
+        tb.querySelectorAll("[data-reset-pin]").forEach(function (btn) {
+          btn.addEventListener("click", async function () {
+            if (btn.getAttribute("data-armed") !== "1") {
+              btn.setAttribute("data-armed", "1");
+              btn.textContent = "Yakin reset?";
+              return;
+            }
+            btn.disabled = true;
+            try {
+              var r = await api("/api/auth/reset-pin", {
+                method: "POST",
+                body: JSON.stringify({ pengurus_id: btn.getAttribute("data-reset-pin") }),
+              });
+              tampilkanSukses("PIN baru untuk " + btn.getAttribute("data-nama") + ": " + r.pin_baru + " — sampaikan ke pengurus, PIN ini tidak akan ditampilkan lagi.");
+            } catch (e) {
+              tampilkanError("Gagal mereset PIN: " + (e && e.message ? e.message : ""));
+            } finally {
+              btn.removeAttribute("data-armed");
+              btn.textContent = "Reset PIN";
+              btn.disabled = false;
+            }
+          });
+        });
       }
 
       /* ===== Render: pratinjau Board ===== */
@@ -1994,13 +2154,123 @@
         renderHitungan(); renderTayangList(); renderLog(); renderAntrean();
         renderJadwal(); renderKas(); renderSerahTerima(); renderEvent(); renderPengurus(); renderBoardTimes(); renderBoardSlide();
         renderArsip(); renderArsipLog();
+        terapkanPeran();
       }
+
+      /* Sembunyikan nav layar yang tidak boleh dibuka peran ini. */
+      function terapkanPeran() {
+        if (!state.saya) return;
+        var peran = state.saya.peran;
+        document.querySelectorAll("[data-nav]").forEach(function (el) {
+          var view = el.dataset.nav;
+          if (LAYAR_PERAN[view]) el.style.display = layarDiizinkan(view) ? "" : "none";
+        });
+        document.querySelectorAll("[data-hanya-ketua]").forEach(function (el) {
+          el.style.display = peran === "ketua" ? "" : "none";
+        });
+        var info = document.querySelector("[data-saya-info]");
+        if (info) info.textContent = state.saya.nama + " — " + labelPeran(peran);
+      }
+
+      function labelPeran(peran) {
+        return { ketua: "Ketua", bendahara: "Bendahara", marbot: "Marbot", pengawas: "Pengawas" }[peran] || peran;
+      }
+
+      /* ===== Auth: sesi, layar login, ganti PIN, reset PIN ===== */
+      function tampilkanLogin(pesan) {
+        state.saya = null;
+        document.getElementById("login-screen").hidden = false;
+        document.querySelector(".app").style.display = "none";
+        if (pesan) {
+          var e = document.querySelector("[data-login-error]");
+          e.textContent = pesan;
+          e.hidden = false;
+        }
+      }
+      function tampilkanApp() {
+        document.getElementById("login-screen").hidden = true;
+        document.querySelector(".app").style.display = "";
+        navigasi("beranda");
+      }
+      async function cekSesi() {
+        try {
+          var r = await api("/api/auth/saya");
+          state.saya = r.saya;
+          tampilkanApp();
+          await muatSemua();
+        } catch (e) {
+          await muatDaftarLogin();
+          tampilkanLogin();
+        }
+      }
+      async function muatDaftarLogin() {
+        var sel = document.querySelector("[data-login-pengurus]");
+        try {
+          var r = await api("/api/auth/pengurus");
+          sel.innerHTML = r.pengurus.map(function (p) {
+            return '<option value="' + esc(p.id) + '">' + esc(p.nama) + " — " + esc(labelPeran(p.peran)) + "</option>";
+          }).join("");
+        } catch (e) {
+          sel.innerHTML = "<option value=''>Gagal memuat daftar pengurus</option>";
+        }
+      }
+      document.querySelector("[data-login-form]").addEventListener("submit", async function (ev) {
+        ev.preventDefault();
+        var btn = document.querySelector("[data-login-masuk]");
+        var err = document.querySelector("[data-login-error]");
+        err.hidden = true;
+        btn.disabled = true;
+        try {
+          var r = await api("/api/auth/login", {
+            method: "POST",
+            body: JSON.stringify({
+              pengurus_id: document.querySelector("[data-login-pengurus]").value,
+              pin: document.querySelector("[data-login-pin]").value,
+            }),
+          });
+          document.querySelector("[data-login-pin]").value = "";
+          state.saya = r.saya;
+          tampilkanApp();
+          await muatSemua();
+        } catch (e) {
+          tampilkanError("Nama atau PIN salah.");
+        } finally {
+          btn.disabled = false;
+        }
+      });
+      document.querySelector("[data-keluar]").addEventListener("click", async function () {
+        try { await api("/api/auth/logout", { method: "POST" }); } catch (e) {}
+        await muatDaftarLogin();
+        tampilkanLogin();
+      });
+      document.querySelector("[data-ganti-pin]").addEventListener("click", function () { navigasi("pin"); });
+      document.querySelector("[data-pin-batal]").addEventListener("click", function () { navigasi("beranda"); });
+      document.querySelector("[data-pin-form]").addEventListener("submit", async function (ev) {
+        ev.preventDefault();
+        var lama = document.querySelector("[data-pin-lama]").value;
+        var baru = document.querySelector("[data-pin-baru]").value;
+        var baru2 = document.querySelector("[data-pin-baru2]").value;
+        if (baru !== baru2) { tampilkanError("PIN baru dan ulangannya tidak sama."); return; }
+        try {
+          await api("/api/auth/ubah-pin", {
+            method: "POST",
+            body: JSON.stringify({ pin_lama: lama, pin_baru: baru }),
+          });
+          document.querySelector("[data-pin-lama]").value = "";
+          document.querySelector("[data-pin-baru]").value = "";
+          document.querySelector("[data-pin-baru2]").value = "";
+          tampilkanSukses("PIN diganti.");
+          navigasi("beranda");
+        } catch (e) {
+          tampilkanError((e && e.message) || "Gagal mengganti PIN.");
+        }
+      });
 
       /* Placeholder "Memuat…" sebelum data pertama tiba. */
       document.querySelector("[data-queue-list]").innerHTML = "<p class='empty-note'>Memuat antrean…</p>";
       document.querySelector("[data-log-list]").innerHTML = "<li class='empty-note'>Memuat log aktivitas…</li>";
 
-      muatSemua();
+      cekSesi();
       mulaiAutoSlide();
 
     </script>

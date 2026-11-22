@@ -5,10 +5,13 @@
 
 const { supabase, getMasjidId, getPengurusMap } = require("../lib/supabase");
 const { ok, gagal, hanyaMethod } = require("../lib/http");
+const { butuhAuth } = require("../lib/auth");
 
 module.exports = async (req, res) => {
   try {
     if (!hanyaMethod(req, res, ["GET"])) return;
+    // Log aktivitas: ketua + bendahara (matriks izin spek).
+    butuhAuth(req, res, ["ketua", "bendahara"]);
     const sb = supabase();
     const masjidId = await getMasjidId(sb);
     let limit = parseInt((req.query && req.query.limit) || "50", 10);

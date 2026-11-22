@@ -4,10 +4,13 @@
 
 const { supabase, getMasjidId } = require("../lib/supabase");
 const { ok, gagal, hanyaMethod } = require("../lib/http");
+const { butuhAuth } = require("../lib/auth");
 
 module.exports = async (req, res) => {
   try {
     if (!hanyaMethod(req, res, ["GET"])) return;
+    // Daftar pengurus: ketua saja (matriks izin spek: mengelola pengurus).
+    butuhAuth(req, res, ["ketua"]);
     const sb = supabase();
     const masjidId = await getMasjidId(sb);
     const { data, error } = await sb

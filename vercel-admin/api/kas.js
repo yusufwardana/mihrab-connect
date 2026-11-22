@@ -10,8 +10,9 @@
 // Tabel: kas_kategori, kas_transaksi, pengurus, log_aktivitas.
 "use strict";
 
-const { supabase, getMasjidId, getKetua, getPengurusMap, tulisLog } = require("../lib/supabase");
+const { supabase, getMasjidId, getPengurusMap, tulisLog } = require("../lib/supabase");
 const { ok, dibuat, gagal, hanyaMethod, bacaJson, salahInput, tidakKetemu } = require("../lib/http");
+const { butuhAuth } = require("../lib/auth");
 
 const JENIS_VALID = ["masuk", "keluar"];
 
@@ -65,6 +66,8 @@ module.exports = async (req, res) => {
   try {
     const sb = supabase();
     const masjidId = await getMasjidId(sb);
+    // Kas (baca + tulis): ketua + bendahara (matriks izin spek).
+    const saya = butuhAuth(req, res, ["ketua", "bendahara"]);
 
     if (req.method === "GET") {
       if (!hanyaMethod(req, res, ["GET"])) return;
@@ -106,6 +109,8 @@ module.exports = async (req, res) => {
       if (!kat) throw tidakKetemu("Kategori kas tidak ditemukan");
 
       // Pencatat: ketua/bendahara saja (keputusan founder 22 Nov 2026).
+      // Bila body tidak menyebut dicatat_oleh, pencatatnya adalah
+      // pengurus yang login (bukan selalu ketua seperti sebelum ada auth).
       let pencatat = null;
       if (body.dicatat_oleh) {
         const { data, error } = await sb
@@ -121,8 +126,7 @@ module.exports = async (req, res) => {
         }
         pencatat = data;
       } else {
-        pencatat = await getKetua(sb, masjidId);
-        if (!pencatat) throw salahInput("Belum ada pengurus dengan peran ketua di database");
+        pencatat = { id: saya.id };
       }
 
       const { data: created, error: insErr } = await sb
@@ -142,7 +146,7 @@ module.exports = async (req, res) => {
 
       await tulisLog(sb, {
         masjidId,
-        pengurusId: pencatat.id,
+        pengurusId: saya.id,
         aksi: "Mencatat kas",
         detail:
           "kas:" + created.id + " | " + (body.jenis === "masuk" ? "Pemasukan" : "Pengeluaran") +
@@ -197,10 +201,9 @@ module.exports = async (req, res) => {
         .single();
       if (updErr) throw updErr;
 
-      const ketua = await getKetua(sb, masjidId);
       await tulisLog(sb, {
         masjidId,
-        pengurusId: ketua ? ketua.id : null,
+        pengurusId: saya.id,
         aksi: "Mengubah QRIS kategori",
         detail:
           "kas_kategori | " + kat.nama + " | qris_url=" +

@@ -19,6 +19,7 @@
 
 const { supabase, getMasjid, getMasjidId, getPengurusMap, tulisLog } = require("../lib/supabase");
 const { ok, dibuat, gagal, hanyaMethod, bacaJson, salahInput, tidakKetemu } = require("../lib/http");
+const { butuhAuth } = require("../lib/auth");
 const { hariIniWIB } = require("../lib/prayer");
 
 function fmtRp(n) {
@@ -90,6 +91,8 @@ module.exports = async (req, res) => {
   try {
     const sb = supabase();
     const masjidId = await getMasjidId(sb);
+    // Serah terima (baca + tulis): ketua saja (matriks izin spek).
+    const saya = butuhAuth(req, res, ["ketua"]);
 
     if (req.method === "GET") {
       if (!hanyaMethod(req, res, ["GET"])) return;
@@ -179,7 +182,7 @@ module.exports = async (req, res) => {
         .join(", ");
       await tulisLog(sb, {
         masjidId,
-        pengurusId: dari.id,
+        pengurusId: saya.id,
         aksi: "Serah terima",
         detail:
           dari.nama + " (Ketua) → " + ke.nama + " (" + ke.peran + ")" +

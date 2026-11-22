@@ -9,6 +9,7 @@
 
 const { supabase, getMasjidId } = require("../lib/supabase");
 const { ok, gagal, hanyaMethod, salahInput } = require("../lib/http");
+const { butuhAuth } = require("../lib/auth");
 const { hariIniWIB } = require("../lib/prayer");
 
 const JENIS_VALID = ["pengumuman", "kajian", "event"];
@@ -26,6 +27,8 @@ function kunciUrut(a) {
 module.exports = async (req, res) => {
   try {
     if (!hanyaMethod(req, res, ["GET"])) return;
+    // Arsip: ketua + bendahara (matriks izin spek).
+    butuhAuth(req, res, ["ketua", "bendahara"]);
     const sb = supabase();
     const masjidId = await getMasjidId(sb);
     const jenis = (req.query && req.query.jenis) || "";

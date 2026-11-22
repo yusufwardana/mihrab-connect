@@ -5,8 +5,9 @@
 // Tabel: pengumuman, pengurus, arsip, log_aktivitas.
 "use strict";
 
-const { supabase, getMasjidId, getKetua, tulisLog } = require("../../../lib/supabase");
+const { supabase, getMasjidId, tulisLog } = require("../../../lib/supabase");
 const { ok, gagal, hanyaMethod, tidakKetemu, konflik } = require("../../../lib/http");
+const { butuhAuth } = require("../../../lib/auth");
 const { hariIniWIB } = require("../../../lib/prayer");
 
 function judulDariIsi(isi) {
@@ -24,6 +25,7 @@ function tanggalHariIniWIB() {
 module.exports = async (req, res) => {
   try {
     if (!hanyaMethod(req, res, ["POST"])) return;
+    const saya = butuhAuth(req, res, ["ketua"]);
     const sb = supabase();
     const masjidId = await getMasjidId(sb);
     const id = req.query && req.query.id;
@@ -40,9 +42,6 @@ module.exports = async (req, res) => {
     if (p.status !== "tayang") {
       throw konflik("Hanya pengumuman berstatus tayang yang bisa diakhiri (saat ini: " + p.status + ")");
     }
-
-    const ketua = await getKetua(sb, masjidId);
-    if (!ketua) throw konflik("Belum ada pengurus dengan peran ketua di database");
 
     const judul = judulDariIsi(p.isi);
     const tanggal = tanggalHariIniWIB();
@@ -63,7 +62,7 @@ module.exports = async (req, res) => {
 
     await tulisLog(sb, {
       masjidId,
-      pengurusId: ketua.id,
+      pengurusId: saya.id,
       aksi: "Mengakhiri tayang",
       detail:
         "pengumuman:" + id + ' | "' + judul + '" — masa tayang berakhir, masuk arsip',

@@ -23,8 +23,9 @@
 // tidak punya kolom pola — lihat deviasi README Admin.
 "use strict";
 
-const { supabase, getMasjid, getMasjidId, getKetua, tulisLog } = require("../lib/supabase");
+const { supabase, getMasjid, getMasjidId, tulisLog } = require("../lib/supabase");
 const { ok, dibuat, gagal, hanyaMethod, bacaJson, salahInput, tidakKetemu } = require("../lib/http");
+const { butuhAuth } = require("../lib/auth");
 const { hariIniWIB } = require("../lib/prayer");
 
 const STATUS_KAJIAN = ["draf", "tayang", "selesai"];
@@ -94,6 +95,8 @@ module.exports = async (req, res) => {
   try {
     const sb = supabase();
     const masjidId = await getMasjidId(sb);
+    // Event & kajian (baca + tulis): ketua saja (matriks izin spek).
+    const saya = butuhAuth(req, res, ["ketua"]);
 
     if (req.method === "GET") {
       if (!hanyaMethod(req, res, ["GET"])) return;
@@ -132,7 +135,6 @@ module.exports = async (req, res) => {
     if (req.method === "POST") {
       if (!hanyaMethod(req, res, ["POST"])) return;
       const body = await bacaJson(req);
-      const ketua = await getKetua(sb, masjidId);
 
       if (body.aksi === "tambah-event") {
         const nama = validasiTeks(body.nama, "nama", 200, true);
@@ -152,7 +154,7 @@ module.exports = async (req, res) => {
         if (error) throw error;
         await tulisLog(sb, {
           masjidId,
-          pengurusId: ketua ? ketua.id : null,
+          pengurusId: saya.id,
           aksi: "Menambah event",
           detail: "event | " + nama + " | " + tanggal,
         });
@@ -175,7 +177,7 @@ module.exports = async (req, res) => {
         if (error) throw error;
         await tulisLog(sb, {
           masjidId,
-          pengurusId: ketua ? ketua.id : null,
+          pengurusId: saya.id,
           aksi: "Menambah kajian",
           detail: "kajian | " + judul + " | " + tanggal,
         });
@@ -202,7 +204,7 @@ module.exports = async (req, res) => {
         if (error) throw error;
         await tulisLog(sb, {
           masjidId,
-          pengurusId: ketua ? ketua.id : null,
+          pengurusId: saya.id,
           aksi: "Menduplikasi event",
           detail: "event | " + asal.nama + " | " + asal.tanggal + " → " + tanggalBaru,
         });
@@ -218,7 +220,6 @@ module.exports = async (req, res) => {
     if (req.method === "PUT") {
       if (!hanyaMethod(req, res, ["PUT"])) return;
       const body = await bacaJson(req);
-      const ketua = await getKetua(sb, masjidId);
       if (!body.id || typeof body.id !== "string") {
         throw salahInput("id wajib diisi");
       }
@@ -247,7 +248,7 @@ module.exports = async (req, res) => {
         if (error) throw error;
         await tulisLog(sb, {
           masjidId,
-          pengurusId: ketua ? ketua.id : null,
+          pengurusId: saya.id,
           aksi: "Mengubah event",
           detail: "event | " + data.nama + " | " + data.tanggal,
         });
@@ -299,7 +300,7 @@ module.exports = async (req, res) => {
         }
         await tulisLog(sb, {
           masjidId,
-          pengurusId: ketua ? ketua.id : null,
+          pengurusId: saya.id,
           aksi: "Mengubah kajian",
           detail: "kajian | " + data.judul + " | " + data.tanggal + " | " + data.status,
         });
@@ -313,7 +314,6 @@ module.exports = async (req, res) => {
     if (req.method === "DELETE") {
       if (!hanyaMethod(req, res, ["DELETE"])) return;
       const body = await bacaJson(req);
-      const ketua = await getKetua(sb, masjidId);
       if (!body.id || typeof body.id !== "string") {
         throw salahInput("id wajib diisi");
       }
@@ -323,7 +323,7 @@ module.exports = async (req, res) => {
         if (error) throw error;
         await tulisLog(sb, {
           masjidId,
-          pengurusId: ketua ? ketua.id : null,
+          pengurusId: saya.id,
           aksi: "Menghapus event",
           detail: "event | " + asal.nama + " | " + asal.tanggal,
         });
@@ -336,7 +336,7 @@ module.exports = async (req, res) => {
         if (error) throw error;
         await tulisLog(sb, {
           masjidId,
-          pengurusId: ketua ? ketua.id : null,
+          pengurusId: saya.id,
           aksi: "Menghapus kajian",
           detail: "kajian | " + asal.judul + " | " + asal.tanggal,
         });

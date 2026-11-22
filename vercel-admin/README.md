@@ -43,6 +43,7 @@ vercel-admin/
 | --- | --- |
 | `SUPABASE_URL` | URL proyek Supabase, mis. `https://rxslkuavzquhfqpycthb.supabase.co` |
 | `SUPABASE_SERVICE_ROLE_KEY` | Service role key proyek (Settings → API Keys). **Rahasia.** Jangan pernah menaruhnya di kode, di `public/`, atau di repo. |
+| `ADMIN_SESSION_SECRET` | Rahasia penanda sesi login (string acak panjang, mis. hasil `openssl rand -hex 32`). **Rahasia.** Tanpa ini semua endpoint auth menolak login. Cara set: Vercel Dashboard → proyek → Settings → Environment Variables (Production + Preview), atau `vercel env add ADMIN_SESSION_SECRET production`. |
 
 API memakai service role key (melewati RLS) karena ini backend dashboard,
 bukan klien browser. Frontend (`public/index.html`) tidak memegang kunci
@@ -88,13 +89,13 @@ kategori dari `GET /api/kas`.
 | Endpoint | Tabel | Keterangan |
 | --- | --- | --- |
 | `GET /api/pengumuman` | `pengumuman`, `pengurus` | Semua pengumuman (+ nama/peran pengirim). `?status=menunggu\|tayang\|draft\|selesai`. |
-| `POST /api/pengumuman` | `pengumuman`, `pengurus`, `log_aktivitas` | Buat pengumuman dari dashboard, langsung `tayang` sebagai ketua (lihat deviasi 18). Body `{ isi (wajib), jenis (opsional, default "Pengumuman") }`; isi kosong 400, jenis > 100 karakter 400, tanpa ketua 409. Kembalikan 201 `{ pengumuman }`. |
+| `POST /api/pengumuman` | `pengumuman`, `pengurus`, `log_aktivitas` | Buat pengumuman dari dashboard, langsung `tayang` (hanya ketua yang boleh; lihat deviasi 18). Body `{ isi (wajib), jenis (opsional, default "Pengumuman") }`; isi kosong 400, jenis > 100 karakter 400. Kembalikan 201 `{ pengumuman }`. |
 | `PUT /api/pengumuman` | `pengumuman`, `pengurus`, `log_aktivitas` | Ubah pengumuman (lihat deviasi 19). Body `{ id (wajib), isi?, jenis? }`; setidaknya satu dari isi/jenis harus dikirim (400 bila tidak ada). Hanya status `menunggu`/`draft` (404 bila tidak ada, 409 bila `tayang`/`selesai`); isi kosong 400, jenis > 100 karakter 400. Kembalikan 200 `{ pengumuman }`. |
-| `POST /api/pengumuman/:id/setujui` | `pengumuman`, `pengurus`, `log_aktivitas` | `menunggu` → `tayang`; `disetujui_oleh` = ketua, `disetujui_pada` = now. Hanya status `menunggu` (409 bila bukan). |
+| `POST /api/pengumuman/:id/setujui` | `pengumuman`, `pengurus`, `log_aktivitas` | `menunggu` → `tayang`; `disetujui_oleh` = ketua yang login, `disetujui_pada` = now. Hanya status `menunggu` (409 bila bukan). |
 | `POST /api/pengumuman/:id/tolak` | `pengumuman`, `pengurus`, `log_aktivitas` | Lihat catatan “Tolak” di bawah. Hanya status `menunggu`. |
 | `POST /api/pengumuman/:id/akhiri` | `pengumuman`, `arsip`, `pengurus`, `log_aktivitas` | `tayang` → `selesai`; tulis baris arsip (judul = baris pertama isi, maks 200 karakter). Hanya status `tayang` (409 bila bukan). Kembalikan pengumuman + arsip. |
 | `GET /api/kas` | `kas_kategori`, `kas_transaksi`, `pengurus` | Kategori + transaksi (100 terakhir) + saldo per kategori. Saldo `null` bila kategori belum punya transaksi. |
-| `POST /api/kas` | `kas_transaksi`, `kas_kategori`, `pengurus`, `log_aktivitas` | Dashboard saja. Validasi: `jenis` masuk/keluar, `jumlah` angka ≥ 0, `kategori_id` ada, `keterangan` wajib. Pencatat harus ketua/bendahara (default: ketua). |
+| `POST /api/kas` | `kas_transaksi`, `kas_kategori`, `pengurus`, `log_aktivitas` | Dashboard saja. Validasi: `jenis` masuk/keluar, `jumlah` angka ≥ 0, `kategori_id` ada, `keterangan` wajib. Pencatat harus ketua/bendahara (default: pengurus yang login). |
 | `PUT /api/kas` | `kas_kategori`, `log_aktivitas` | Atur QRIS per kategori: `{kategori_id, qris_url}`. `qris_url` `null`/kosong = hapus QRIS; selain itu harus URL `https` yang valid (400 bila bukan). Kembalikan kategori yang diubah. |
 | `GET /api/serah-terima` | `serah_terima`, `kas_kategori`, `kas_transaksi`, `pengurus`, `masjid` | Daftar (tanggal terbaru dulu, maks 50). Tiap item berisi dari/ke (nama + peran), tanggal, catatan, `saldo_akhir` per kategori + total (dihitung dari transaksi dengan `tanggal <= tanggal` serah terima — saldo beku per tanggal), dan daftar pengurus saat ini. |
 | `POST /api/serah-terima` | `serah_terima`, `pengurus`, `log_aktivitas` | Catat serah terima: `{dari_pengurus_id, ke_pengurus_id, catatan?, tanggal?}` (tanggal default hari ini WIB). Validasi: kedua pengurus ada untuk masjid ini, dari ≠ ke, **dari harus ketua** (matriks izin spek). Kembalikan baris yang dibuat + snapshot saldo yang sama seperti GET. |
@@ -107,7 +108,31 @@ kategori dari `GET /api/kas`.
 | `GET /api/pengurus` | `pengurus` | Daftar pengurus + nomor WhatsApp terdaftar. |
 | `GET /api/log` | `log_aktivitas`, `pengurus` | 50 terakhir (`?limit=` maks 100). |
 | `GET /api/arsip` | `arsip`, `event` | Arsip tersimpan (terbaru dulu) + event yang tanggalnya sudah lewat (turunan bacaan dari tabel `event`, `asal: 'event'`; tidak ditulis ke tabel `arsip`). `?q=` cari judul/konten, `?jenis=pengumuman\|kajian\|event` (400 bila lain), `?limit=` maks 100. |
-| `GET /api/board` | `masjid`, `jadwal_settings`, `iqomah_durations`, `pengumuman`, `pengurus`, `kas_kategori`, `kas_transaksi`, `event`, `murotal_settings` | Paket tayang: hanya pengumuman `tayang`, ringkasan kas (bukan detail transaksi), QRIS, countdown event, murotal. Baca-saja. |
+| `GET /api/board` | `masjid`, `jadwal_settings`, `iqomah_durations`, `pengumuman`, `pengurus`, `kas_kategori`, `kas_transaksi`, `event`, `murotal_settings` | Paket tayang: hanya pengumuman `tayang`, ringkasan kas (bukan detail transaksi), QRIS, countdown event, murotal. Baca-saja. **Tetap publik tanpa login** — Board tidak disentuh login Admin. |
+| `GET /api/auth/pengurus` | `pengurus` | Publik (tanpa login): daftar `{id, nama, peran}` untuk dropdown login. Nama + peran pengurus bukan rahasia. |
+| `POST /api/auth/login` | `pengurus` | Body `{pengurus_id, pin}`. PIN benar → cookie `mihrab_sesi` (httpOnly, Secure, SameSite=Lax, 12 jam) + `{saya: {id, nama, peran}}`. PIN salah → 401 + `pin_gagal` +1; 5 gagal → kunci 15 menit (429). PIN belum diatur → 409. Tidak menulis log. |
+| `GET /api/auth/saya` | — | Butuh sesi → `{saya: {id, nama, peran}}`, atau 401. |
+| `POST /api/auth/logout` | — | Hapus cookie `mihrab_sesi` → `{ok: true}`. |
+| `POST /api/auth/ubah-pin` | `pengurus` | Butuh sesi (semua peran). Body `{pin_lama, pin_baru}`; PIN lama harus cocok (401), PIN baru tepat 6 digit angka (400). |
+| `POST /api/auth/reset-pin` | `pengurus` | Ketua saja. Body `{pengurus_id}` → `{pin_baru}` — PIN acak 6 digit yang hanya muncul sekali di respons ini; ketua yang menyampaikannya ke pengurus, tidak tersimpan sebagai teks di mana pun. |
+
+### Peran per layar & endpoint (login Admin, 22 Nov 2026)
+
+| Layar / endpoint | Ketua | Bendahara | Marbot |
+| --- | --- | --- | --- |
+| Beranda, Jadwal (lihat), Pratinjau Board, Ganti PIN | Ya | Ya | Ya |
+| Kas (lihat + catat + QRIS), Arsip + Log (lihat) | Ya | Ya | — |
+| Persetujuan, Event, Pengurus | Ya | — | — |
+| `GET /api/pengumuman`, `GET /api/jadwal`, `GET /api/board` | Ya | Ya | Ya |
+| `POST/PUT /api/pengumuman`, setujui/tolak/akhiri, serah terima, `PUT /api/jadwal`, `/api/event`, `/api/pengurus` | Ya | — | — |
+| `GET/POST/PUT /api/kas` | Ya | Ya | — |
+| `GET /api/log`, `GET /api/arsip` | Ya | Ya | — |
+
+Semua endpoint di atas (kecuali `/api/board` dan `/api/auth/pengurus` +
+`/api/auth/login`) menolak tanpa cookie sesi yang valid (401) atau peran
+yang salah (403). Log aktivitas kini mencatat id pengurus yang login,
+bukan selalu ketua. Peran pengawas ada di matriks spek tapi belum ada
+orangnya — belum dibuka akses endpoint untuknya.
 
 Setiap aksi tulis (setujui / tolak / akhiri tayang / tambah & ubah
 pengumuman / tambah kas / ubah jadwal / ubah QRIS / serah terima /
@@ -231,20 +256,62 @@ bagian yang terikat data mengikuti skema.
     dari Admin.
 18. **Buat pengumuman dari dashboard langsung tayang sebagai ketua.**
     `POST /api/pengumuman` mengikuti preseden spek backend §4.3
-    (kiriman WhatsApp dari ketua auto-tayang): dashboard hanya
-    dioperasikan ketua, jadi `pengirim_id` = `disetujui_oleh` =
-    ketua dan status langsung `tayang` tanpa antrean persetujuan.
+    (kiriman WhatsApp dari ketua auto-tayang): hanya ketua yang boleh
+    membuat pengumuman dari dashboard, jadi `pengirim_id` =
+    `disetujui_oleh` = ketua yang login dan status langsung `tayang`
+    tanpa antrean persetujuan.
 19. **Hanya pengumuman `menunggu`/`draft` yang bisa diubah.** `PUT
     /api/pengumuman` menolak status `tayang`/`selesai` (409): yang
     tayang harus diakhiri dulu lewat "Akhiri tayang", yang selesai
     sudah masuk arsip. Tombol "Ubah" di layar Persetujuan hanya tampil
     pada item `menunggu`/`draft`; klik "Ubah" mengubah kartu item
     menjadi form edit inline (textarea + select jenis + Simpan/Batal).
+20. **Login Admin pakai nama + PIN 6 digit, bukan email.** Pengurus tidak
+    punya email tercatat dan nomor WA dipakai bersama, jadi login memilih
+    nama pengurus lalu PIN. PIN disimpan sebagai hash scrypt + salt
+    (kolom `pin_hash`/`pin_salt` di `pengurus`, migrasi
+    `docs/migrations/002-pin-pengurus.sql` — BELUM diterapkan, lihat
+    bagian "Yang belum dilakukan (login Admin)" di bawah). Sesi 12 jam
+    via cookie `mihrab_sesi` (HMAC-SHA256, secret
+    `ADMIN_SESSION_SECRET`).
+21. **Semua endpoint Admin (kecuali `/api/board`) butuh sesi login.**
+    `GET /api/pengumuman`, `GET /api/jadwal`, `GET /api/board` boleh
+    semua peran yang login; tulis pengumuman, setujui/tolak/akhiri,
+    serah terima, ubah jadwal, event, dan pengurus hanya ketua;
+    kas + log + arsip ketua + bendahara. Bila ragu, dipilih yang
+    lebih ketat (ketua saja). Frontend hanya mengambil endpoint yang
+    boleh dibaca peran yang login (lihat `muatSemua()`).
+22. **Log aktivitas mencatat pengurus yang login.** Sebelum ada login,
+    semua log ditulis atas nama ketua (`getKetua`). Kini `tulisLog`
+    memakai id dari token sesi. Pengecualian: serah terima — kolom
+    `dari_pengurus` tetap harus ketua (aturan bisnis), tapi aktor
+    log-nya adalah ketua yang login.
+23. **Vercel SSO masih menyala.** Login aplikasi di atas belum menggantikan
+    SSO Vercel; SSO dimatikan hanya setelah login terverifikasi live
+    (lihat "Yang belum dilakukan (login Admin)"). Sementara itu pengurus
+    tetap butuh akun Vercel untuk membuka Admin.
+
+## Yang belum dilakukan (login Admin — langkah parent setelah build)
+
+- Terapkan migrasi `docs/migrations/002-pin-pengurus.sql` lewat SQL
+  Editor Supabase (kolom `pin_hash`, `pin_salt`, `pin_gagal`,
+  `pin_terkunci_sampai` di tabel `pengurus`). File skema
+  `docs/supabase-schema.sql` sudah memuat keempat kolom untuk setup baru.
+- Set `ADMIN_SESSION_SECRET` di Vercel (Production + Preview) — nilai
+  acak panjang, jangan pernah dimasukkan ke repo.
+- Buat PIN awal tiap pengurus dengan `node scripts/set-pin.js <pengurus_id> <pin-6-digit>`
+  (dari direktori `vercel-admin`, env `SUPABASE_URL` +
+  `SUPABASE_SERVICE_ROLE_KEY` diatur). Script hanya mencetak nama,
+  bukan PIN. Sampaikan PIN ke tiap pengurus lewat jalur yang aman.
+- Uji live: masuk sebagai tiap peran, pastikan layar + endpoint yang
+  dilarang memang 403/tertutup, lalu matikan Vercel Authentication
+  (SSO) di proyek Admin.
 
 ## Yang sudah diverifikasi (saat build, 22 Nov 2026)
 
-- `npm run check` — `node --check` lolos untuk 12 file `api/*`, 3 file
-  `lib/*`, dan script inline `public/index.html`.
+- `npm run check` — `node --check` lolos untuk 18 file `api/*`
+  (termasuk 6 file `api/auth/*`), 4 file `lib/*`, dan `scripts/set-pin.js`
+  (script inline `public/index.html` dicek terpisah, lihat bawah).
 - `npm install` berhasil (`@supabase/supabase-js` 2.119.2).
 - Fungsi murni `lib/prayer.js` diuji langsung: jadwal Kemenag Jakarta
   22 Nov 2026 (lihat butir 4 di atas) dan tanggal Hijriyah pada

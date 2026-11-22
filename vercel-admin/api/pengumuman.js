@@ -11,8 +11,9 @@
 // Tabel: pengumuman (+ pengurus untuk nama/peran/nomor pengirim), log_aktivitas.
 "use strict";
 
-const { supabase, getMasjidId, getKetua, getPengurusMap, tulisLog } = require("../lib/supabase");
+const { supabase, getMasjidId, getPengurusMap, tulisLog } = require("../lib/supabase");
 const { ok, dibuat, gagal, hanyaMethod, bacaJson, salahInput, konflik } = require("../lib/http");
+const { butuhAuth } = require("../lib/auth");
 
 const STATUS_VALID = ["draft", "menunggu", "tayang", "selesai"];
 
@@ -44,15 +45,12 @@ function bentukPengumuman(p, pengurusMap) {
   };
 }
 
-async function buatPengumuman(req, res, sb, masjidId) {
+async function buatPengumuman(req, res, sb, masjidId, saya) {
   const body = await bacaJson(req);
   const isi = String((body && body.isi) || "").trim();
   if (!isi) throw salahInput("Isi pengumuman wajib diisi");
   var jenis = String((body && body.jenis) || "").trim() || "Pengumuman";
   if (jenis.length > 100) throw salahInput("Jenis terlalu panjang (maks 100 karakter)");
-
-  const ketua = await getKetua(sb, masjidId);
-  if (!ketua) throw konflik("Belum ada pengurus dengan peran ketua di database");
 
   const sekarang = new Date().toISOString();
   const { data, error } = await sb
@@ -62,9 +60,9 @@ async function buatPengumuman(req, res, sb, masjidId) {
       isi,
       jenis,
       sumber: "dashboard",
-      pengirim_id: ketua.id,
+      pengirim_id: saya.id,
       status: "tayang",
-      disetujui_oleh: ketua.id,
+      disetujui_oleh: saya.id,
       disetujui_pada: sekarang,
     })
     .select("id, isi, jenis, status, sumber, pengirim_id, disetujui_oleh, disetujui_pada, created_at")
@@ -73,7 +71,7 @@ async function buatPengumuman(req, res, sb, masjidId) {
 
   await tulisLog(sb, {
     masjidId,
-    pengurusId: ketua.id,
+    pengurusId: saya.id,
     aksi: "Menambah pengumuman",
     detail: jenis + ': "' + judulDariIsi(isi) + '" — dibuat dari dashboard, langsung tayang di Board',
   });
@@ -82,7 +80,7 @@ async function buatPengumuman(req, res, sb, masjidId) {
   dibuat(res, { pengumuman: bentukPengumuman(data, pengurusMap) });
 }
 
-async function ubahPengumuman(req, res, sb, masjidId) {
+async function ubahPengumuman(req, res, sb, masjidId, saya) {
   const body = await bacaJson(req);
   const id = String((body && body.id) || "").trim();
   if (!id) throw salahInput("ID pengumuman wajib diisi");
@@ -117,9 +115,6 @@ async function ubahPengumuman(req, res, sb, masjidId) {
     );
   }
 
-  const ketua = await getKetua(sb, masjidId);
-  if (!ketua) throw konflik("Belum ada pengurus dengan peran ketua di database");
-
   const { data, error } = await sb
     .from("pengumuman")
     .update(patch)
@@ -130,7 +125,7 @@ async function ubahPengumuman(req, res, sb, masjidId) {
 
   await tulisLog(sb, {
     masjidId,
-    pengurusId: ketua.id,
+    pengurusId: saya.id,
     aksi: "Mengubah pengumuman",
     detail: data.jenis + ': "' + judulDariIsi(data.isi) + '" — diubah dari dashboard',
   });
@@ -144,8 +139,16 @@ module.exports = async (req, res) => {
     if (!hanyaMethod(req, res, ["GET", "POST", "PUT"])) return;
     const sb = supabase();
     const masjidId = await getMasjidId(sb);
-    if (req.method === "POST") return buatPengumuman(req, res, sb, masjidId);
-    if (req.method === "PUT") return ubahPengumuman(req, res, sb, masjidId);
+    // Peran: baca = semua yang login; tulis = ketua saja (matriks izin spek).
+    if (req.method === "POST") {
+      const saya = butuhAuth(req, res, ["ketua"]);
+      return buatPengumuman(req, res, sb, masjidId, saya);
+    }
+    if (req.method === "PUT") {
+      const saya = butuhAuth(req, res, ["ketua"]);
+      return ubahPengumuman(req, res, sb, masjidId, saya);
+    }
+    butuhAuth(req, res);
 
     let q = sb
       .from("pengumuman")

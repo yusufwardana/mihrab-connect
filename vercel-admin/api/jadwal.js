@@ -16,8 +16,9 @@
 //        murotal_settings, pengurus, log_aktivitas.
 "use strict";
 
-const { supabase, getMasjid, getKetua, tulisLog } = require("../lib/supabase");
+const { supabase, getMasjid, tulisLog } = require("../lib/supabase");
 const { ok, gagal, hanyaMethod, bacaJson, salahInput } = require("../lib/http");
+const { butuhAuth } = require("../lib/auth");
 const { hariIniWIB, formatTanggalId, hitungJadwalSholat, tanggalHijriyah } = require("../lib/prayer");
 
 const WAKTU_IQOMAH = ["subuh", "dzuhur", "ashar", "maghrib", "isya", "jumat", "tarawih"];
@@ -91,16 +92,18 @@ module.exports = async (req, res) => {
 
     if (req.method === "GET") {
       if (!hanyaMethod(req, res, ["GET"])) return;
+      butuhAuth(req, res);
       ok(res, await getJadwal(sb));
       return;
     }
 
     if (req.method === "PUT") {
       if (!hanyaMethod(req, res, ["PUT"])) return;
+      // Ubah jadwal: ketua saja (matriks izin spek).
+      const saya = butuhAuth(req, res, ["ketua"]);
       const body = await bacaJson(req);
       const masjid = await getMasjid(sb);
       const masjidId = masjid.id;
-      const ketua = await getKetua(sb, masjidId);
       const logs = [];
 
       if (body.koreksi_menit !== undefined) {
@@ -200,7 +203,7 @@ module.exports = async (req, res) => {
       }
 
       for (const l of logs) {
-        await tulisLog(sb, { masjidId, pengurusId: ketua ? ketua.id : null, aksi: l.aksi, detail: l.detail });
+        await tulisLog(sb, { masjidId, pengurusId: saya.id, aksi: l.aksi, detail: l.detail });
       }
 
       ok(res, await getJadwal(sb));

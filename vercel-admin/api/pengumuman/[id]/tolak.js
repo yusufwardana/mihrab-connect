@@ -12,12 +12,14 @@
 // Tabel: pengumuman, pengurus, log_aktivitas.
 "use strict";
 
-const { supabase, getMasjidId, getKetua, tulisLog } = require("../../../lib/supabase");
+const { supabase, getMasjidId, tulisLog } = require("../../../lib/supabase");
 const { ok, gagal, hanyaMethod, tidakKetemu, konflik } = require("../../../lib/http");
+const { butuhAuth } = require("../../../lib/auth");
 
 module.exports = async (req, res) => {
   try {
     if (!hanyaMethod(req, res, ["POST"])) return;
+    const saya = butuhAuth(req, res, ["ketua"]);
     const sb = supabase();
     const masjidId = await getMasjidId(sb);
     const id = req.query && req.query.id;
@@ -35,9 +37,6 @@ module.exports = async (req, res) => {
       throw konflik("Hanya pengumuman berstatus menunggu yang bisa ditolak (saat ini: " + p.status + ")");
     }
 
-    const ketua = await getKetua(sb, masjidId);
-    if (!ketua) throw konflik("Belum ada pengurus dengan peran ketua di database");
-
     const { data: updated, error: updErr } = await sb
       .from("pengumuman")
       .update({ status: "selesai" })
@@ -48,7 +47,7 @@ module.exports = async (req, res) => {
 
     await tulisLog(sb, {
       masjidId,
-      pengurusId: ketua.id,
+      pengurusId: saya.id,
       aksi: "Menolak kiriman",
       detail:
         "pengumuman:" + id + " | " + (p.jenis || "pengumuman") + ': "' +
