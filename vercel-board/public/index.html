@@ -165,7 +165,7 @@
         margin-top:.2em; font-size:1.08em; color:var(--gold-soft);
         font-weight:600; white-space:nowrap;
       }
-      .date-hijri small{ display:block; font-size:.68em; color:var(--warm-dim); font-weight:500; letter-spacing:.05em; margin-top:.15em; }
+      .date-hijri small{ display:block; font-size:.78em; color:var(--warm-dim); font-weight:500; letter-spacing:.05em; margin-top:.15em; }
 
       /* --- Strip status --- */
       .b-status{
@@ -215,7 +215,7 @@
         min-height:0;
       }
       .sched-row .nm{ font-size:1.28em; font-weight:600; color:var(--warm-dim); display:flex; align-items:baseline; gap:.55em; }
-      .sched-row .iq{ font-size:.72em; font-weight:600; color:var(--warm-dim); opacity:.85; letter-spacing:.03em; }
+      .sched-row .iq{ font-size:.82em; font-weight:600; color:var(--warm-dim); opacity:.85; letter-spacing:.03em; }
       .sched-row .tm{
         font-size:1.62em; font-weight:800; font-variant-numeric:tabular-nums; color:var(--warm);
       }
@@ -418,14 +418,16 @@
         .scope-grid{ grid-template-columns:1fr; }
       }
 
-      /* ============ TV 960x540: tanpa scroll, di dalam margin overscan 5% ============ */
+      /* ============ TV: mode fullscreen (tanpa scroll). Font-size diskala mengikuti
+         lebar layar — dulu 7.8px tetap (disetel untuk TV 960x540) sehingga di TV/laptop
+         besar semua teks mengecil ~setengah. ============ */
       body{ background:#04120D; }
       .page{
         height:100dvh; min-height:0; overflow:hidden;
         padding:27px 48px; gap:12px;
       }
       .stage-wrap{ flex:1 1 auto; min-height:0; display:flex; }
-      .board{ height:100%; font-size:7.8px; border-radius:10px; }
+      .board{ height:100%; font-size:clamp(7.8px, 0.81vw, 17px); border-radius:10px; }
       .board::before{ inset:6px; }
       .brand-note,
       .sched-note{ display:none; }
