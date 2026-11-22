@@ -58,6 +58,14 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
 - Ketua BOLEH mencatat kas lewat dashboard saja (tidak lewat WhatsApp).
 - Bendahara BOLEH mengirim kiriman WhatsApp bila nomornya terdaftar;
   kiriman tetap menunggu persetujuan ketua sebelum tayang.
+- Penyedia WhatsApp dikunci 22 Nov 2026: Meta Cloud API langsung
+  (resmi; Rp0 di volume pilot). Semua kiriman WhatsApp masuk
+  "menunggu" dan disetujui ketua dari dashboard — karena Sarino,
+  Gondes, dan Paijo memakai satu nomor yang sama (083871374743),
+  peran pengirim tidak bisa dibedakan dari nomor, jadi aturan spek
+  "auto-tayang bila pengirim ketua" tidak berlaku untuk kiriman WA.
+  Buat pengumuman dari dashboard tetap langsung tayang (pembuatnya
+  jelas ketua).
 
 ## Status
 
@@ -155,4 +163,4 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   uji Rp1.000 dihapus.
 - Stack Admin dikunci 22 Nov 2026: Vercel + Supabase (tier gratis),
   hosting ikut Vercel.
-- Keputusan terbuka: penyedia WhatsApp, brand final.
+- Keputusan terbuka: brand final.
