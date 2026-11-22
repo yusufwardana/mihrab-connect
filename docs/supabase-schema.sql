@@ -1,6 +1,9 @@
--- MIHRAB CONNECT — Skema Supabase (Postgres)
+-- MIHRAB CONNECT — Skema Supabase (Postgres) — v2
 -- Sumber: docs/backend-spec.md (model data, alur persetujuan, matriks izin).
 -- Cara pakai: jalankan di Supabase SQL Editor, satu kali, pada proyek baru.
+-- Aman diulang: semua pernyataan idempotent (IF NOT EXISTS / IF EXISTS /
+-- guard NOT EXISTS pada seed). v2: policy ditulis eksplisit per tabel —
+-- blok DO/FOREACH di v1 gagal di SQL Editor (error 42601).
 -- Semua data di bawah ini CONTOH (Masjid Contoh An-Nur) — ganti dengan data
 -- Masjid Al Furqon saat pilot. Jumlah kas sengaja tidak di-seed (tampil "Rp —").
 --
@@ -180,51 +183,93 @@ alter table serah_terima enable row level security;
 
 -- Policy starter: semua tabel boleh dibaca/ditulis oleh pengguna login.
 -- Kencangkan per-peran sebelum pilot dengan jamaah nyata.
-do $$
-declare t text;
-begin
-  foreach t in array['masjid','pengurus','jadwal_settings','iqomah_durations',
-    'jadwal_petugas','kajian','pengumuman','kas_kategori','kas_transaksi',
-    'event','murotal_settings','arsip','log_aktivitas','serah_terima']
-  loop
-    execute format('create policy "starter_authenticated_all" on %I
-      for all to authenticated using (true) with check (true)', t);
-  end loop;
-end $$;
+drop policy if exists starter_authenticated_all on masjid;
+create policy starter_authenticated_all on masjid
+  for all to authenticated using (true) with check (true);
+drop policy if exists starter_authenticated_all on pengurus;
+create policy starter_authenticated_all on pengurus
+  for all to authenticated using (true) with check (true);
+drop policy if exists starter_authenticated_all on jadwal_settings;
+create policy starter_authenticated_all on jadwal_settings
+  for all to authenticated using (true) with check (true);
+drop policy if exists starter_authenticated_all on iqomah_durations;
+create policy starter_authenticated_all on iqomah_durations
+  for all to authenticated using (true) with check (true);
+drop policy if exists starter_authenticated_all on jadwal_petugas;
+create policy starter_authenticated_all on jadwal_petugas
+  for all to authenticated using (true) with check (true);
+drop policy if exists starter_authenticated_all on kajian;
+create policy starter_authenticated_all on kajian
+  for all to authenticated using (true) with check (true);
+drop policy if exists starter_authenticated_all on pengumuman;
+create policy starter_authenticated_all on pengumuman
+  for all to authenticated using (true) with check (true);
+drop policy if exists starter_authenticated_all on kas_kategori;
+create policy starter_authenticated_all on kas_kategori
+  for all to authenticated using (true) with check (true);
+drop policy if exists starter_authenticated_all on kas_transaksi;
+create policy starter_authenticated_all on kas_transaksi
+  for all to authenticated using (true) with check (true);
+drop policy if exists starter_authenticated_all on event;
+create policy starter_authenticated_all on event
+  for all to authenticated using (true) with check (true);
+drop policy if exists starter_authenticated_all on murotal_settings;
+create policy starter_authenticated_all on murotal_settings
+  for all to authenticated using (true) with check (true);
+drop policy if exists starter_authenticated_all on arsip;
+create policy starter_authenticated_all on arsip
+  for all to authenticated using (true) with check (true);
+drop policy if exists starter_authenticated_all on log_aktivitas;
+create policy starter_authenticated_all on log_aktivitas
+  for all to authenticated using (true) with check (true);
+drop policy if exists starter_authenticated_all on serah_terima;
+create policy starter_authenticated_all on serah_terima
+  for all to authenticated using (true) with check (true);
 
--- ============ 13. Data contoh (sekali saja) ============
-insert into masjid (nama, alamat) values
-  ('Masjid Contoh An-Nur', 'Kelurahan Contoh, Kota Contoh')
-on conflict do nothing;
+-- ============ 13. Data contoh (sekali saja; guard NOT EXISTS) ============
+insert into masjid (nama, alamat)
+select 'Masjid Contoh An-Nur', 'Kelurahan Contoh, Kota Contoh'
+where not exists (select 1 from masjid where nama = 'Masjid Contoh An-Nur');
 
--- id masjid contoh dipakai di bawah ini
--- (jalankan select id from masjid untuk melihatnya; seed berikut memakai subquery)
 insert into pengurus (masjid_id, nama, peran, no_whatsapp, whatsapp_terdaftar)
-select id, 'Ketua Contoh', 'ketua', null, false from masjid where nama = 'Masjid Contoh An-Nur'
-union all
-select id, 'Bendahara Contoh', 'bendahara', null, true from masjid where nama = 'Masjid Contoh An-Nur'
-union all
-select id, 'Marbot Contoh', 'marbot', null, true from masjid where nama = 'Masjid Contoh An-Nur';
+select m.id, v.nama, v.peran, null, v.terdaftar
+from masjid m
+cross join (values
+  ('Ketua Contoh', 'ketua', false),
+  ('Bendahara Contoh', 'bendahara', true),
+  ('Marbot Contoh', 'marbot', true)
+) as v(nama, peran, terdaftar)
+where m.nama = 'Masjid Contoh An-Nur'
+  and not exists (select 1 from pengurus);
 
 insert into jadwal_settings (masjid_id, metode, koreksi_menit, offset_hijriyah)
-select id, 'Kemenag', 0, 0 from masjid where nama = 'Masjid Contoh An-Nur';
+select id, 'Kemenag', 0, 0 from masjid where nama = 'Masjid Contoh An-Nur'
+and not exists (select 1 from jadwal_settings);
 
 insert into iqomah_durations (masjid_id, waktu, durasi_menit)
-select id, w.waktu, w.durasi from masjid,
-  (values ('subuh',10),('dzuhur',10),('ashar',10),('maghrib',10),('isya',10),('jumat',0),('tarawih',15))
-  as w(waktu, durasi)
-where nama = 'Masjid Contoh An-Nur';
+select m.id, w.waktu, w.durasi from masjid m
+cross join (values
+  ('subuh',10),('dzuhur',10),('ashar',10),('maghrib',10),('isya',10),('jumat',0),('tarawih',15)
+) as w(waktu, durasi)
+where m.nama = 'Masjid Contoh An-Nur'
+  and not exists (select 1 from iqomah_durations);
 
 insert into kas_kategori (masjid_id, nama)
-select id, k.nama from masjid,
-  (values ('Infaq umum'),('Pembangunan'),('TPQ')) as k(nama)
-where nama = 'Masjid Contoh An-Nur';
+select m.id, k.nama from masjid m
+cross join (values ('Infaq umum'),('Pembangunan'),('TPQ')) as k(nama)
+where m.nama = 'Masjid Contoh An-Nur'
+  and not exists (select 1 from kas_kategori);
 
 insert into murotal_settings (masjid_id, surah, qari, durasi_menit, volume, aktif)
 select id, 'Ar-Rahman', 'Contoh Qari', 10, 70, true
-from masjid where nama = 'Masjid Contoh An-Nur';
+from masjid where nama = 'Masjid Contoh An-Nur'
+and not exists (select 1 from murotal_settings);
 
 insert into event (masjid_id, nama, tanggal)
-select id, 'Ramadan 1448 H', date '2027-02-18' from masjid where nama = 'Masjid Contoh An-Nur'
-union all
-select id, 'Idul Fitri 1448 H', date '2027-03-20' from masjid where nama = 'Masjid Contoh An-Nur';
+select m.id, e.nama, e.tanggal from masjid m
+cross join (values
+  ('Ramadan 1448 H', date '2027-02-18'),
+  ('Idul Fitri 1448 H', date '2027-03-20')
+) as e(nama, tanggal)
+where m.nama = 'Masjid Contoh An-Nur'
+  and not exists (select 1 from event);
