@@ -21,18 +21,20 @@ vercel-admin/
 ├── lib/
 │   ├── supabase.js       # klien service-role + helper masjid/ketua/log
 │   ├── http.js           # helper respons & baca body JSON
+│   ├── auth.js           # PIN scrypt + token sesi HMAC + butuhAuth
 │   └── prayer.js         # hitung jadwal sholat Kemenag + tanggal Hijriyah
-├── api/
+├── api/                              # 11 Serverless Functions (batas Hobby: 12 — lihat deviasi 24)
+│   ├── auth.js                       # dispatcher /api/auth?aksi=pengurus|login|saya|logout|ubah-pin|reset-pin
 │   ├── pengumuman.js                 # GET/POST/PUT /api/pengumuman
-│   ├── pengumuman/[id]/setujui.js   # POST /api/pengumuman/:id/setujui
-│   ├── pengumuman/[id]/tolak.js     # POST /api/pengumuman/:id/tolak
+│   ├── pengumuman/[id]/aksi.js       # dispatcher POST /api/pengumuman/:id/setujui|tolak|akhiri
 │   ├── kas.js                        # GET/POST/PUT /api/kas
 │   ├── serah-terima.js               # GET/POST /api/serah-terima
 │   ├── event.js                      # GET/POST/PUT/DELETE /api/event
 │   ├── jadwal.js                     # GET/PUT /api/jadwal
 │   ├── pengurus.js                   # GET /api/pengurus
 │   ├── log.js                        # GET /api/log
-│   └── board.js                      # GET /api/board (paket tayang)
+│   ├── arsip.js                      # GET /api/arsip
+│   └── board.js                      # GET /api/board (paket tayang, publik)
 └── public/
     └── index.html        # Admin (7 layar), data dari /api/*, tanpa data contoh
 ```
@@ -158,7 +160,7 @@ bagian yang terikat data mengikuti skema.
    alter table pengumuman add constraint pengumuman_status_check
      check (status in ('draft','menunggu','tayang','selesai','ditolak'));
    ```
-   (lalu ubah `api/pengumuman/[id]/tolak.js` memakai `'ditolak'`).
+   (lalu ubah `api/pengumuman/[id]/aksi.js` (aksi `tolak`) memakai `'ditolak'`).
 2. **Pengumuman tidak punya kolom judul/poster/prioritas.** Tabel hanya
    punya `isi`, `jenis`, `sumber`, `pengirim_id`. Frontend memakai judul
    turunan = baris pertama `isi` (maks 80 karakter); “Prioritas tampil”
@@ -290,6 +292,29 @@ bagian yang terikat data mengikuti skema.
     SSO Vercel; SSO dimatikan hanya setelah login terverifikasi live
     (lihat "Yang belum dilakukan (login Admin)"). Sementara itu pengurus
     tetap butuh akun Vercel untuk membuka Admin.
+24. **Endpoint digabung karena batas 12 Serverless Functions (Hobby).**
+    Deploy Admin gagal dengan `exceeded_serverless_functions_per_deployment`
+    karena ada 18 file `api/*.js` (batas Hobby: 12 function per
+    deployment). Enam endpoint auth digabung ke satu function
+    `api/auth.js` (dispatcher lewat query `aksi`) dan tiga aksi
+    pengumuman digabung ke `api/pengumuman/[id]/aksi.js` (dispatcher
+    lewat query `aksi`, id dari path). Rewrite di `vercel.json`
+    (`/api/auth/:aksi` → `/api/auth?aksi=:aksi` dan
+    `/api/pengumuman/:id/:aksi` →
+    `/api/pengumuman/:id/aksi?aksi=:aksi`, sebelum fallback SPA)
+    menjaga URL yang dipanggil frontend TETAP SAMA; validasi, status
+    HTTP, pesan error, cookie/sesi, dan peran per aksi sama persis
+    seperti file asalnya. Vercel menghitung SEMUA file `.js` di bawah
+    `api/` sebagai function, walau tidak di-route — jadi file lama
+    (`api/auth/*.js`, `setujui.js`, `tolak.js`, `akhiri.js`) DIHAPUS,
+    bukan dibiarkan. Daftar function akhir (11): `api/auth.js`,
+    `api/pengumuman.js`, `api/pengumuman/[id]/aksi.js`, `api/kas.js`,
+    `api/serah-terima.js`, `api/event.js`, `api/jadwal.js`,
+    `api/pengurus.js`, `api/log.js`, `api/arsip.js`, `api/board.js`.
+    **Jangan tambah file `api/` baru tanpa menggabungkan — total
+    harus ≤ 12.** Bila butuh endpoint baru, masukkan ke dispatcher
+    yang sudah ada (auth / pengumuman / event) atau buat dispatcher
+    baru dengan rewrite yang sama polanya.
 
 ## Yang belum dilakukan (login Admin — langkah parent setelah build)
 
@@ -309,8 +334,9 @@ bagian yang terikat data mengikuti skema.
 
 ## Yang sudah diverifikasi (saat build, 22 Nov 2026)
 
-- `npm run check` — `node --check` lolos untuk 18 file `api/*`
-  (termasuk 6 file `api/auth/*`), 4 file `lib/*`, dan `scripts/set-pin.js`
+- `npm run check` — `node --check` lolos untuk 11 file `api/*`
+  (`api/auth.js` + `api/pengumuman/[id]/aksi.js` sebagai dispatcher
+  penggabungan, lihat deviasi 24), 4 file `lib/*`, dan `scripts/set-pin.js`
   (script inline `public/index.html` dicek terpisah, lihat bawah).
 - `npm install` berhasil (`@supabase/supabase-js` 2.119.2).
 - Fungsi murni `lib/prayer.js` diuji langsung: jadwal Kemenag Jakarta

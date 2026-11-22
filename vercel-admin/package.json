@@ -9,7 +9,7 @@
   "name": "mihrab-connect-admin",
   "private": true,
   "scripts": {
-    "check": "node --check api/pengumuman.js && node --check \"api/pengumuman/[id]/setujui.js\" && node --check \"api/pengumuman/[id]/tolak.js\" && node --check \"api/pengumuman/[id]/akhiri.js\" && node --check api/kas.js && node --check api/serah-terima.js && node --check api/event.js && node --check api/jadwal.js && node --check api/pengurus.js && node --check api/log.js && node --check api/arsip.js && node --check api/board.js && node --check api/auth/pengurus.js && node --check api/auth/login.js && node --check api/auth/saya.js && node --check api/auth/logout.js && node --check api/auth/ubah-pin.js && node --check api/auth/reset-pin.js && node --check lib/supabase.js && node --check lib/http.js && node --check lib/prayer.js && node --check lib/auth.js && node --check scripts/set-pin.js"
+    "check": "node --check api/pengumuman.js && node --check \"api/pengumuman/[id]/aksi.js\" && node --check api/kas.js && node --check api/serah-terima.js && node --check api/event.js && node --check api/jadwal.js && node --check api/pengurus.js && node --check api/log.js && node --check api/arsip.js && node --check api/board.js && node --check api/auth.js && node --check lib/supabase.js && node --check lib/http.js && node --check lib/prayer.js && node --check lib/auth.js && node --check scripts/set-pin.js"
   },
   "version": "0.1.0"
 }

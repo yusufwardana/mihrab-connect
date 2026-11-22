@@ -174,7 +174,12 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   (kolom pin_hash, pin_salt, pin_gagal, pin_terkunci_sampai);
   ADMIN_SESSION_SECRET sudah diset di Vercel (Production + Preview).
   PIN awal 3 pengurus dibuat setelah deploy; login Vercel (SSO)
-  dimatikan HANYA setelah login baru terverifikasi live.
+  dimatikan HANYA setelah login baru terverifikasi live. Deploy
+  pertama (commit e5cfacc0) GAGAL karena batas 12 function di paket
+  Hobby Vercel (18 file api/) — diperbaiki dengan menggabungkan
+  endpoint jadi 11 function (dispatcher api/auth.js + api/pengumuman/
+  [id]/aksi.js + rewrite di vercel.json), tanpa mengubah URL maupun
+  peran. Jangan tambah file api/ baru tanpa menggabungkan.
 - Board live di Vercel 22 Nov 2026: proyek `mihrab-connect-board`
   (team 0x's projects, git-linked ke repo ini, root `vercel-board`),
   https://mihrab-connect-board-0xs-projects-798a67b4.vercel.app —

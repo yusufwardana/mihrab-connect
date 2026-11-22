@@ -1,1 +1,1 @@
-{"$schema":"https://openapi.vercel.sh/vercel.json","rewrites":[{"destination":"/index.html","source":"/((?!api/).*)"}]}
+{"$schema":"https://openapi.vercel.sh/vercel.json","rewrites":[{"destination":"/api/auth?aksi=:aksi","source":"/api/auth/:aksi"},{"destination":"/api/pengumuman/:id/aksi?aksi=:aksi","source":"/api/pengumuman/:id/:aksi"},{"destination":"/index.html","source":"/((?!api/).*)"}]}
