@@ -79,7 +79,14 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   tercatat + masuk log. Perlu login Vercel untuk membuka (Vercel
   Authentication aktif). Migrasi `kas_kategori.created_at` diterapkan
   22 Nov 2026 (API butuh kolom itu untuk urutan).
-- Branding final menunggu penilaian konsultan KI.
+- Board live di Vercel 22 Nov 2026: proyek `mihrab-connect-board`
+  (team 0x's projects, git-linked ke repo ini, root `vercel-board`),
+  https://mihrab-connect-board-0xs-projects-798a67b4.vercel.app —
+  publik tanpa login (SSO protection dimatikan); data dari function
+  `/api/board` sendiri di proyek itu (bukan dari domain Admin, karena
+  Admin dilindungi login Vercel); panel simulasi dihapus, data dari
+  Supabase, poll 60 detik. Koordinat contoh Jakarta sudah diisi agar
+  jadwal tampil (ganti dengan koordinat Masjid Al Furqon saat pilot).
 - Stack Admin dikunci 22 Nov 2026: Vercel + Supabase (tier gratis),
   hosting ikut Vercel.
 - Keputusan terbuka: penyedia WhatsApp, brand final.
