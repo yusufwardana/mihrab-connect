@@ -23,7 +23,7 @@ vercel-admin/
 │   ├── http.js           # helper respons & baca body JSON
 │   └── prayer.js         # hitung jadwal sholat Kemenag + tanggal Hijriyah
 ├── api/
-│   ├── pengumuman.js                 # GET/POST /api/pengumuman
+│   ├── pengumuman.js                 # GET/POST/PUT /api/pengumuman
 │   ├── pengumuman/[id]/setujui.js   # POST /api/pengumuman/:id/setujui
 │   ├── pengumuman/[id]/tolak.js     # POST /api/pengumuman/:id/tolak
 │   ├── kas.js                        # GET/POST/PUT /api/kas
@@ -89,6 +89,7 @@ kategori dari `GET /api/kas`.
 | --- | --- | --- |
 | `GET /api/pengumuman` | `pengumuman`, `pengurus` | Semua pengumuman (+ nama/peran pengirim). `?status=menunggu\|tayang\|draft\|selesai`. |
 | `POST /api/pengumuman` | `pengumuman`, `pengurus`, `log_aktivitas` | Buat pengumuman dari dashboard, langsung `tayang` sebagai ketua (lihat deviasi 18). Body `{ isi (wajib), jenis (opsional, default "Pengumuman") }`; isi kosong 400, jenis > 100 karakter 400, tanpa ketua 409. Kembalikan 201 `{ pengumuman }`. |
+| `PUT /api/pengumuman` | `pengumuman`, `pengurus`, `log_aktivitas` | Ubah pengumuman (lihat deviasi 19). Body `{ id (wajib), isi?, jenis? }`; setidaknya satu dari isi/jenis harus dikirim (400 bila tidak ada). Hanya status `menunggu`/`draft` (404 bila tidak ada, 409 bila `tayang`/`selesai`); isi kosong 400, jenis > 100 karakter 400. Kembalikan 200 `{ pengumuman }`. |
 | `POST /api/pengumuman/:id/setujui` | `pengumuman`, `pengurus`, `log_aktivitas` | `menunggu` → `tayang`; `disetujui_oleh` = ketua, `disetujui_pada` = now. Hanya status `menunggu` (409 bila bukan). |
 | `POST /api/pengumuman/:id/tolak` | `pengumuman`, `pengurus`, `log_aktivitas` | Lihat catatan “Tolak” di bawah. Hanya status `menunggu`. |
 | `POST /api/pengumuman/:id/akhiri` | `pengumuman`, `arsip`, `pengurus`, `log_aktivitas` | `tayang` → `selesai`; tulis baris arsip (judul = baris pertama isi, maks 200 karakter). Hanya status `tayang` (409 bila bukan). Kembalikan pengumuman + arsip. |
@@ -108,9 +109,10 @@ kategori dari `GET /api/kas`.
 | `GET /api/arsip` | `arsip`, `event` | Arsip tersimpan (terbaru dulu) + event yang tanggalnya sudah lewat (turunan bacaan dari tabel `event`, `asal: 'event'`; tidak ditulis ke tabel `arsip`). `?q=` cari judul/konten, `?jenis=pengumuman\|kajian\|event` (400 bila lain), `?limit=` maks 100. |
 | `GET /api/board` | `masjid`, `jadwal_settings`, `iqomah_durations`, `pengumuman`, `pengurus`, `kas_kategori`, `kas_transaksi`, `event`, `murotal_settings` | Paket tayang: hanya pengumuman `tayang`, ringkasan kas (bukan detail transaksi), QRIS, countdown event, murotal. Baca-saja. |
 
-Setiap aksi tulis (setujui / tolak / akhiri tayang / tambah kas / ubah jadwal /
-ubah QRIS / serah terima / tambah-ubah-hapus event & kajian) menulis satu
-baris ke `log_aktivitas` (`sumber: "dashboard"`).
+Setiap aksi tulis (setujui / tolak / akhiri tayang / tambah & ubah
+pengumuman / tambah kas / ubah jadwal / ubah QRIS / serah terima /
+tambah-ubah-hapus event & kajian) menulis satu baris ke `log_aktivitas`
+(`sumber: "dashboard"`).
 
 ## Penyimpangan dari prototipe & skema (sengaja, dicatat di sini)
 
@@ -232,7 +234,12 @@ bagian yang terikat data mengikuti skema.
     (kiriman WhatsApp dari ketua auto-tayang): dashboard hanya
     dioperasikan ketua, jadi `pengirim_id` = `disetujui_oleh` =
     ketua dan status langsung `tayang` tanpa antrean persetujuan.
-    Edit pengumuman (PUT) belum dibangun — itu tindak lanjut.
+19. **Hanya pengumuman `menunggu`/`draft` yang bisa diubah.** `PUT
+    /api/pengumuman` menolak status `tayang`/`selesai` (409): yang
+    tayang harus diakhiri dulu lewat "Akhiri tayang", yang selesai
+    sudah masuk arsip. Tombol "Ubah" di layar Persetujuan hanya tampil
+    pada item `menunggu`/`draft`; klik "Ubah" mengubah kartu item
+    menjadi form edit inline (textarea + select jenis + Simpan/Batal).
 
 ## Yang sudah diverifikasi (saat build, 22 Nov 2026)
 

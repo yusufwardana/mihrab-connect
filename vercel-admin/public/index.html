@@ -927,6 +927,9 @@
         apiOk: {},
       };
       var slideIdx = 0, slideTimer = null;
+      /* ID pengumuman yang sedang diubah inline di layar Persetujuan
+         (null = tidak ada yang sedang diubah). */
+      var idEditPengumuman = null;
 
       var BULAN_PENDEK = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
       var BULAN_PANJANG = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
@@ -1196,7 +1199,13 @@
           if (p.status === "menunggu") {
             actions = "<div class='queue-actions'>" +
               "<button type='button' class='btn primary' data-setujui='" + esc(p.id) + "'>Setujui &amp; tayangkan</button>" +
-              "<button type='button' class='btn danger-ghost' data-tolak='" + esc(p.id) + "'>Tolak kiriman</button></div>";
+              "<button type='button' class='btn danger-ghost' data-tolak='" + esc(p.id) + "'>Tolak kiriman</button>" +
+              "<button type='button' class='btn ghost' data-ubah='" + esc(p.id) + "'>Ubah</button></div>";
+          }
+          if (p.status === "draft") {
+            // Draf hanya bisa diubah (belum masuk antrean persetujuan).
+            actions = "<div class='queue-actions'>" +
+              "<button type='button' class='btn ghost' data-ubah='" + esc(p.id) + "'>Ubah</button></div>";
           }
           if (p.status === "tayang") {
             actions = "<div class='queue-actions'>" +
@@ -1210,6 +1219,29 @@
           }
           if (p.status === "tayang" && !autoTayang) {
             note = "<div class='queue-note'>Sudah disetujui ketua — konten ini sekarang tampil di Board. Lihat di Pratinjau Board.</div>";
+          }
+          // Item 'tayang' dan 'selesai' sengaja TIDAK mendapat tombol Ubah:
+          // yang tayang harus diakhiri dulu lewat "Akhiri tayang",
+          // yang selesai sudah masuk arsip.
+          if (p.id === idEditPengumuman) {
+            var opsiJenis = ["Pengumuman", "Kegiatan", "Keuangan", "Berita duka", "Jadwal"].map(function (j) {
+              return "<option" + ((p.jenis || "Pengumuman") === j ? " selected" : "") + ">" + j + "</option>";
+            }).join("");
+            return "<article class='queue-item'>" +
+              "<div class='q-head'>" +
+                "<div class='avatar" + (pengirim.peran === "ketua" ? " gold" : "") + "' aria-hidden='true'>" + esc(inisial(nama)) + "</div>" +
+                "<div><div class='who'>" + esc(nama) + " · " + esc(peran) + "</div>" +
+                "<div class='meta'>via " + esc(p.sumber === "whatsapp" ? "WhatsApp" : "Dashboard") + " " + nomor + " · " + esc(formatWaktuWIB(p.created_at)) + "</div></div>" +
+                "<div class='badges'>" + (prioritas ? "<span class='badge prioritas'>Prioritas tampil</span>" : "") + badgeStatus(p) + "</div>" +
+              "</div>" +
+              "<div class='field'><label>Isi pengumuman</label>" +
+                "<textarea rows='4' data-ubah-isi required>" + esc(p.isi) + "</textarea></div>" +
+              "<div class='field'><label>Jenis</label>" +
+                "<select data-ubah-jenis>" + opsiJenis + "</select></div>" +
+              "<div class='queue-actions'>" +
+                "<button type='button' class='btn primary' data-ubah-simpan='" + esc(p.id) + "'>Simpan</button>" +
+                "<button type='button' class='btn ghost' data-ubah-batal='" + esc(p.id) + "'>Batal</button></div>" +
+            "</article>";
           }
           return "<article class='queue-item'>" +
             "<div class='q-head'>" +
@@ -1240,6 +1272,21 @@
             akhiriTayang(b.getAttribute("data-akhiri"), b);
           });
         });
+        list.querySelectorAll("[data-ubah]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            idEditPengumuman = b.getAttribute("data-ubah");
+            renderAntrean();
+          });
+        });
+        list.querySelectorAll("[data-ubah-batal]").forEach(function (b) {
+          b.addEventListener("click", function () {
+            idEditPengumuman = null;
+            renderAntrean();
+          });
+        });
+        list.querySelectorAll("[data-ubah-simpan]").forEach(function (b) {
+          b.addEventListener("click", function () { ubahPengumuman(b.getAttribute("data-ubah-simpan"), b); });
+        });
       }
       async function putuskan(id, setuju, btn) {
         if (btn) btn.disabled = true;
@@ -1261,6 +1308,27 @@
           tampilkanSukses("Masa tayang diakhiri — konten masuk arsip.");
         } catch (e) {
           tampilkanError("Gagal mengakhiri tayang: " + e.message);
+          if (btn) btn.disabled = false;
+        }
+      }
+      async function ubahPengumuman(id, btn) {
+        var isiEl = document.querySelector("[data-ubah-isi]");
+        var jenisEl = document.querySelector("[data-ubah-jenis]");
+        var isi = isiEl ? isiEl.value.trim() : "";
+        if (!isi) { tampilkanError("Isi pengumuman wajib diisi."); return; }
+        if (btn) btn.disabled = true;
+        try {
+          await api("/api/pengumuman", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id: id, isi: isi, jenis: jenisEl ? jenisEl.value : undefined }),
+          });
+          idEditPengumuman = null;
+          sembunyikanError();
+          await muatSemua();
+          tampilkanSukses("Pengumuman diubah.");
+        } catch (e) {
+          tampilkanError("Gagal mengubah pengumuman: " + e.message);
           if (btn) btn.disabled = false;
         }
       }
