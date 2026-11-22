@@ -1,0 +1,1080 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="data:," />
+    <title>Mihrab Connect Admin — Masjid Contoh An-Nur</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet" />
+    <style>
+      button, [role="button"], select, summary, input:not([type="checkbox"], [type="radio"]) { min-height: 2.25rem; }
+    </style>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #f6f1e6;
+        --surface: #fffdf7;
+        --surface-2: #efe8d6;
+        --ink: #1d2b23;
+        --muted: #5d6f64;
+        --line: #ddd2b8;
+        --green: #0d4d33;
+        --green-deep: #07301f;
+        --green-soft: #dcebe1;
+        --gold: #a97e2f;
+        --gold-soft: #f3e7c8;
+        --gold-bright: #c9a45c;
+        --red: #a33327;
+        --red-soft: #f6ded9;
+        --shadow: 0 1px 2px rgba(29, 43, 35, .06), 0 8px 24px -12px rgba(29, 43, 35, .18);
+        --radius: 14px;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #081b12;
+          --surface: #0f2a1d;
+          --surface-2: #143626;
+          --ink: #f0ead6;
+          --muted: #a3b5a8;
+          --line: #2a4a38;
+          --green: #2e8b62;
+          --green-deep: #0a2417;
+          --green-soft: #173d2a;
+          --gold: #d4af6e;
+          --gold-soft: #3a2f16;
+          --gold-bright: #d4af6e;
+          --red: #e08a7d;
+          --red-soft: #40231e;
+          --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+        }
+      }
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--ink);
+        line-height: 1.5;
+      }
+      h1, h2, h3 { margin: 0; line-height: 1.2; }
+      p { margin: 0; }
+      button { font: inherit; cursor: pointer; }
+      input, select, textarea { font: inherit; color: inherit; }
+      :focus-visible { outline: 3px solid var(--gold-bright); outline-offset: 2px; border-radius: 6px; }
+
+      /* ---------- Layout ---------- */
+      .app { display: grid; grid-template-columns: 264px 1fr; min-height: 100dvh; }
+      .sidebar {
+        background: var(--green-deep);
+        color: #f3eedd;
+        padding: 22px 16px;
+        display: flex; flex-direction: column; gap: 22px;
+        position: sticky; top: 0; height: 100dvh;
+      }
+      .brand { padding: 2px 8px; }
+      .brand .brand-name { font-weight: 800; letter-spacing: .04em; font-size: .95rem; }
+      .brand .brand-sub { font-size: .78rem; color: #cdbd8f; margin-top: 2px; }
+      .brand .arabic { font-family: "Amiri", serif; font-size: 1.5rem; color: var(--gold-bright); line-height: 1; margin-bottom: 8px; }
+      .nav { display: flex; flex-direction: column; gap: 4px; }
+      .nav button {
+        display: flex; align-items: center; gap: 11px;
+        width: 100%; text-align: left;
+        background: transparent; border: 0; color: #e9e2cd;
+        padding: 10px 12px; border-radius: 10px; font-weight: 600; font-size: .93rem;
+        min-height: 44px;
+      }
+      .nav button svg { flex: none; opacity: .85; }
+      .nav button:hover { background: rgba(255,255,255,.08); }
+      .nav button[aria-current="page"] { background: #f3e7c8; color: #20301f; }
+      .nav button[aria-current="page"] svg { opacity: 1; }
+      .nav .count {
+        margin-left: auto; background: var(--gold-bright); color: #241a05;
+        font-size: .72rem; font-weight: 800; border-radius: 999px;
+        min-width: 22px; height: 22px; display: grid; place-items: center; padding: 0 6px;
+      }
+      .nav button[aria-current="page"] .count { background: var(--green); color: #fff; }
+      .side-note {
+        margin-top: auto; font-size: .78rem; color: #bdb894;
+        border-top: 1px solid rgba(255,255,255,.14); padding: 14px 8px 2px;
+      }
+      .side-note strong { color: #f3e7c8; }
+
+      .main { min-width: 0; display: flex; flex-direction: column; }
+      .topbar {
+        display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+        padding: 18px 28px 0;
+      }
+      .topbar .masjid { font-size: 1.3rem; font-weight: 800; }
+      .topbar .masjid small { display: block; font-size: .8rem; font-weight: 600; color: var(--muted); }
+      .topbar .spacer { flex: 1; }
+      .contoh-badge {
+        display: inline-flex; align-items: center; gap: 7px;
+        background: var(--gold-soft); color: var(--gold);
+        border: 1.5px dashed var(--gold);
+        font-weight: 800; font-size: .75rem; letter-spacing: .08em;
+        padding: 6px 12px; border-radius: 999px;
+      }
+      .board-status { display: inline-flex; align-items: center; gap: 8px; font-size: .85rem; font-weight: 600; color: var(--muted); }
+      .dot { width: 10px; height: 10px; border-radius: 50%; background: #2e9e5b; box-shadow: 0 0 0 4px rgba(46,158,91,.18); flex: none; }
+
+      .proto-banner {
+        margin: 16px 28px 0; padding: 12px 16px;
+        background: var(--gold-soft); border: 1px solid var(--gold);
+        border-radius: var(--radius); font-size: .88rem;
+      }
+      .proto-banner strong { letter-spacing: .04em; }
+
+      .content { padding: 20px 28px 48px; }
+      .view { display: none; }
+      .view.active { display: block; }
+      .view-head { margin-bottom: 18px; }
+      .view-head h2 { font-size: 1.45rem; font-weight: 800; }
+      .view-head p { color: var(--muted); margin-top: 4px; max-width: 62ch; font-size: .94rem; }
+
+      /* ---------- Cards & grids ---------- */
+      .grid { display: grid; gap: 16px; }
+      .grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+      .grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+      .card {
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--radius); box-shadow: var(--shadow);
+        padding: 18px;
+      }
+      .card h3 { font-size: 1rem; font-weight: 800; display: flex; align-items: center; gap: 9px; }
+      .card h3 svg { color: var(--green); flex: none; }
+      @media (prefers-color-scheme: dark) { .card h3 svg { color: var(--gold-bright); } }
+      .card .sub { color: var(--muted); font-size: .85rem; margin-top: 3px; }
+      .card-link { margin-top: 12px; }
+      .link-btn {
+        background: none; border: 0; color: var(--green); font-weight: 700;
+        padding: 6px 2px; min-height: 36px; text-decoration: underline; text-underline-offset: 3px;
+      }
+      @media (prefers-color-scheme: dark) { .link-btn { color: var(--gold-bright); } }
+
+      .stat-big { font-size: 2rem; font-weight: 800; line-height: 1.1; margin-top: 8px; }
+      .stat-label { color: var(--muted); font-size: .85rem; }
+
+      /* ---------- Badges & buttons ---------- */
+      .badge {
+        display: inline-flex; align-items: center; gap: 5px;
+        font-size: .72rem; font-weight: 800; letter-spacing: .03em;
+        padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+      }
+      .badge.menunggu { background: var(--gold-soft); color: var(--gold); }
+      .badge.tayang { background: var(--green-soft); color: var(--green); }
+      @media (prefers-color-scheme: dark) { .badge.tayang { color: #7fd6ab; } }
+      .badge.ditolak { background: var(--red-soft); color: var(--red); }
+      .badge.draf { background: var(--surface-2); color: var(--muted); }
+      .badge.prioritas { background: var(--red); color: #fff; }
+      .btn {
+        border-radius: 10px; border: 1px solid transparent;
+        padding: 9px 16px; font-weight: 700; font-size: .9rem; min-height: 40px;
+        display: inline-flex; align-items: center; gap: 7px; justify-content: center;
+      }
+      .btn.primary { background: var(--green); color: #fff; }
+      .btn.primary:hover { filter: brightness(1.12); }
+      .btn.gold { background: var(--gold-bright); color: #241a05; }
+      .btn.ghost { background: transparent; border-color: var(--line); color: var(--ink); }
+      .btn.danger-ghost { background: transparent; border-color: var(--red); color: var(--red); }
+      .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+      /* ---------- Lists ---------- */
+      .mini-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px; }
+      .mini-list li { display: flex; gap: 10px; align-items: flex-start; font-size: .9rem; }
+      .mini-list .grow { flex: 1; min-width: 0; }
+      .mini-list .meta { color: var(--muted); font-size: .8rem; }
+
+      .queue-list { display: grid; gap: 14px; }
+      .queue-item {
+        background: var(--surface); border: 1px solid var(--line);
+        border-radius: var(--radius); box-shadow: var(--shadow); padding: 18px;
+      }
+      .queue-item .q-head { display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+      .avatar {
+        width: 42px; height: 42px; border-radius: 50%; flex: none;
+        background: var(--green); color: #f3e7c8; font-weight: 800;
+        display: grid; place-items: center; font-size: .95rem;
+      }
+      .avatar.gold { background: var(--gold-bright); color: #241a05; }
+      .avatar.gray { background: var(--surface-2); color: var(--muted); }
+      .queue-item .who { font-weight: 800; }
+      .queue-item .meta { color: var(--muted); font-size: .82rem; }
+      .queue-item .badges { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+      .queue-body { margin-top: 12px; font-size: .95rem; }
+      .poster {
+        margin-top: 12px; border-radius: 10px; padding: 20px 18px;
+        background: linear-gradient(150deg, var(--green-deep), var(--green));
+        color: #f6efdb; text-align: center;
+      }
+      .poster .p-arabic { font-family: "Amiri", serif; font-size: 1.4rem; color: var(--gold-bright); }
+      .poster .p-title { font-weight: 800; font-size: 1.15rem; margin-top: 4px; }
+      .poster .p-meta { font-size: .85rem; color: #d9cf9f; margin-top: 4px; }
+      .queue-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+      .queue-note {
+        margin-top: 12px; font-size: .85rem; padding: 10px 12px;
+        border-radius: 10px; background: var(--surface-2); color: var(--muted);
+      }
+      .queue-note.blocked { background: var(--red-soft); color: var(--red); }
+
+      /* ---------- Prayer times ---------- */
+      .times-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(118px, 1fr)); gap: 10px; margin-top: 14px; }
+      .time-chip {
+        background: var(--surface-2); border-radius: 10px; padding: 10px 12px; text-align: center;
+      }
+      .time-chip .t-name { font-size: .78rem; font-weight: 700; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+      .time-chip .t-time { font-size: 1.25rem; font-weight: 800; margin-top: 2px; font-variant-numeric: tabular-nums; }
+      .time-chip .t-iqomah { font-size: .75rem; color: var(--muted); }
+      .time-chip.next { background: var(--green); color: #fff; }
+      .time-chip.next .t-name, .time-chip.next .t-iqomah { color: #cfe3d4; }
+
+      .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-top: 14px; }
+      .field label { display: block; font-size: .82rem; font-weight: 700; margin-bottom: 5px; }
+      .field .hint { font-size: .78rem; color: var(--muted); margin-top: 4px; }
+      .field input, .field select, .field textarea {
+        width: 100%; padding: 9px 11px; border-radius: 9px;
+        border: 1px solid var(--line); background: var(--surface);
+      }
+      .field input[type="number"] { font-variant-numeric: tabular-nums; }
+
+      /* ---------- Tables ---------- */
+      .table-wrap { margin-top: 12px; }
+      table { width: 100%; border-collapse: collapse; font-size: .92rem; }
+      th { text-align: left; font-size: .76rem; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 8px 10px; border-bottom: 2px solid var(--line); }
+      td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+      tr:last-child td { border-bottom: 0; }
+      td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+      .check { color: var(--green); font-weight: 800; }
+      @media (prefers-color-scheme: dark) { .check { color: #7fd6ab; } }
+      .dash { color: var(--muted); }
+      .role-name { font-weight: 800; }
+
+      /* ---------- Kas ---------- */
+      .kas-total { display: flex; align-items: baseline; gap: 10px; margin-top: 6px; }
+      .kas-total .amount { font-size: 1.7rem; font-weight: 800; }
+      .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 14px; }
+      .wa-block {
+        display: flex; gap: 12px; align-items: flex-start;
+        background: var(--red-soft); color: var(--red);
+        border-radius: 10px; padding: 12px 14px; font-size: .88rem; margin-top: 14px;
+      }
+      .wa-block svg { flex: none; margin-top: 2px; }
+
+      /* ---------- Board preview ---------- */
+      .board-frame {
+        background: #04150d; border-radius: 18px; padding: 12px;
+        box-shadow: var(--shadow);
+      }
+      .board-screen {
+        aspect-ratio: 16 / 9; border-radius: 10px; overflow: hidden;
+        background: linear-gradient(160deg, #0a3d27, #062417 70%);
+        color: #f6efdb; display: flex; flex-direction: column;
+        font-size: clamp(.55rem, 1.6vw, .95rem);
+      }
+      .board-top {
+        display: flex; justify-content: space-between; align-items: center; gap: 1em;
+        padding: .9em 1.2em; border-bottom: 1px solid rgba(201,164,92,.35);
+      }
+      .board-top .b-name { font-weight: 800; font-size: 1.35em; }
+      .board-top .b-date { color: #d9cf9f; font-size: .92em; text-align: right; }
+      .board-mid { flex: 1; display: grid; grid-template-columns: 1fr 1.6fr; min-height: 0; }
+      .board-times { padding: 1em 1.2em; border-right: 1px solid rgba(201,164,92,.35); display: flex; flex-direction: column; justify-content: center; gap: .45em; }
+      .board-times .bt-row { display: flex; justify-content: space-between; font-size: 1.02em; }
+      .board-times .bt-row.next { color: var(--gold-bright); font-weight: 800; }
+      .board-times .bt-title { font-size: .8em; letter-spacing: .12em; color: #d9cf9f; text-transform: uppercase; margin-bottom: .3em; }
+      .board-slide { padding: 1.2em; display: flex; flex-direction: column; justify-content: center; text-align: center; min-width: 0; }
+      .board-slide .s-kicker { color: var(--gold-bright); font-size: .82em; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; }
+      .board-slide .s-title { font-size: 1.7em; font-weight: 800; line-height: 1.25; margin-top: .3em; }
+      .board-slide .s-body { color: #e6dcbc; margin-top: .5em; font-size: 1em; }
+      .board-slide .s-arabic { font-family: "Amiri", serif; font-size: 2em; color: var(--gold-bright); }
+      .board-ticker {
+        border-top: 1px solid rgba(201,164,92,.35); padding: .55em 0;
+        overflow: hidden; white-space: nowrap; background: rgba(0,0,0,.25);
+      }
+      .board-ticker .ticker-inner { display: inline-block; padding-left: 100%; animation: ticker 28s linear infinite; font-size: 1em; }
+      @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-100%); } }
+      .board-controls { display: flex; gap: 10px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
+      .board-controls .pos { color: var(--muted); font-size: .88rem; font-weight: 600; }
+
+      .log-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 0; }
+      .log-list li { display: flex; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: .9rem; }
+      .log-list li:last-child { border-bottom: 0; }
+      .log-list .l-time { color: var(--muted); font-size: .8rem; white-space: nowrap; font-variant-numeric: tabular-nums; }
+      .log-list .l-what { flex: 1; }
+
+      .section-gap { margin-top: 16px; }
+      .empty-note { color: var(--muted); font-size: .9rem; padding: 14px 0 4px; }
+
+      /* ---------- Mobile ---------- */
+      .mobilebar { display: none; }
+      @media (max-width: 860px) {
+        .app { grid-template-columns: 1fr; }
+        .sidebar { display: none; }
+        .topbar { padding: 14px 16px 0; }
+        .proto-banner { margin: 12px 16px 0; }
+        .content { padding: 16px 16px 110px; }
+        .grid.cols-3, .grid.cols-2 { grid-template-columns: 1fr; }
+        .mobilebar {
+          display: grid; grid-template-columns: repeat(6, 1fr);
+          position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+          background: var(--green-deep); padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+          box-shadow: 0 -4px 18px rgba(0,0,0,.25);
+        }
+        .mobilebar button {
+          background: transparent; border: 0; color: #cfc69d;
+          display: flex; flex-direction: column; align-items: center; gap: 3px;
+          font-size: .62rem; font-weight: 700; padding: 7px 2px; border-radius: 9px; min-height: 52px;
+          position: relative;
+        }
+        .mobilebar button[aria-current="page"] { background: #f3e7c8; color: #20301f; }
+        .mobilebar .count {
+          position: absolute; top: 3px; right: calc(50% - 20px);
+          background: var(--gold-bright); color: #241a05;
+          font-size: .62rem; font-weight: 800; border-radius: 999px;
+          min-width: 17px; height: 17px; display: grid; place-items: center; padding: 0 4px;
+        }
+        table.stack thead { display: none; }
+        table.stack tr { display: block; padding: 8px 0; border-bottom: 1px solid var(--line); }
+        table.stack tr:last-child { border-bottom: 0; }
+        table.stack td { display: flex; justify-content: space-between; gap: 14px; border-bottom: 0; padding: 4px 2px; text-align: right; }
+        table.stack td::before { content: attr(data-label); font-weight: 700; color: var(--muted); font-size: .8rem; text-align: left; }
+        table.stack td.num { text-align: right; }
+        .board-mid { grid-template-columns: 1fr; }
+        .board-times { display: none; }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .board-ticker .ticker-inner { animation: none; padding-left: 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <!-- ============ SIDEBAR (desktop) ============ -->
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="arabic" aria-hidden="true">مِحْرَاب</div>
+          <div class="brand-name">MIHRAB CONNECT</div>
+          <div class="brand-sub">Admin — Dashboard Pengurus</div>
+        </div>
+        <nav class="nav" aria-label="Navigasi utama">
+          <button type="button" data-nav="beranda" aria-current="page">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg>
+            Beranda
+          </button>
+          <button type="button" data-nav="persetujuan">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/></svg>
+            Persetujuan
+            <span class="count" data-count-badge>3</span>
+          </button>
+          <button type="button" data-nav="jadwal">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            Jadwal
+          </button>
+          <button type="button" data-nav="kas">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></svg>
+            Kas
+          </button>
+          <button type="button" data-nav="pengurus">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.2 3.4-5 6.5-5s5.7 1.8 6.5 5"/><path d="M16 5.5a3.5 3.5 0 0 1 0 6.5"/><path d="M17.5 15.3c2 .6 3.4 2.1 4 4.7"/></svg>
+            Pengurus &amp; Peran
+          </button>
+          <button type="button" data-nav="board">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M9 21h6"/><path d="M12 17v4"/></svg>
+            Pratinjau Board
+          </button>
+        </nav>
+        <div class="side-note">
+          <strong>Prototipe P0.</strong> Struktur data mengikuti spesifikasi backend MIHRAB CONNECT. Stack yang dikunci: Vercel + Supabase (tier gratis) — belum tersambung, semua isi halaman ini data contoh.
+        </div>
+      </aside>
+
+      <!-- ============ MAIN ============ -->
+      <div class="main">
+        <header class="topbar">
+          <div class="masjid">
+            Masjid Contoh An-Nur
+            <small>Akun lembaga (DKM) — bukan akun pribadi pengurus</small>
+          </div>
+          <div class="spacer"></div>
+          <span class="board-status"><span class="dot" aria-hidden="true"></span> Board tersambung (contoh)</span>
+          <span class="contoh-badge">DATA CONTOH</span>
+        </header>
+
+        <div class="proto-banner" role="note">
+          <strong>PROTOTIPE — DATA CONTOH.</strong> Belum ada koneksi backend: belum ada proyek Supabase, belum ada kiriman WhatsApp asli, dan semua nama, nomor, jadwal, serta angka di halaman ini contoh. Tombol persetujuan, koreksi jadwal, dan catat kas bekerja di dalam halaman ini saja untuk mendemonstrasikan alur sesuai spesifikasi.
+        </div>
+        <main class="content">
+
+          <!-- ================= BERANDA ================= -->
+          <section class="view active" id="view-beranda" aria-labelledby="h-beranda">
+            <div class="view-head">
+              <h2 id="h-beranda">Beranda</h2>
+              <p>Ringkasan hari ini untuk pengurus: apa yang sedang tayang di TV, apa yang menunggu keputusan ketua, dan keadaan kas per kategori dana.</p>
+            </div>
+
+            <div class="grid cols-3">
+              <div class="card">
+                <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M9 21h6"/><path d="M12 17v4"/></svg> Status Board</h3>
+                <div class="stat-big"><span data-tayang-count>4</span> konten tayang</div>
+                <p class="stat-label">Mode normal · sinkronisasi terakhir 5 menit lalu (contoh). Hanya konten berstatus <strong>tayang</strong> yang dikirim ke Board.</p>
+                <div class="card-link"><button type="button" class="link-btn" data-nav="board">Lihat pratinjau Board →</button></div>
+              </div>
+              <div class="card">
+                <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/></svg> Menunggu Persetujuan</h3>
+                <div class="stat-big"><span data-menunggu-count>3</span> kiriman</div>
+                <p class="stat-label">Kiriman WhatsApp dari pengurus terdaftar. Belum tampil di Board sampai ketua menyetujui.</p>
+                <div class="card-link"><button type="button" class="link-btn" data-nav="persetujuan">Buka antrean persetujuan →</button></div>
+              </div>
+              <div class="card">
+                <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></svg> Ringkasan Kas</h3>
+                <ul class="mini-list">
+                  <li><span class="grow">Infaq umum</span><strong>Rp —</strong></li>
+                  <li><span class="grow">Pembangunan</span><strong>Rp —</strong></li>
+                  <li><span class="grow">TPQ</span><strong>Rp —</strong></li>
+                </ul>
+                <p class="sub" style="margin-top:10px">Jumlah ditampilkan “Rp —” karena data contoh. Board hanya menerima ringkasan ini, bukan detail transaksi.</p>
+                <div class="card-link"><button type="button" class="link-btn" data-nav="kas">Buka kas →</button></div>
+              </div>
+            </div>
+
+            <div class="grid cols-2 section-gap">
+              <div class="card">
+                <h3>Sedang Tayang di Board</h3>
+                <ul class="mini-list" data-tayang-list></ul>
+              </div>
+              <div class="card">
+                <h3>Jadwal Sholat Hari Ini</h3>
+                <p class="sub">Metode Kemenag dari koordinat masjid · Ahad, 22 November 2026 · 2 Jumadilawal 1448 H (contoh)</p>
+                <div class="times-grid" data-times-grid></div>
+                <div class="card-link"><button type="button" class="link-btn" data-nav="jadwal">Atur jadwal &amp; petugas →</button></div>
+              </div>
+            </div>
+
+            <div class="card section-gap">
+              <h3>Log Aktivitas Terakhir</h3>
+              <p class="sub">Setiap perubahan dari dashboard maupun WhatsApp tercatat: siapa, kapan, dari mana, dan apa yang diubah.</p>
+              <ul class="log-list" data-log-list></ul>
+            </div>
+          </section>
+
+          <!-- ================= PERSETUJUAN ================= -->
+          <section class="view" id="view-persetujuan" aria-labelledby="h-persetujuan">
+            <div class="view-head">
+              <h2 id="h-persetujuan">Antrean Persetujuan</h2>
+              <p>Kiriman WhatsApp dari nomor pengurus terdaftar masuk sebagai draf, lalu menunggu persetujuan ketua sebelum tayang. Kiriman ketua dapat auto-tayang. Nomor yang tidak terdaftar ditolak otomatis dan tidak membuat draf apa pun. Kas tidak pernah bisa diubah lewat jalur ini.</p>
+            </div>
+            <div class="queue-list" data-queue-list></div>
+          </section>
+
+          <!-- ================= JADWAL ================= -->
+          <section class="view" id="view-jadwal" aria-labelledby="h-jadwal">
+            <div class="view-head">
+              <h2 id="h-jadwal">Jadwal</h2>
+              <p>Pengaturan jadwal sholat dan jadwal petugas. Perubahan di sini mengubah paket tayang yang diterima Board pada sinkronisasi berikutnya — Board sendiri tidak bisa mengedit jadwal.</p>
+            </div>
+
+            <div class="card">
+              <h3>Jadwal Sholat — Metode Kemenag</h3>
+              <p class="sub">Dihitung dari koordinat masjid contoh (−6,2000, 106,8167). Koreksi menit berlaku per waktu sholat; ubah nilainya dan jadwal di bawah langsung menyesuaikan.</p>
+              <div class="times-grid" data-times-grid></div>
+              <div class="settings-grid">
+                <div class="field">
+                  <label for="set-metode">Metode perhitungan</label>
+                  <select id="set-metode">
+                    <option selected>Kemenag RI</option>
+                  </select>
+                  <p class="hint">Satu-satunya metode pada scope P0.</p>
+                </div>
+                <div class="field">
+                  <label for="set-offset-hijriyah">Offset Hijriyah (hari)</label>
+                  <input type="number" id="set-offset-hijriyah" value="0" min="-2" max="2" step="1" />
+                  <p class="hint">Penyesuaian tanggal Hijriyah yang tampil di Board.</p>
+                </div>
+                <div class="field">
+                  <label for="set-murotal">Murotal otomatis</label>
+                  <select id="set-murotal">
+                    <option selected>Aktif — 10 menit sebelum Subuh &amp; Maghrib</option>
+                    <option>Nonaktif</option>
+                  </select>
+                  <p class="hint">Jumat sebelum Maghrib: Al-Kahfi. Volume memudar saat adzan, berhenti saat iqomah.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid cols-2 section-gap">
+              <div class="card">
+                <h3>Koreksi Menit per Waktu</h3>
+                <p class="sub">Geser bila jadwal masjid berbeda beberapa menit dari hasil hitung Kemenag.</p>
+                <div class="settings-grid" style="grid-template-columns:1fr 1fr" data-koreksi-grid></div>
+              </div>
+              <div class="card">
+                <h3>Durasi Iqomah per Waktu</h3>
+                <p class="sub">Countdown iqomah di Board mengikuti durasi ini; berbeda untuk Subuh, Jumat, dan Tarawih.</p>
+                <div class="settings-grid" style="grid-template-columns:1fr 1fr" data-iqomah-grid></div>
+              </div>
+            </div>
+
+            <div class="card section-gap">
+              <h3>Jadwal Petugas</h3>
+              <p class="sub">Imam, muadzin, dan khatib Jumat. Petugas Jumat tampil di Board pada mode Jumat.</p>
+              <div class="table-wrap">
+                <table class="stack">
+                  <thead><tr><th>Jenis</th><th>Nama petugas</th><th>Waktu / tanggal</th><th>Keterangan</th></tr></thead>
+                  <tbody>
+                    <tr><td data-label="Jenis">Imam Subuh</td><td data-label="Nama petugas">Ust. Hasan Basri (contoh)</td><td data-label="Waktu">Setiap hari, Subuh</td><td data-label="Keterangan">Bergantian dengan imam cadangan</td></tr>
+                    <tr><td data-label="Jenis">Muadzin</td><td data-label="Nama petugas">Ahmad Fauzi — Marbot (contoh)</td><td data-label="Waktu">Setiap hari, semua waktu</td><td data-label="Keterangan">Piket utama</td></tr>
+                    <tr><td data-label="Jenis">Khatib Jumat</td><td data-label="Nama petugas">Ust. Dr. Mahmud Syarif (contoh)</td><td data-label="Waktu">Jumat, 27 November 2026</td><td data-label="Keterangan">Imam Jumat: Ust. Hasan Basri</td></tr>
+                    <tr><td data-label="Jenis">Piket kebersihan</td><td data-label="Nama petugas">Tim marbot (contoh)</td><td data-label="Waktu">Sabtu, 07.00 WIB</td><td data-label="Keterangan">Sebelum kerja bakti jamaah</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- ================= KAS ================= -->
+          <section class="view" id="view-kas" aria-labelledby="h-kas">
+            <div class="view-head">
+              <h2 id="h-kas">Kas</h2>
+              <p>Pemasukan dan pengeluaran per kategori dana, dicatat hanya dari dashboard oleh ketua atau bendahara. Semua jumlah ditampilkan “Rp —” karena ini data contoh.</p>
+            </div>
+
+            <div class="wa-block" role="note">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+              <p><strong>Kas tidak bisa dibuat atau diubah dari WhatsApp, dalam bentuk apa pun.</strong> Perintah WhatsApp yang menyentuh kas ditolak dan penolakannya tercatat di log aktivitas — supaya kas tetap dapat diaudit.</p>
+            </div>
+
+            <div class="grid cols-3 section-gap">
+              <div class="card">
+                <h3>Infaq Umum</h3>
+                <div class="kas-total"><span class="amount">Rp —</span></div>
+                <p class="sub">Saldo kategori · QRIS infaq umum aktif (contoh)</p>
+              </div>
+              <div class="card">
+                <h3>Pembangunan</h3>
+                <div class="kas-total"><span class="amount">Rp —</span></div>
+                <p class="sub">Saldo kategori · QRIS pembangunan aktif (contoh)</p>
+              </div>
+              <div class="card">
+                <h3>TPQ</h3>
+                <div class="kas-total"><span class="amount">Rp —</span></div>
+                <p class="sub">Saldo kategori · QRIS TPQ aktif (contoh)</p>
+              </div>
+            </div>
+
+            <div class="grid cols-2 section-gap">
+              <div class="card">
+                <h3>Catat Transaksi</h3>
+                <p class="sub">Form dashboard — satu-satunya jalur input kas. Nominal sengaja tidak ditampilkan di prototipe ini.</p>
+                <form data-kas-form>
+                  <div class="form-row">
+                    <div class="field">
+                      <label for="kas-jenis">Jenis</label>
+                      <select id="kas-jenis">
+                        <option value="Pemasukan">Pemasukan</option>
+                        <option value="Pengeluaran">Pengeluaran</option>
+                      </select>
+                    </div>
+                    <div class="field">
+                      <label for="kas-kategori">Kategori dana</label>
+                      <select id="kas-kategori">
+                        <option>Infaq umum</option>
+                        <option>Pembangunan</option>
+                        <option>TPQ</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="field" style="margin-top:12px">
+                    <label for="kas-keterangan">Keterangan</label>
+                    <input type="text" id="kas-keterangan" placeholder="cth. Infaq Jumat dari kotak amal" required />
+                  </div>
+                  <div style="margin-top:14px">
+                    <button type="submit" class="btn primary">Catat transaksi</button>
+                  </div>
+                </form>
+              </div>
+              <div class="card">
+                <h3>Laporan</h3>
+                <p class="sub">Laporan diturunkan otomatis dari transaksi yang tercatat.</p>
+                <ul class="mini-list">
+                  <li><span class="grow"><strong>Laporan Jumat</strong><br /><span class="meta">Jumat, 20 November 2026 (contoh)</span></span><strong>Rp —</strong></li>
+                  <li><span class="grow"><strong>Laporan Bulanan</strong><br /><span class="meta">November 2026 (contoh)</span></span><strong>Rp —</strong></li>
+                </ul>
+                <p class="sub" style="margin-top:12px">Yang dikirim ke Board hanya ringkasannya: saldo per kategori dan total — bukan laporan detail ini.</p>
+              </div>
+            </div>
+
+            <div class="card section-gap">
+              <h3>Transaksi Terakhir</h3>
+              <div class="table-wrap">
+                <table class="stack">
+                  <thead><tr><th>Tanggal</th><th>Keterangan</th><th>Kategori</th><th>Jenis</th><th class="num">Jumlah</th><th>Dicatat oleh</th></tr></thead>
+                  <tbody data-kas-tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <!-- ================= PENGURUS ================= -->
+          <section class="view" id="view-pengurus" aria-labelledby="h-pengurus">
+            <div class="view-head">
+              <h2 id="h-pengurus">Pengurus &amp; Peran</h2>
+              <p>Data melekat pada lembaga, bukan pada pribadi pengurus: pengurus lama dapat dinonaktifkan dan pengurus baru ditambah tanpa memindah data. Nomor WhatsApp di sini adalah daftar nomor yang boleh mengirim kiriman ke Board.</p>
+            </div>
+
+            <div class="card">
+              <h3>Daftar Pengurus (Contoh)</h3>
+              <div class="table-wrap">
+                <table class="stack">
+                  <thead><tr><th>Nama</th><th>Peran</th><th>Nomor WhatsApp terdaftar</th><th>Kiriman butuh persetujuan ketua</th><th>Status</th></tr></thead>
+                  <tbody>
+                    <tr><td data-label="Nama"><span class="role-name">H. Muhammad Ridwan</span></td><td data-label="Peran">Ketua</td><td data-label="Nomor WhatsApp">0812-xxxx-1001</td><td data-label="Butuh persetujuan">Tidak — kiriman ketua dapat auto-tayang</td><td data-label="Status"><span class="badge tayang">Aktif</span></td></tr>
+                    <tr><td data-label="Nama"><span class="role-name">Siti Rahmawati</span></td><td data-label="Peran">Bendahara</td><td data-label="Nomor WhatsApp">0813-xxxx-2002</td><td data-label="Butuh persetujuan">Ya — menunggu persetujuan ketua</td><td data-label="Status"><span class="badge tayang">Aktif</span></td></tr>
+                    <tr><td data-label="Nama"><span class="role-name">Ahmad Fauzi</span></td><td data-label="Peran">Marbot</td><td data-label="Nomor WhatsApp">0857-xxxx-3003</td><td data-label="Butuh persetujuan">Ya — menunggu persetujuan ketua</td><td data-label="Status"><span class="badge tayang">Aktif</span></td></tr>
+                    <tr><td data-label="Nama"><span class="role-name">Bambang Sutrisno</span></td><td data-label="Peran">Pengawas</td><td data-label="Nomor WhatsApp">— (tidak mengirim)</td><td data-label="Butuh persetujuan">—</td><td data-label="Status"><span class="badge tayang">Aktif</span></td></tr>
+                    <tr><td data-label="Nama"><span class="role-name">Pengurus lama (contoh)</span></td><td data-label="Peran">Marbot</td><td data-label="Nomor WhatsApp">0819-xxxx-4004</td><td data-label="Butuh persetujuan">Ya</td><td data-label="Status"><span class="badge draf">Nonaktif</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="sub" style="margin-top:12px">Nomor ditampilkan terpotong karena data contoh. Menonaktifkan pengurus tidak menghapus arsip dan log aktivitasnya.</p>
+            </div>
+
+            <div class="card section-gap">
+              <h3>Matriks Izin per Peran</h3>
+              <p class="sub">Sesuai spesifikasi backend, termasuk dua keputusan yang dikunci founder pada 22 Nov 2026: ketua boleh mencatat kas lewat dashboard, dan bendahara boleh mengirim WhatsApp bila nomornya terdaftar (tetap menunggu persetujuan ketua).</p>
+              <div class="table-wrap">
+                <table class="stack">
+                  <thead><tr><th>Kemampuan</th><th>Ketua</th><th>Bendahara</th><th>Marbot</th><th>Pengawas</th></tr></thead>
+                  <tbody>
+                    <tr><td data-label="Kemampuan">Menyetujui / menolak kiriman</td><td data-label="Ketua"><span class="check">Ya</span></td><td data-label="Bendahara"><span class="dash">Tidak</span></td><td data-label="Marbot"><span class="dash">Tidak</span></td><td data-label="Pengawas"><span class="dash">Tidak</span></td></tr>
+                    <tr><td data-label="Kemampuan">Kiriman auto-tayang</td><td data-label="Ketua"><span class="check">Ya</span></td><td data-label="Bendahara"><span class="dash">Tidak</span></td><td data-label="Marbot"><span class="dash">Tidak</span></td><td data-label="Pengawas"><span class="dash">Tidak</span></td></tr>
+                    <tr><td data-label="Kemampuan">Mengatur profil, jadwal, petugas, murotal</td><td data-label="Ketua"><span class="check">Ya</span></td><td data-label="Bendahara"><span class="dash">Tidak</span></td><td data-label="Marbot"><span class="dash">Tidak</span></td><td data-label="Pengawas"><span class="dash">Tidak</span></td></tr>
+                    <tr><td data-label="Kemampuan">Mengelola pengurus &amp; nomor WhatsApp</td><td data-label="Ketua"><span class="check">Ya</span></td><td data-label="Bendahara"><span class="dash">Tidak</span></td><td data-label="Marbot"><span class="dash">Tidak</span></td><td data-label="Pengawas"><span class="dash">Tidak</span></td></tr>
+                    <tr><td data-label="Kemampuan">Mencatat kas (dashboard saja)</td><td data-label="Ketua"><span class="check">Ya</span></td><td data-label="Bendahara"><span class="check">Ya</span></td><td data-label="Marbot"><span class="dash">Tidak</span></td><td data-label="Pengawas"><span class="dash">Tidak</span></td></tr>
+                    <tr><td data-label="Kemampuan">Mengirim kiriman WhatsApp</td><td data-label="Ketua"><span class="check">Ya</span></td><td data-label="Bendahara"><span class="check">Ya, bila nomor terdaftar</span></td><td data-label="Marbot"><span class="check">Ya</span></td><td data-label="Pengawas"><span class="dash">Tidak</span></td></tr>
+                    <tr><td data-label="Kemampuan">Melihat arsip &amp; log aktivitas</td><td data-label="Ketua"><span class="check">Ya</span></td><td data-label="Bendahara"><span class="check">Ya</span></td><td data-label="Marbot"><span class="dash">Tidak</span></td><td data-label="Pengawas"><span class="check">Ya</span></td></tr>
+                    <tr><td data-label="Kemampuan">Serah terima</td><td data-label="Ketua"><span class="check">Ya</span></td><td data-label="Bendahara"><span class="dash">Tidak</span></td><td data-label="Marbot"><span class="dash">Tidak</span></td><td data-label="Pengawas"><span class="dash">Tidak</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="sub" style="margin-top:12px">Ringkasnya: ketua menyetujui, bendahara mencatat, marbot mengirim, pengawas hanya melihat. Pengawas tidak menulis dalam bentuk apa pun.</p>
+            </div>
+          </section>
+
+          <!-- ================= PRATINJAU BOARD ================= -->
+          <section class="view" id="view-board" aria-labelledby="h-board">
+            <div class="view-head">
+              <h2 id="h-board">Pratinjau Board</h2>
+              <p>Beginilah tampilan TV di masjid saat ini, dirender dari paket tayang yang sama: hanya konten berstatus <strong>tayang</strong>. Menyetujui kiriman di antrean akan menambahkannya ke rotasi slide di sini.</p>
+            </div>
+
+            <div class="board-frame">
+              <div class="board-screen" role="img" aria-label="Pratinjau layar TV Board Masjid Contoh An-Nur">
+                <div class="board-top">
+                  <div>
+                    <div class="b-name">Masjid Contoh An-Nur</div>
+                    <div style="color:#d9cf9f;font-size:.85em">MIHRAB CONNECT BOARD</div>
+                  </div>
+                  <div class="b-date">Ahad, 22 November 2026<br />2 Jumadilawal 1448 H</div>
+                </div>
+                <div class="board-mid">
+                  <div class="board-times" data-board-times></div>
+                  <div class="board-slide" data-board-slide></div>
+                </div>
+                <div class="board-ticker"><span class="ticker-inner" data-board-ticker></span></div>
+              </div>
+            </div>
+            <div class="board-controls">
+              <button type="button" class="btn ghost" data-slide-prev>← Slide sebelumnya</button>
+              <span class="pos" data-slide-pos></span>
+              <button type="button" class="btn ghost" data-slide-next>Slide berikutnya →</button>
+              <span class="pos">Slide berganti otomatis tiap 8 detik di pratinjau ini.</span>
+            </div>
+
+            <div class="card section-gap">
+              <h3>Isi Paket Tayang Saat Ini</h3>
+              <p class="sub">Satu paket yang diambil Board dari endpoint <em>paket-tayang</em>: profil masjid, pengaturan jadwal, pengumuman tayang, ringkasan kas, QRIS per kategori, countdown event, dan pengaturan murotal.</p>
+              <ul class="mini-list" data-tayang-list></ul>
+            </div>
+          </section>
+
+        </main>
+      </div>
+    </div>
+
+    <!-- ============ MOBILE NAV ============ -->
+    <nav class="mobilebar" aria-label="Navigasi utama">
+      <button type="button" data-nav="beranda" aria-current="page">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9 21v-6h6v6"/></svg>
+        Beranda
+      </button>
+      <button type="button" data-nav="persetujuan">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/></svg>
+        Setujui
+        <span class="count" data-count-badge>3</span>
+      </button>
+      <button type="button" data-nav="jadwal">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        Jadwal
+      </button>
+      <button type="button" data-nav="kas">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><path d="M7 15h4"/></svg>
+        Kas
+      </button>
+      <button type="button" data-nav="pengurus">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.2 3.4-5 6.5-5s5.7 1.8 6.5 5"/><path d="M16 5.5a3.5 3.5 0 0 1 0 6.5"/><path d="M17.5 15.3c2 .6 3.4 2.1 4 4.7"/></svg>
+        Pengurus
+      </button>
+      <button type="button" data-nav="board">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M9 21h6"/><path d="M12 17v4"/></svg>
+        Board
+      </button>
+    </nav>
+
+    <script>
+      "use strict";
+
+      /* ===== Model data contoh — field mengikuti spesifikasi backend =====
+         pengumuman: { jenis, isi, status, sumber, pengirim, peran, nomor, waktu }
+         status: draf -> menunggu_persetujuan -> tayang -> selesai (ditolak terpisah)
+         transaksi_kas: { jenis, kategori_dana, keterangan, dicatat_oleh, tanggal } */
+      var pengumuman = [
+        {
+          id: 1, jenis: "Poster kajian (foto + caption)", status: "menunggu_persetujuan",
+          sumber: "whatsapp", pengirim: "Ahmad Fauzi", peran: "Marbot", nomor: "0857-xxxx-3003",
+          waktu: "Hari ini, 06.12 WIB",
+          judul: "Kajian Rutin Ahad Ba'da Subuh",
+          isi: "Foto poster kajian dikirim marbot lewat WhatsApp. Caption: “Kajian rutin Ahad ba'da Subuh bersama Ust. Hasan Basri — tema: Fikih Sholat. Terbuka untuk umum.”",
+          poster: { arabic: "طَلَبُ الْعِلْمِ فَرِيضَةٌ", title: "Kajian Rutin Ahad Ba'da Subuh", meta: "Ust. Hasan Basri · Ahad, 05.00 WIB · Masjid Contoh An-Nur" },
+          prioritas: false
+        },
+        {
+          id: 2, jenis: "Teks pengumuman", status: "menunggu_persetujuan",
+          sumber: "whatsapp", pengirim: "Siti Rahmawati", peran: "Bendahara", nomor: "0813-xxxx-2002",
+          waktu: "Hari ini, 07.40 WIB",
+          judul: "Kerja Bakti Membersihkan Masjid",
+          isi: "“Assalamu'alaikum, mengingatkan kerja bakti membersihkan masjid hari Sabtu pukul 07.00 WIB. Mohon jamaah membawa peralatan masing-masing.” — nomor bendahara terdaftar, jadi kiriman sah dan tetap menunggu persetujuan ketua.",
+          poster: null, prioritas: false
+        },
+        {
+          id: 3, jenis: "Berita duka", status: "menunggu_persetujuan",
+          sumber: "whatsapp", pengirim: "Ahmad Fauzi", peran: "Marbot", nomor: "0857-xxxx-3003",
+          waktu: "Hari ini, 08.05 WIB",
+          judul: "Berita Duka — Warga Contoh RT 04",
+          isi: "“Innalillahi wa inna ilaihi raji'un. Telah berpulang Bapak Contoh bin Contoh, warga RT 04. Jenazah disholatkan ba'da Dzuhur di Masjid Contoh An-Nur.” Berita duka berformat khusus dan berprioritas tampil setelah disetujui.",
+          poster: null, prioritas: true
+        },
+        {
+          id: 4, jenis: "Running text", status: "tayang",
+          sumber: "whatsapp", pengirim: "H. Muhammad Ridwan", peran: "Ketua", nomor: "0812-xxxx-1001",
+          waktu: "Kemarin, 19.20 WIB",
+          judul: "Himbauan Ketua: Rapatkan Shaf",
+          isi: "Kiriman ketua dengan pengaturan auto-tayang: langsung berstatus tayang tanpa antrean, dan tercatat di log aktivitas.",
+          poster: null, prioritas: false, autoTayang: true
+        },
+        {
+          id: 5, jenis: "Teks pengumuman", status: "ditolak",
+          sumber: "whatsapp", pengirim: "Nomor tidak dikenal", peran: "Tidak terdaftar", nomor: "0899-xxxx-9999",
+          waktu: "Kemarin, 21.03 WIB",
+          judul: "Kiriman dari nomor tidak terdaftar",
+          isi: "Nomor pengirim tidak ada di daftar pengurus terdaftar di dashboard, jadi kiriman ditolak otomatis dan tidak membuat draf apa pun.",
+          poster: null, prioritas: false, tidakTerdaftar: true
+        }
+      ];
+
+      var logAktivitas = [
+        { kapan: "08.05", siapa: "Ahmad Fauzi (Marbot)", dari: "WhatsApp", apa: "Mengirim berita duka — masuk antrean persetujuan" },
+        { kapan: "07.40", siapa: "Siti Rahmawati (Bendahara)", dari: "WhatsApp", apa: "Mengirim teks pengumuman kerja bakti — masuk antrean persetujuan" },
+        { kapan: "06.12", siapa: "Ahmad Fauzi (Marbot)", dari: "WhatsApp", apa: "Mengirim foto poster kajian Ahad — masuk antrean persetujuan" },
+        { kapan: "Kemarin 21.03", siapa: "Sistem", dari: "WhatsApp", apa: "Menolak kiriman dari nomor 0899-xxxx-9999 (tidak terdaftar)" },
+        { kapan: "Kemarin 20.15", siapa: "Sistem", dari: "WhatsApp", apa: "Menolak perintah ubah kas dari WhatsApp — kas hanya dari dashboard" },
+        { kapan: "Kemarin 19.20", siapa: "H. Muhammad Ridwan (Ketua)", dari: "WhatsApp", apa: "Kiriman running text auto-tayang ke Board" }
+      ];
+
+      var transaksiKas = [
+        { tanggal: "Jumat, 20 Nov 2026", keterangan: "Infaq Jumat dari kotak amal", kategori: "Infaq umum", jenis: "Pemasukan", oleh: "Siti Rahmawati (Bendahara)" },
+        { tanggal: "Kamis, 19 Nov 2026", keterangan: "Donasi pembangunan tahap 2 (transfer)", kategori: "Pembangunan", jenis: "Pemasukan", oleh: "H. Muhammad Ridwan (Ketua)" },
+        { tanggal: "Rabu, 18 Nov 2026", keterangan: "Honor guru TPQ bulan November", kategori: "TPQ", jenis: "Pengeluaran", oleh: "Siti Rahmawati (Bendahara)" },
+        { tanggal: "Selasa, 17 Nov 2026", keterangan: "Pembelian karpet saf tambahan", kategori: "Infaq umum", jenis: "Pengeluaran", oleh: "H. Muhammad Ridwan (Ketua)" }
+      ];
+
+      /* Jadwal dasar hasil metode Kemenag (contoh) + koreksi & iqomah per waktu */
+      var jadwalDasar = [
+        { nama: "Subuh", jam: "04:22", koreksi: 2, iqomah: 15 },
+        { nama: "Terbit", jam: "05:37", koreksi: 0, iqomah: null },
+        { nama: "Dzuhur", jam: "11:48", koreksi: 2, iqomah: 10 },
+        { nama: "Ashar", jam: "15:10", koreksi: 2, iqomah: 10 },
+        { nama: "Maghrib", jam: "17:57", koreksi: 2, iqomah: 10 },
+        { nama: "Isya", jam: "19:10", koreksi: 2, iqomah: 10 }
+      ];
+      var iqomahKhusus = [
+        { nama: "Jumat (khutbah)", menit: 0, ket: "Mode Jumat: countdown iqomah mati, diganti slide khutbah & petugas Jumat" },
+        { nama: "Tarawih (Ramadan)", menit: 10, ket: "Berlaku pada mode khusus Ramadan" }
+      ];
+
+      function tambahMenit(jam, menit) {
+        var p = jam.split(":");
+        var total = parseInt(p[0], 10) * 60 + parseInt(p[1], 10) + menit;
+        total = ((total % 1440) + 1440) % 1440;
+        var h = Math.floor(total / 60), m = total % 60;
+        return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
+      }
+      function jamTayang(w) { return tambahMenit(w.jam, w.koreksi); }
+
+      /* ===== Navigasi ===== */
+      function navigasi(view) {
+        document.querySelectorAll(".view").forEach(function (v) { v.classList.remove("active"); });
+        var target = document.getElementById("view-" + view);
+        if (target) target.classList.add("active");
+        document.querySelectorAll("[data-nav]").forEach(function (b) {
+          if (b.getAttribute("data-nav") === view) b.setAttribute("aria-current", "page");
+          else b.removeAttribute("aria-current");
+        });
+        window.scrollTo({ top: 0 });
+      }
+      document.querySelectorAll("[data-nav]").forEach(function (b) {
+        b.addEventListener("click", function () { navigasi(b.getAttribute("data-nav")); });
+      });
+
+      /* ===== Render: hitungan & daftar tayang ===== */
+      function yangMenunggu() { return pengumuman.filter(function (p) { return p.status === "menunggu_persetujuan"; }); }
+      function yangTayang() { return pengumuman.filter(function (p) { return p.status === "tayang"; }); }
+
+      function renderHitungan() {
+        var m = yangMenunggu().length, t = yangTayang().length;
+        document.querySelectorAll("[data-count-badge]").forEach(function (el) {
+          el.textContent = m; el.style.display = m > 0 ? "" : "none";
+        });
+        document.querySelectorAll("[data-menunggu-count]").forEach(function (el) { el.textContent = m; });
+        document.querySelectorAll("[data-tayang-count]").forEach(function (el) { el.textContent = t + 3; }); /* + slide kas, QRIS, countdown */
+      }
+
+      function renderTayangList() {
+        var items = yangTayang().map(function (p) {
+          return { judul: p.judul, meta: p.jenis + " · dari " + p.pengirim + " (" + p.peran + ")" };
+        });
+        items.push({ judul: "Slide kas ringkasan", meta: "Saldo per kategori & total — infaq umum, pembangunan, TPQ (Rp —)" });
+        items.push({ judul: "Slide QRIS per kategori", meta: "Infaq umum · Pembangunan · TPQ" });
+        items.push({ judul: "Countdown Isra Mi'raj 1448 H", meta: "Event hari besar yang sudah ditetapkan & disetujui (contoh)" });
+        var html = items.map(function (it) {
+          return "<li><span class='badge tayang'>Tayang</span><span class='grow'><strong>" + it.judul + "</strong><br /><span class='meta'>" + it.meta + "</span></span></li>";
+        }).join("");
+        document.querySelectorAll("[data-tayang-list]").forEach(function (el) { el.innerHTML = html; });
+      }
+
+      function renderLog() {
+        var html = logAktivitas.slice(0, 8).map(function (l) {
+          return "<li><span class='l-time'>" + l.kapan + "</span><span class='l-what'><strong>" + l.siapa + "</strong> · via " + l.dari + " — " + l.apa + "</span></li>";
+        }).join("");
+        document.querySelectorAll("[data-log-list]").forEach(function (el) { el.innerHTML = html; });
+      }
+      function tambahLog(apa) {
+        logAktivitas.unshift({ kapan: "Baru saja", siapa: "H. Muhammad Ridwan (Ketua)", dari: "Dashboard", apa: apa });
+        renderLog();
+      }
+
+      /* ===== Render: antrean persetujuan ===== */
+      function badgeStatus(p) {
+        if (p.status === "menunggu_persetujuan") return "<span class='badge menunggu'>Menunggu persetujuan</span>";
+        if (p.status === "tayang") return "<span class='badge tayang'>Tayang di Board</span>";
+        if (p.status === "ditolak") return "<span class='badge ditolak'>Ditolak</span>";
+        return "<span class='badge draf'>Draf</span>";
+      }
+      function inisial(nama) {
+        if (nama.indexOf("tidak") >= 0 || nama.indexOf("Tidak") >= 0) return "?";
+        return nama.replace(/^H\.\s*/, "").split(" ").slice(0, 2).map(function (s) { return s.charAt(0); }).join("");
+      }
+      function renderAntrean() {
+        var list = document.querySelector("[data-queue-list]");
+        if (!yangMenunggu().length && !pengumuman.length) {
+          list.innerHTML = "<p class='empty-note'>Antrean kosong.</p>"; return;
+        }
+        list.innerHTML = pengumuman.map(function (p) {
+          var actions = "", note = "";
+          if (p.status === "menunggu_persetujuan") {
+            actions = "<div class='queue-actions'>" +
+              "<button type='button' class='btn primary' data-setujui='" + p.id + "'>Setujui &amp; tayangkan</button>" +
+              "<button type='button' class='btn danger-ghost' data-tolak='" + p.id + "'>Tolak kiriman</button></div>";
+          }
+          if (p.autoTayang && p.status === "tayang") {
+            note = "<div class='queue-note'>Auto-tayang: pengirim adalah ketua dengan pengaturan kiriman tanpa persetujuan. Tetap tercatat di log aktivitas.</div>";
+          }
+          if (p.tidakTerdaftar) {
+            note = "<div class='queue-note blocked'>Ditolak otomatis oleh sistem: nomor tidak terdaftar di dashboard. Tidak ada draf yang dibuat dan tidak ada yang tampil di Board.</div>";
+          }
+          if (p.status === "ditolak" && !p.tidakTerdaftar) {
+            note = "<div class='queue-note blocked'>Ditolak oleh ketua dari dashboard. Kiriman tidak tayang, tetapi penolakannya tetap tercatat di log aktivitas.</div>";
+          }
+          if (p.status === "tayang" && !p.autoTayang) {
+            note = "<div class='queue-note'>Sudah disetujui ketua — konten ini sekarang tampil di Board. Lihat di Pratinjau Board.</div>";
+          }
+          var poster = p.poster ?
+            "<div class='poster'><div class='p-arabic'>" + p.poster.arabic + "</div><div class='p-title'>" + p.poster.title + "</div><div class='p-meta'>" + p.poster.meta + "</div></div>" : "";
+          return "<article class='queue-item'>" +
+            "<div class='q-head'>" +
+              "<div class='avatar" + (p.tidakTerdaftar ? " gray" : (p.peran === "Ketua" ? " gold" : "")) + "' aria-hidden='true'>" + inisial(p.pengirim) + "</div>" +
+              "<div><div class='who'>" + p.pengirim + " · " + p.peran + "</div>" +
+              "<div class='meta'>via WhatsApp " + p.nomor + " · " + p.waktu + "</div></div>" +
+              "<div class='badges'>" + (p.prioritas ? "<span class='badge prioritas'>Prioritas tampil</span>" : "") + badgeStatus(p) + "</div>" +
+            "</div>" +
+            "<div class='queue-body'><strong>" + p.judul + "</strong> <span class='meta'>(" + p.jenis + ")</span><br />" + p.isi + "</div>" +
+            poster + actions + note +
+          "</article>";
+        }).join("");
+        list.querySelectorAll("[data-setujui]").forEach(function (b) {
+          b.addEventListener("click", function () { putuskan(parseInt(b.getAttribute("data-setujui"), 10), true); });
+        });
+        list.querySelectorAll("[data-tolak]").forEach(function (b) {
+          b.addEventListener("click", function () { putuskan(parseInt(b.getAttribute("data-tolak"), 10), false); });
+        });
+      }
+      function putuskan(id, setuju) {
+        var p = pengumuman.find(function (x) { return x.id === id; });
+        if (!p || p.status !== "menunggu_persetujuan") return;
+        p.status = setuju ? "tayang" : "ditolak";
+        tambahLog((setuju ? "Menyetujui" : "Menolak") + " kiriman " + p.peran.toLowerCase() + " " + p.pengirim + ": “" + p.judul + "”" + (setuju ? " — kini tayang di Board" : ""));
+        renderSemua();
+      }
+
+      /* ===== Render: jadwal ===== */
+      function renderTimes() {
+        var html = jadwalDasar.map(function (w, i) {
+          return "<div class='time-chip" + (i === 4 ? " next" : "") + "'><div class='t-name'>" + w.nama + "</div>" +
+            "<div class='t-time'>" + jamTayang(w) + "</div>" +
+            "<div class='t-iqomah'>" + (w.iqomah ? "Iqomah " + w.iqomah + " mnt" : "—") + "</div></div>";
+        }).join("");
+        document.querySelectorAll("[data-times-grid]").forEach(function (el) { el.innerHTML = html; });
+      }
+      function renderJadwal() {
+        renderTimes();
+
+        var kg = document.querySelector("[data-koreksi-grid]");
+        kg.innerHTML = jadwalDasar.map(function (w, i) {
+          return "<div class='field'><label for='koreksi-" + i + "'>" + w.nama + " (menit)</label>" +
+            "<input type='number' id='koreksi-" + i + "' data-koreksi='" + i + "' value='" + w.koreksi + "' min='-10' max='10' step='1' /></div>";
+        }).join("") + iqomahKhusus.map(function () { return ""; }).join("");
+        kg.querySelectorAll("[data-koreksi]").forEach(function (inp) {
+          inp.addEventListener("input", function () {
+            var i = parseInt(inp.getAttribute("data-koreksi"), 10);
+            var v = parseInt(inp.value, 10);
+            if (!isNaN(v)) { jadwalDasar[i].koreksi = v; renderTimes(); renderBoardTimes(); }
+          });
+          inp.addEventListener("change", function () {
+            var i = parseInt(inp.getAttribute("data-koreksi"), 10);
+            var v = parseInt(inp.value, 10);
+            if (!isNaN(v)) tambahLog("Mengubah koreksi menit " + jadwalDasar[i].nama + " menjadi " + (v >= 0 ? "+" : "") + v + " menit");
+          });
+        });
+
+        var ig = document.querySelector("[data-iqomah-grid]");
+        ig.innerHTML = jadwalDasar.filter(function (w) { return w.iqomah !== null; }).map(function (w) {
+          var i = jadwalDasar.indexOf(w);
+          return "<div class='field'><label for='iqomah-" + i + "'>" + w.nama + " (menit)</label>" +
+            "<input type='number' id='iqomah-" + i + "' data-iqomah='" + i + "' value='" + w.iqomah + "' min='0' max='30' step='1' /></div>";
+        }).join("") + iqomahKhusus.map(function (k, j) {
+          return "<div class='field'><label for='iqomah-khusus-" + j + "'>" + k.nama + "</label>" +
+            "<input type='number' id='iqomah-khusus-" + j + "' value='" + k.menit + "' min='0' max='30' step='1' disabled />" +
+            "<p class='hint'>" + k.ket + "</p></div>";
+        }).join("");
+        ig.querySelectorAll("[data-iqomah]").forEach(function (inp) {
+          inp.addEventListener("input", function () {
+            var i = parseInt(inp.getAttribute("data-iqomah"), 10);
+            var v = parseInt(inp.value, 10);
+            if (!isNaN(v)) { jadwalDasar[i].iqomah = v; renderTimes(); }
+          });
+          inp.addEventListener("change", function () {
+            var i = parseInt(inp.getAttribute("data-iqomah"), 10);
+            var v = parseInt(inp.value, 10);
+            if (!isNaN(v)) tambahLog("Mengubah durasi iqomah " + jadwalDasar[i].nama + " menjadi " + v + " menit");
+          });
+        });
+      }
+
+      /* ===== Render: kas ===== */
+      function renderKas() {
+        var tb = document.querySelector("[data-kas-tbody]");
+        tb.innerHTML = transaksiKas.map(function (t) {
+          return "<tr><td data-label='Tanggal'>" + t.tanggal + "</td><td data-label='Keterangan'>" + t.keterangan + "</td>" +
+            "<td data-label='Kategori'>" + t.kategori + "</td><td data-label='Jenis'>" + t.jenis + "</td>" +
+            "<td data-label='Jumlah' class='num'><strong>Rp —</strong></td><td data-label='Dicatat oleh'>" + t.oleh + "</td></tr>";
+        }).join("");
+      }
+      document.querySelector("[data-kas-form]").addEventListener("submit", function (e) {
+        e.preventDefault();
+        var ket = document.getElementById("kas-keterangan").value.trim();
+        if (!ket) return;
+        var t = {
+          tanggal: "Hari ini (contoh)", keterangan: ket,
+          kategori: document.getElementById("kas-kategori").value,
+          jenis: document.getElementById("kas-jenis").value,
+          oleh: "H. Muhammad Ridwan (Ketua)"
+        };
+        transaksiKas.unshift(t);
+        document.getElementById("kas-keterangan").value = "";
+        tambahLog("Mencatat kas " + t.jenis.toLowerCase() + " kategori " + t.kategori + ": “" + ket + "” (Rp —, data contoh)");
+        renderKas();
+      });
+
+      /* ===== Render: pratinjau Board ===== */
+      function slideBoard() {
+        var slides = yangTayang().map(function (p) {
+          if (p.poster) return { kicker: "Poster Kajian", title: p.poster.title, body: p.poster.meta, arabic: p.poster.arabic };
+          if (p.prioritas) return { kicker: "Berita Duka", title: p.judul, body: p.isi };
+          return { kicker: p.jenis, title: p.judul, body: p.isi };
+        });
+        slides.push({ kicker: "Kas Masjid — Ringkasan", title: "Infaq Umum · Pembangunan · TPQ", body: "Saldo per kategori: Rp — · Total: Rp — · Infaq dapat melalui QRIS per kategori di slide berikutnya." });
+        slides.push({ kicker: "Countdown Hari Besar", title: "Isra Mi'raj Nabi Muhammad ﷺ", body: "27 Rajab 1448 H — tanggal dan poster countdown ditetapkan & disetujui di dashboard (contoh)." });
+        return slides;
+      }
+      var slideIdx = 0, slideTimer = null;
+      function renderBoardTimes() {
+        var el = document.querySelector("[data-board-times]");
+        if (!el) return;
+        el.innerHTML = "<div class='bt-title'>Jadwal Sholat — Kemenag</div>" + jadwalDasar.map(function (w, i) {
+          return "<div class='bt-row" + (i === 4 ? " next" : "") + "'><span>" + w.nama + "</span><span>" + jamTayang(w) + "</span></div>";
+        }).join("");
+      }
+      function renderBoardSlide() {
+        var slides = slideBoard();
+        if (slideIdx >= slides.length) slideIdx = 0;
+        var s = slides[slideIdx];
+        var el = document.querySelector("[data-board-slide]");
+        el.innerHTML = (s.arabic ? "<div class='s-arabic'>" + s.arabic + "</div>" : "") +
+          "<div class='s-kicker'>" + s.kicker + "</div><div class='s-title'>" + s.title + "</div><div class='s-body'>" + s.body + "</div>";
+        document.querySelector("[data-slide-pos]").textContent = "Slide " + (slideIdx + 1) + " dari " + slides.length + " — " + s.kicker;
+        var ticker = yangTayang().map(function (p) { return p.judul; }).join("  •  ");
+        document.querySelector("[data-board-ticker]").textContent =
+          "Selamat datang di Masjid Contoh An-Nur  •  " + ticker + "  •  Mohon senyapkan HP saat sholat berlangsung  •  ";
+      }
+      function langkahSlide(delta) {
+        var n = slideBoard().length;
+        slideIdx = ((slideIdx + delta) % n + n) % n;
+        renderBoardSlide();
+        mulaiAutoSlide();
+      }
+      function mulaiAutoSlide() {
+        if (slideTimer) clearInterval(slideTimer);
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+        slideTimer = setInterval(function () {
+          if (!document.getElementById("view-board").classList.contains("active")) return;
+          slideIdx = (slideIdx + 1) % slideBoard().length;
+          renderBoardSlide();
+        }, 8000);
+      }
+      document.querySelector("[data-slide-prev]").addEventListener("click", function () { langkahSlide(-1); });
+      document.querySelector("[data-slide-next]").addEventListener("click", function () { langkahSlide(1); });
+
+      function renderSemua() {
+        renderHitungan(); renderTayangList(); renderLog(); renderAntrean(); renderBoardSlide();
+      }
+
+      renderJadwal();
+      renderKas();
+      renderBoardTimes();
+      renderSemua();
+      mulaiAutoSlide();
+    </script>
+  </body>
+</html>

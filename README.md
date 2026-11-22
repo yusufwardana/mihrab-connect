@@ -46,6 +46,7 @@ Palet: hijau gelap, emas lembut, putih hangat.
 | `docs/masjid-board-fitur-dan-usp.md` | Dokumen sumber: fitur utama & USP Masjid Board. |
 | `frontend/masjid-board.html` | Export landing page Masjid Board v2, satu file (gambar inline; font masih dari Google, fallback bila offline). |
 | `frontend/mihrab-connect-board.html` | Export prototipe Board P0, satu file mandiri penuh (font & gambar inline, tanpa dependensi eksternal). |
+| `frontend/mihrab-connect-admin.html` | Export prototipe Admin P0, satu file (font masih dari Google, fallback bila offline; tanpa backend nyata). |
 
 Dokumen PDF (7 halaman konsep brand, 5 halaman scope) adalah hasil render
 dari dokumen-dokumen di atas dan tersimpan di workspace; repo ini menyimpan
@@ -68,6 +69,8 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   ditandatangani pengurus Sarino — lolos pilot secara formal, tetapi
   jawaban wawancara kosong dan nama marbot pengirim WA belum tertulis
   (lihat `docs/hasil-validasi-al-furqon.md`).
+- Prototipe Admin P0 selesai 22 Nov 2026 (6 layar, data contoh, tanpa
+  backend nyata); proyek Supabase belum dibuat.
 - Branding final menunggu penilaian konsultan KI.
 - Stack Admin dikunci 22 Nov 2026: Vercel + Supabase (tier gratis),
   hosting ikut Vercel.
