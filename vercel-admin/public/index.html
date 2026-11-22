@@ -1224,6 +1224,7 @@
           await api("/api/pengumuman/" + encodeURIComponent(id) + (setuju ? "/setujui" : "/tolak"), { method: "POST" });
           sembunyikanError();
           await muatSemua();
+          tampilkanSukses(setuju ? "Kiriman disetujui — konten tampil di Board." : "Kiriman ditolak.");
         } catch (e) {
           tampilkanError("Gagal " + (setuju ? "menyetujui" : "menolak") + " kiriman: " + e.message);
           if (btn) btn.disabled = false;
