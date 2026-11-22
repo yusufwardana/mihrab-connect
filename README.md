@@ -71,8 +71,10 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   jawaban wawancara kosong dan nama marbot pengirim WA belum tertulis
   (lihat `docs/hasil-validasi-al-furqon.md`).
 - Prototipe Admin P0 selesai 22 Nov 2026 (6 layar, data contoh, tanpa
-  backend nyata); skema Supabase siap di `docs/supabase-schema.sql`,
-  proyek Supabase sedang dibuat.
+  backend nyata). Proyek Supabase **mihrab-connect** dibuat 22 Nov 2026
+  (Singapura, tier gratis, ref `rxslkuavzquhfqpycthb`); skema v2 dari
+  `docs/supabase-schema.sql` diterapkan dan terverifikasi — 14 tabel
+  di schema `public` beserta RLS starter dan data contoh.
 - Branding final menunggu penilaian konsultan KI.
 - Stack Admin dikunci 22 Nov 2026: Vercel + Supabase (tier gratis),
   hosting ikut Vercel.
