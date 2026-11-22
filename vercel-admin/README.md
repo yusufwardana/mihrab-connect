@@ -198,9 +198,12 @@ bagian yang terikat data mengikuti skema.
     `tanggal` saja — jangan tambah `.order("created_at")` untuk tabel
     ini. Duplikasi event memakai tanggal +1 tahun (29 Feb menjadi
     28 Feb bila tahun tujuan bukan kabisat).
-15. **Hapus event/kajian memakai `confirm()` browser.** Admin belum
-    punya pola hapus sebelumnya, jadi tidak ada dialog khusus.
-    Penghapusan langsung menghapus baris dan tercatat di
+15. **Hapus event/kajian memakai konfirmasi dua langkah di tombol.**
+    `window.confirm()` tidak bisa diandalkan (di beberapa browser
+    dialognya tidak muncul sehingga hapus tidak pernah jalan —
+    ditemukan saat verifikasi live 22 Nov 2026): klik pertama pada
+    "Hapus" mengubah tombol menjadi "Yakin hapus?", klik kedua baru
+    menghapus. Penghapusan langsung menghapus baris dan tercatat di
     `log_aktivitas` (`aksi: "Menghapus event"` / `"Menghapus kajian"`).
     Pesan sukses singkat tampil di banner hijau `[data-api-sukses]`
     (baru di Event P0); banner error `[data-api-error]` menyembunyikan

@@ -1489,8 +1489,15 @@
           });
           listEv.querySelectorAll("[data-ev-hapus]").forEach(function (btn) {
             btn.addEventListener("click", function () {
-              var nama = btn.getAttribute("data-ev-nama") || "event ini";
-              if (!window.confirm("Hapus event \"" + nama + "\"?")) return;
+              // Konfirmasi dua langkah (bukan window.confirm): dialog
+              // bawaan browser tidak muncul di semua browser, sehingga
+              // hapus tidak pernah jalan. Klik pertama mempersenjatai
+              // tombol, klik kedua menghapus.
+              if (btn.getAttribute("data-armed") !== "1") {
+                btn.setAttribute("data-armed", "1");
+                btn.textContent = "Yakin hapus?";
+                return;
+              }
               kirimEvent("DELETE", { target: "event", id: btn.getAttribute("data-ev-hapus") },
                 "Event dihapus.", "Gagal menghapus event", btn);
             });
@@ -1519,8 +1526,11 @@
           });
           listKj.querySelectorAll("[data-kj-hapus]").forEach(function (btn) {
             btn.addEventListener("click", function () {
-              var judul = btn.getAttribute("data-kj-judul") || "kajian ini";
-              if (!window.confirm("Hapus kajian \"" + judul + "\"?")) return;
+              if (btn.getAttribute("data-armed") !== "1") {
+                btn.setAttribute("data-armed", "1");
+                btn.textContent = "Yakin hapus?";
+                return;
+              }
               kirimEvent("DELETE", { target: "kajian", id: btn.getAttribute("data-kj-hapus") },
                 "Kajian dihapus.", "Gagal menghapus kajian", btn);
             });
