@@ -64,6 +64,10 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   (panel simulasi di TV, overlay sholat, font offline) sudah diperbaiki.
 - Spesifikasi backend selesai (10 halaman).
 - Kit validasi untuk Masjid Al Furqon disetujui founder 22 Nov 2026.
+- Validasi 22 Nov 2026: 4/4 kriteria pilot "Ya", persetujuan pilot
+  ditandatangani pengurus Sarino — lolos pilot secara formal, tetapi
+  jawaban wawancara kosong dan nama marbot pengirim WA belum tertulis
+  (lihat `docs/hasil-validasi-al-furqon.md`).
 - Branding final menunggu penilaian konsultan KI.
 - Stack Admin dikunci 22 Nov 2026: Vercel + Supabase (tier gratis),
   hosting ikut Vercel.
