@@ -154,6 +154,16 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   400. Belum dibangun: PUT edit pengumuman. Data uji dibersihkan
   (1 pengumuman uji + 1 baris arsip uji dihapus; pengumuman/arsip
   kembali 0; log tetap sebagai jejak audit).
+- Edit pengumuman selesai + terverifikasi live 22 Nov 2026
+  21:39–21:40 WIB (commit c513b2fd): PUT /api/pengumuman (isi dan/atau
+  jenis) + tombol "Ubah" dengan form edit inline di layar Persetujuan.
+  Hanya status menunggu/draft yang bisa diubah (tayang harus diakhiri
+  dulu, selesai sudah masuk arsip — server menolak 409). Terverifikasi
+  live: ubah pengumuman menunggu (isi + jenis Pengumuman → Kegiatan)
+  berhasil dan tetap menunggu; pengumuman tayang tidak punya tombol
+  Ubah; log "Mengubah pengumuman" tercatat. Data uji dibersihkan
+  (2 pengumuman uji + 1 baris arsip uji dihapus; pengumuman/arsip
+  kembali 0; log tetap sebagai jejak audit).
 - Board live di Vercel 22 Nov 2026: proyek `mihrab-connect-board`
   (team 0x's projects, git-linked ke repo ini, root `vercel-board`),
   https://mihrab-connect-board-0xs-projects-798a67b4.vercel.app —
