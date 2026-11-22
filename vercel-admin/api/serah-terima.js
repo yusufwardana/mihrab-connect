@@ -99,7 +99,6 @@ module.exports = async (req, res) => {
         .select("id, dari_pengurus, ke_pengurus, tanggal, catatan")
         .eq("masjid_id", masjidId)
         .order("tanggal", { ascending: false })
-        .order("created_at", { ascending: false })
         .limit(50);
       if (error) throw error;
       const dasar = await muatDasar(sb, masjidId);

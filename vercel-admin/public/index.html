@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="color-scheme" content="light dark" />
     <link rel="icon" href="data:," />
-    <title>Mihrab Connect Admin — Masjid Contoh An-Nur</title>
+    <title>Mihrab Connect Admin — Masjid Jami' Abdul Latief Al Furqon</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet" />
@@ -395,7 +395,7 @@
       <div class="main">
         <header class="topbar">
           <div class="masjid" data-masjid-nama>
-            Masjid Contoh An-Nur
+            Masjid Jami' Abdul Latief Al Furqon
             <small>Akun lembaga (DKM) — bukan akun pribadi pengurus</small>
           </div>
           <div class="spacer"></div>
@@ -419,13 +419,13 @@
             <div class="grid cols-3">
               <div class="card">
                 <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="13" rx="2"/><path d="M9 21h6"/><path d="M12 17v4"/></svg> Status Board</h3>
-                <div class="stat-big"><span data-tayang-count>4</span> konten tayang</div>
+                <div class="stat-big"><span data-tayang-count>…</span> konten tayang</div>
                 <p class="stat-label">Mode normal · Hanya konten berstatus <strong>tayang</strong> yang dikirim ke Board.</p>
                 <div class="card-link"><button type="button" class="link-btn" data-nav="board">Lihat pratinjau Board →</button></div>
               </div>
               <div class="card">
                 <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/><path d="M12 3l7 3v5c0 4.5-3 8.5-7 10-4-1.5-7-5.5-7-10V6z"/></svg> Menunggu Persetujuan</h3>
-                <div class="stat-big"><span data-menunggu-count>3</span> kiriman</div>
+                <div class="stat-big"><span data-menunggu-count>…</span> kiriman</div>
                 <p class="stat-label">Kiriman WhatsApp dari pengurus terdaftar. Belum tampil di Board sampai ketua menyetujui.</p>
                 <div class="card-link"><button type="button" class="link-btn" data-nav="persetujuan">Buka antrean persetujuan →</button></div>
               </div>
@@ -659,7 +659,7 @@
             </div>
 
             <div class="card">
-              <h3>Daftar Pengurus (Contoh)</h3>
+              <h3>Daftar Pengurus</h3>
               <div class="table-wrap">
                 <table class="stack">
                   <thead><tr><th>Nama</th><th>Peran</th><th>Nomor WhatsApp terdaftar</th><th>Kiriman butuh persetujuan ketua</th><th>Status</th></tr></thead>
@@ -699,10 +699,10 @@
             </div>
 
             <div class="board-frame">
-              <div class="board-screen" role="img" aria-label="Pratinjau layar TV Board Masjid Contoh An-Nur">
+              <div class="board-screen" role="img" aria-label="Pratinjau layar TV Board Masjid Jami' Abdul Latief Al Furqon">
                 <div class="board-top">
                   <div>
-                    <div class="b-name" data-board-nama>Masjid Contoh An-Nur</div>
+                    <div class="b-name" data-board-nama>Masjid Jami' Abdul Latief Al Furqon</div>
                     <div style="color:#d9cf9f;font-size:.85em">MIHRAB CONNECT BOARD</div>
                   </div>
                   <div class="b-date" data-board-tanggal>Ahad, 22 November 2026<br />2 Jumadilawal 1448 H</div>
@@ -1154,12 +1154,20 @@
               var nilai = inp ? inp.value.trim() : "";
               btn.disabled = true;
               try {
-                await api("/api/kas", {
+                var hasil = await api("/api/kas", {
                   method: "PUT",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ kategori_id: id, qris_url: nilai || null }),
                 });
                 sembunyikanError();
+                // Perbarui status langsung dari respons PUT agar tidak
+                // menunggu muatSemua() selesai.
+                if (hasil && hasil.kategori && state.kas && state.kas.kategori) {
+                  state.kas.kategori.forEach(function (k) {
+                    if (k.id === hasil.kategori.id) k.qris_url = hasil.kategori.qris_url;
+                  });
+                  renderKas();
+                }
                 await muatSemua();
               } catch (err) {
                 tampilkanError("Gagal menyimpan QRIS: " + err.message);
