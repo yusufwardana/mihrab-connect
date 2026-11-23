@@ -735,13 +735,14 @@
       "use strict";
 
       /* ---------- Tema Board (?tema=gelap|terang|emas|biru-malam) ----------
-         Tanpa param / param tidak dikenal -> gelap (nilai dasar di .board).
-         Nilai ditaruh di <html data-tema> supaya override CSS menang. */
+         Tanpa param / param tidak dikenal -> biru-malam (default, dipilih
+         founder 23 Nov 2026). Nilai ditaruh di <html data-tema> supaya
+         override CSS menang. */
       var TEMA_OK = { "gelap":1, "terang":1, "emas":1, "biru-malam":1 };
       var temaParam = "";
       try { temaParam = new URLSearchParams(window.location.search).get("tema") || ""; } catch (e) { temaParam = ""; }
       temaParam = String(temaParam).toLowerCase();
-      if (!TEMA_OK[temaParam]) temaParam = "gelap";
+      if (!TEMA_OK[temaParam]) temaParam = "biru-malam";
       document.documentElement.setAttribute("data-tema", temaParam);
 
       /* ---------- Sumber data: paket tayang live dari Admin ---------- */
