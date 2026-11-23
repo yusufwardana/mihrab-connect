@@ -47,7 +47,7 @@ Palet: hijau gelap, emas lembut, putih hangat.
 | `docs/hasil-validasi-al-furqon.md` | Transkripsi setia hasil validasi di Masjid Al Furqon (22 Nov 2026). |
 | `docs/supabase-schema.sql` | Skema Supabase (Postgres) dari spek backend — 14 tabel, RLS least-privilege (migrasi 003), data contoh. |
 | `vercel-admin/` | Kode Admin live (Vercel, root `vercel-admin`): 12 file `api/`, 3 file `lib/`, `public/index.html`, `vercel.json`, README dengan daftar deviasi. |
-| `vercel-board/` | Kode Board live (Vercel, root `vercel-board`): `api/board.js`, `lib/`, `public/index.html`, `vercel.json`. |
+| `vercel-board/` | Kode Board live (Vercel, root `vercel-board`, React 19 + Vite 8 + Tailwind 4 sejak 23 Nov 2026): `api/board.js`, `lib/`, `src/`, `index.html`, `vercel.json`. Build: `npm run build` → `dist/`. |
 | `frontend/masjid-board.html` | Export landing page Masjid Board v2, satu file (gambar inline; font masih dari Google, fallback bila offline). |
 | `frontend/mihrab-connect-board.html` | Export prototipe Board P0, satu file mandiri penuh (font & gambar inline, tanpa dependensi eksternal). |
 | `frontend/mihrab-connect-admin.html` | Export prototipe Admin P0, satu file (font masih dari Google, fallback bila offline; tanpa backend nyata). |
@@ -82,6 +82,18 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   cacat: baris passed 2,05:1, diperbaiki ke 5,90:1, terverifikasi
   ulang live). Tema default: **biru-malam** (dipilih founder 23 Nov
   2026; sebelumnya gelap).
+- Board: REDESIGN React 19 + Vite 8 + Tailwind 4, selesai +
+  terverifikasi live 23 Nov 2026 20:58–20:59 WIB (commit e7551d02)
+  — hijau zamrud `#05261B`/`#0A3D2D`, emas `#D4AF37`, pola geometris
+  Islami, siluet lengkung mihrab di kartu countdown, serif untuk nama
+  masjid, ticker marquee, sistem tema `?tema=` dipertahankan. Data
+  tetap asli dari `/api/board` (kas kosong → `Rp —`, QRIS null →
+  empty state). YANG BERUBAH: rotasi slide (poster pengumuman,
+  petugas Jumat, kajian) TIDAK dirender lagi; overlay penuh mode
+  sholat diganti peredupan; label "Nama kerja — branding belum
+  final" hilang. BUTUH browser modern — WebView bawaan Android 6
+  STB ZTE B860H tidak bisa, perlu update WebView/Chrome; fallback
+  CSS lama tidak berlaku.
 - Spesifikasi backend selesai (10 halaman).
 - Kit validasi untuk Masjid Al Furqon disetujui founder 22 Nov 2026.
 - Validasi 22 Nov 2026: 4/4 kriteria pilot "Ya", persetujuan pilot
