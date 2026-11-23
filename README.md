@@ -75,6 +75,13 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
 - Landing page Masjid Board v2 sudah publik.
 - Prototipe Board P0 (layar TV) selesai, lolos audit; temuan audit
   (panel simulasi di TV, overlay sholat, font offline) sudah diperbaiki.
+- Board: fallback CSS WebView lama selesai + terverifikasi live 23 Nov
+  2026 19:44 WIB (commit b7df1c3f) — nilai cadangan untuk clamp, grid,
+  gap, aspect-ratio, min(), inset + blok `@supports not
+  (aspect-ratio: 1/1)`; target STB ZTE B860H v2.1 (Android 6).
+  Tampilan browser modern tidak berubah (computed style identik);
+  verifikasi WebView lama hanya by-construction, belum dites di STB
+  sungguhan.
 - Spesifikasi backend selesai (10 halaman).
 - Kit validasi untuk Masjid Al Furqon disetujui founder 22 Nov 2026.
 - Validasi 22 Nov 2026: 4/4 kriteria pilot "Ya", persetujuan pilot
