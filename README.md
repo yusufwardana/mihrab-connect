@@ -45,7 +45,7 @@ Palet: hijau gelap, emas lembut, putih hangat.
 | `docs/backend-spec.md` | Spesifikasi backend (model data, alur persetujuan, endpoint API, matriks izin, perilaku offline). |
 | `docs/masjid-board-fitur-dan-usp.md` | Dokumen sumber: fitur utama & USP Masjid Board. |
 | `docs/hasil-validasi-al-furqon.md` | Transkripsi setia hasil validasi di Masjid Al Furqon (22 Nov 2026). |
-| `docs/supabase-schema.sql` | Skema Supabase (Postgres) dari spek backend — 14 tabel, RLS starter, data contoh. |
+| `docs/supabase-schema.sql` | Skema Supabase (Postgres) dari spek backend — 14 tabel, RLS least-privilege (migrasi 003), data contoh. |
 | `vercel-admin/` | Kode Admin live (Vercel, root `vercel-admin`): 12 file `api/`, 3 file `lib/`, `public/index.html`, `vercel.json`, README dengan daftar deviasi. |
 | `vercel-board/` | Kode Board live (Vercel, root `vercel-board`): `api/board.js`, `lib/`, `public/index.html`, `vercel.json`. |
 | `frontend/masjid-board.html` | Export landing page Masjid Board v2, satu file (gambar inline; font masih dari Google, fallback bila offline). |
@@ -214,8 +214,12 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
 - Keputusan terbuka: brand final.
 - Menunggu / belum dikerjakan: instalasi TV
   Board di Masjid Al Furqon (masjid setuju pasang, belum tercatat
-  terpasang); verifikasi live login Admin + matikan SSO Vercel Admin
-  setelahnya; perketat RLS Supabase per-peran sebelum dipakai jamaah;
-  celah bukti validasi (satu contoh insiden tercatat, lingkari LOLOS
-  PILOT di formulir, tanggal tanda tangan Sarino, fitur paling
-  dibutuhkan + keberatan terbesar).
+  terpasang); celah bukti validasi (satu contoh insiden tercatat,
+  lingkari LOLOS PILOT di formulir, tanggal tanda tangan Sarino,
+  fitur paling dibutuhkan + keberatan terbesar).
+- Selesai 23 Nov 2026: login Admin per pengurus terverifikasi live
+  22 Nov 23:02–23:18 WIB + SSO Vercel Admin dimatikan 22 Nov 23:19 WIB;
+  RLS diperketat 23 Nov 12:46 WIB (migrasi 003: hapus policy starter,
+  authenticated hanya SELECT konten publik, pengurus/kas/log/arsip
+  ditolak penuh untuk akses langsung; Admin/Board tidak berubah
+  karena memakai service_role).
