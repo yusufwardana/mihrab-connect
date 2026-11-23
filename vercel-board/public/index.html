@@ -153,8 +153,18 @@
       html[data-tema="terang"] .b-ticker{ background:rgba(23,53,42,.08); }
       html[data-tema="terang"] .slide-poster .veil{ background:linear-gradient(180deg, rgba(247,241,227,.08) 30%, rgba(247,241,227,.95) 78%); }
       html[data-tema="terang"] .sholat-overlay{ background:linear-gradient(180deg, #FBF8F0, #F1EAD6); }
-      html[data-tema="terang"] .sched-row{ background:rgba(23,53,42,.05); }
+      html[data-tema="terang"] .sched-row{ background:rgba(23,53,42,.09); }
       html[data-tema="terang"] .sched-row.next{ background:linear-gradient(90deg, rgba(138,109,47,.14), rgba(138,109,47,.05)); }
+      /* Baris passed di tema terang: opacity .48 membuat teks nyaris tak terbaca
+         (nama 2,05:1, jam 2,64:1). Dinaikkan ke .8 + teks digelapkan ke --warm
+         supaya kontras passed jadi 5,90:1 untuk nama, jam, dan label iqomah.
+         .tm ikut digelapkan: baris next+passed (Subuh setelah Isya) memakai
+         emas #7A5E24 yang pada opacity .8 hanya 3,19:1 — kini 5,88:1. */
+      html[data-tema="terang"] .sched-row.passed{ opacity:.8; }
+      html[data-tema="terang"] .sched-row.passed .nm,
+      html[data-tema="terang"] .sched-row.passed .tm,
+      html[data-tema="terang"] .sched-row.passed .iq{ color:var(--warm); }
+      html[data-tema="terang"] .sched-row.passed .iq{ opacity:1; }
       html[data-tema="terang"] .hero-bar{ background:rgba(23,53,42,.15); }
       html[data-tema="terang"] .qris-box{ background:rgba(23,53,42,.05); }
       html[data-tema="terang"] .slide-dots i{ background:rgba(23,53,42,.28); }
