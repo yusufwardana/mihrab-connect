@@ -80,7 +80,8 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   gelap (default), terang, emas, biru-malam, dipilih lewat
   `?tema=`; kontras teks/latar utama tiap tema ≥4,5:1 (terang sempat
   cacat: baris passed 2,05:1, diperbaiki ke 5,90:1, terverifikasi
-  ulang live). Tema default tidak berubah.
+  ulang live). Tema default: **biru-malam** (dipilih founder 23 Nov
+  2026; sebelumnya gelap).
 - Spesifikasi backend selesai (10 halaman).
 - Kit validasi untuk Masjid Al Furqon disetujui founder 22 Nov 2026.
 - Validasi 22 Nov 2026: 4/4 kriteria pilot "Ya", persetujuan pilot
