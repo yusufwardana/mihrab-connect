@@ -1,13 +1,10 @@
 # Mihrab Connect Board — Live (Vercel)
 
-Papan informasi digital TV (16:9) yang tersambung ke data live. Satu file
-HTML statis di `public/` + satu function baca-saja `api/board.js` yang
+Papan informasi digital TV (16:9) yang tersambung ke data live. **Redesign
+23 Nov 2026: React + Vite + Tailwind CSS 4** (sebelumnya satu file HTML
+vanilla ES5 — salinan lamanya di `/tmp/board-vanilla-backup.html`, BUKAN di
+repo). Build output `dist/` + satu function baca-saja `api/board.js` yang
 mengambil paket tayang dari Supabase.
-
-Sumber: prototipe Board P0 (`../frontend/mihrab-connect-board.html`) yang
-diubah lewat skrip transformasi (`/tmp/transform-board.py`, skrip live di
-`/tmp/board-live-script.js`) — panel simulasi dihapus, semua data contoh
-dihapus, data layer diganti `fetch()` ke API.
 
 > **Belum di-deploy dan belum di-push.** Direktori ini hanya berisi kode
 > siap deploy. Tidak ada kunci apa pun di dalam file-file di sini.
@@ -16,15 +13,62 @@ dihapus, data layer diganti `fetch()` ke API.
 
 ```
 vercel-board/
-├── package.json     # dependensi: @supabase/supabase-js (untuk api/board.js)
-├── vercel.json      # static dari public/, /api/* ke functions
-├── README.md        # file ini
+├── package.json     # react, react-dom, vite, tailwindcss (+ @supabase/supabase-js untuk api/board.js)
+├── vite.config.mjs  # plugin React + Tailwind; build -> dist/
+├── vercel.json      # framework vite, buildCommand npm run build, outputDirectory dist
+├── index.html       # entry Vite (skrip tema inline di <head>)
+├── src/
+│   ├── main.jsx     # entry React
+│   ├── App.jsx      # fetch /api/board + polling 60 dtk + jam 1 dtk + tema
+│   ├── data.js      # MOCK_PAYLOAD (referensi bentuk/fixture saja) + computeBoardState
+│   ├── index.css    # token tema + pola geometris + marquee
+│   ├── assets/fonts.css  # font self-hosted (Plus Jakarta Sans, Cormorant Garamond)
+│   └── components/  # Header, PrayerSchedule, HeroCountdown, FinancePanel, Ticker, icons
 ├── lib/             # klien Supabase + hitung jadwal (salinan dari vercel-admin)
-├── api/
-│   └── board.js     # GET /api/board (paket tayang) — salinan dari vercel-admin
-└── public/
-    └── index.html   # Board live (font/gambar inline, ~944 KB)
+└── api/
+    └── board.js     # GET /api/board (paket tayang) — TIDAK BERUBAH
 ```
+
+## Build & cek lokal
+
+```
+npm install
+npm run build     # -> dist/ (dipakai Vercel)
+npm run check     # node --check api/board.js + lib/*
+npm run dev       # dev server (butuh /api/board — pakai fixture /tmp/mock-api.mjs)
+npm run preview   # sajikan dist/ di :4173 (proxy /api/board -> :8787, lokal saja)
+```
+
+Verifikasi render 23 Nov 2026: `npm run build` lolos; screenshot headless
+Chromium 1920×1080 + 1366×768 untuk tema biru-malam (default), gelap,
+terang, emas — tanpa overflow X/Y, tanpa console error, keenam baris jadwal
+terbaca, countdown jalan. Fixture: `/tmp/mock-api.mjs` + `/tmp/shot-board.mjs`
+(tidak ikut di-push).
+
+## Perubahan dari Board vanilla (redesign 23 Nov 2026)
+
+- Layout tetap 3 kolom + header + footer, tapi mengikuti spek founder:
+  header 3 bagian (brand+badges / nama masjid serif emas / jam besar +
+  detik), hero countdown 65% + duo event/murotal 35%, kanan kas + QRIS,
+  footer ticker **marquee berjalan** (dulu rotasi di tempat).
+- Tema `?tema=` dipertahankan (gelap/terang/emas/biru-malam, default
+  biru-malam); token baru menyesuaikan tiap tema. Tema gelap = spek persis
+  (#05261B / #0A3D2D / emas #D4AF37 / #F5D061). Perbaikan kontras baris
+  passed tema terang (5,90:1) ikut dibawa.
+- Pola geometris Islami halus (opacity ~5%) + siluet lengkung mihrab di
+  kartu hero + ornamen pembatas emas di bawah nama masjid.
+- **Dihapus mengikuti layout baru:** rotasi slide (poster pengumuman,
+  petugas Jumat, kajian) — data kajian tetap masuk payload tapi tidak
+  dirender. Label kejujuran "Nama kerja — branding belum final" di bawah
+  logo juga tidak ada di layout baru.
+- Mode sholat: layar meredup + hero menampilkan status (overlay penuh
+  lama diganti peredupan saja). Mode Jumat (Dzuhur → Jumat, khutbah)
+  dipertahankan.
+- **Batasan jujur:** build React+Tailwind butuh browser modern. WebView
+  bawaan Android 6 di STB ZTE B860H TIDAK BISA menjalankan build ini
+  (butuh update WebView/Chrome di STB). Fallback CSS WebView lama dari
+  Board vanilla tidak berlaku untuk build ini.
+
 
 ## Sumber data
 
