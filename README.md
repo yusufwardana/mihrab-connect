@@ -88,12 +88,17 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   Islami, siluet lengkung mihrab di kartu countdown, serif untuk nama
   masjid, ticker marquee, sistem tema `?tema=` dipertahankan. Data
   tetap asli dari `/api/board` (kas kosong → `Rp —`, QRIS null →
-  empty state). YANG BERUBAH: rotasi slide (poster pengumuman,
-  petugas Jumat, kajian) TIDAK dirender lagi; overlay penuh mode
-  sholat diganti peredupan; label "Nama kerja — branding belum
-  final" hilang. BUTUH browser modern — WebView bawaan Android 6
-  STB ZTE B860H tidak bisa, perlu update WebView/Chrome; fallback
-  CSS lama tidak berlaku.
+  empty state). YANG BERUBAH: overlay penuh mode sholat diganti
+  peredupan; label "Nama kerja — branding belum final" hilang.
+  BUTUH browser modern — WebView bawaan Android 6 STB ZTE B860H
+  tidak bisa, perlu update WebView/Chrome; fallback CSS lama tidak
+  berlaku. Slide kajian + petugas Jumat DIKEMBALIKAN 23 Nov 2026
+  21:15 WIB (commit 9cd4af6b, terverifikasi live): strip full-width
+  antara kolom utama dan ticker, rotasi 9 detik + dot; `/api/board`
+  kini memuat `petugas_jumat` (Jumat terdekat, khutbah = Dzuhur di
+  tanggal itu); kajian tampil hanya bila ada yang tayang, petugas
+  kosong tampil "Belum ada petugas Jumat". Slide poster pengumuman
+  tetap tidak ada (pengumuman di ticker marquee).
 - Spesifikasi backend selesai (10 halaman).
 - Kit validasi untuk Masjid Al Furqon disetujui founder 22 Nov 2026.
 - Validasi 22 Nov 2026: 4/4 kriteria pilot "Ya", persetujuan pilot
