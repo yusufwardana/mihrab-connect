@@ -50,6 +50,7 @@ export const MOCK_PAYLOAD = {
   event: [{ id: "mock-ev", nama: "Ramadan 1448 H", tanggal: "2027-02-18" }],
   countdown_berikutnya: { id: "mock-ev", nama: "Ramadan 1448 H", tanggal: "2027-02-18" },
   kajian: [],
+  petugas_jumat: null,
   murotal: { surah: "Ar-Rahman", qari: "Contoh Qari", durasi_menit: 30, volume: 70, aktif: true },
   tanggal: { masehi: "Senin, 23 November 2026", hijriyah: "12 Jumadilakhir 1448 H" },
 };
@@ -116,6 +117,8 @@ export function computeBoardState(payload, now, syncStatus) {
     financeData: { categories: [], total: null, allNull: true },
     qrisItems: [],
     announcements: [],
+    kajianBerikutnya: null,
+    petugasJumat: null,
     friday: isFriday,
     sholatMode: false,
   };
@@ -140,6 +143,44 @@ export function computeBoardState(payload, now, syncStatus) {
   model.announcements = tayang.length
     ? tayang.map((p) => p.isi)
     : ["Mihrab Connect Board — " + (m.nama || "Masjid")];
+
+  // Slide kajian berikutnya: kajian tayang pertama (payload sudah difilter
+  // status tayang + tanggal >= hari ini, urut tanggal). Null bila kosong —
+  // slide + dot-nya ikut hilang (pola Board vanilla lama).
+  const daftarKajian = (payload && payload.kajian) || [];
+  if (daftarKajian.length) {
+    const k = daftarKajian[0];
+    const parts = String(k.tanggal).split("-");
+    const tgl = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+    model.kajianBerikutnya = {
+      title: k.judul,
+      meta: fmtTanggalId(tgl) + (k.waktu ? " · Pukul " + k.waktu + " WIB" : ""),
+      text:
+        (k.pemateri ? "Pemateri: " + k.pemateri : "") +
+        (daftarKajian.length > 1
+          ? (k.pemateri ? " · " : "") + "+" + (daftarKajian.length - 1) + " kajian lagi"
+          : ""),
+    };
+  } else {
+    model.kajianBerikutnya = null;
+  }
+
+  // Slide petugas Jumat terdekat (dari payload.petugas_jumat). Null bila
+  // belum ada data petugas sama sekali — slide menampilkan empty state.
+  const pj = payload ? payload.petugas_jumat : null;
+  if (pj) {
+    const parts = String(pj.tanggal).split("-");
+    const tgl = new Date(+parts[0], +parts[1] - 1, +parts[2]);
+    model.petugasJumat = {
+      dateLabel: fmtTanggalId(tgl),
+      khutbahMulai: pj.khutbah_mulai || null,
+      khatib: pj.khatib || null,
+      imam: pj.imam || null,
+      muadzin: pj.muadzin || null,
+    };
+  } else {
+    model.petugasJumat = null;
+  }
 
   // Jadwal (null bila koordinat masjid belum diisi -> jangan tampilkan jam palsu).
   const waktu = (payload && payload.jadwal && payload.jadwal.waktu) || null;

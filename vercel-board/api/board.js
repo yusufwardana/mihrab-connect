@@ -6,7 +6,8 @@
 // mendatang (maks 5, untuk slide agenda), pengaturan murotal.
 // Endpoint ini baca-saja; Board tidak pernah menulis lewat sini.
 // Tabel: masjid, jadwal_settings, iqomah_durations, pengumuman, pengurus,
-//        kas_kategori, kas_transaksi, event, kajian, murotal_settings.
+//        kas_kategori, kas_transaksi, event, kajian, jadwal_petugas,
+//        murotal_settings.
 "use strict";
 
 const { supabase, getMasjid, getPengurusMap } = require("../lib/supabase");
@@ -34,7 +35,7 @@ module.exports = async (req, res) => {
     const hariIniStr =
       hariIni.tahun + "-" + String(hariIni.bulan).padStart(2, "0") + "-" + String(hariIni.hari).padStart(2, "0");
 
-    const [set, iq, tayang, kat, trx, evt, mur, kj] = await Promise.all([
+    const [set, iq, tayang, kat, trx, evt, mur, kj, ptg] = await Promise.all([
       sb.from("jadwal_settings").select("metode, koreksi_menit, offset_hijriyah").eq("masjid_id", masjidId).maybeSingle(),
       sb.from("iqomah_durations").select("waktu, durasi_menit").eq("masjid_id", masjidId),
       sb.from("pengumuman")
@@ -47,8 +48,10 @@ module.exports = async (req, res) => {
       sb.from("event").select("id, nama, tanggal, tampil_countdown").eq("masjid_id", masjidId).eq("tampil_countdown", true).order("tanggal", { ascending: true }),
       sb.from("murotal_settings").select("surah, qari, durasi_menit, volume, aktif").eq("masjid_id", masjidId).maybeSingle(),
       sb.from("kajian").select("id, judul, tanggal, waktu, pemateri").eq("masjid_id", masjidId).eq("status", "tayang").gte("tanggal", hariIniStr).order("tanggal", { ascending: true }).limit(5),
+      // Petugas Jumat terdekat: semua baris tanggal >= hari ini, urut tanggal.
+      sb.from("jadwal_petugas").select("id, tanggal, peran, nama").eq("masjid_id", masjidId).gte("tanggal", hariIniStr).order("tanggal", { ascending: true }).limit(12),
     ]);
-    for (const r of [set, iq, tayang, kat, trx, evt, mur, kj]) if (r.error) throw r.error;
+    for (const r of [set, iq, tayang, kat, trx, evt, mur, kj, ptg]) if (r.error) throw r.error;
 
     const settings = set.data || { metode: "Kemenag", koreksi_menit: 0, offset_hijriyah: 0 };
     const waktuMentah = hitungJadwalSholat({
@@ -107,6 +110,41 @@ module.exports = async (req, res) => {
       pemateri: k.pemateri,
     }));
 
+    // Petugas Jumat terdekat: tanggal paling awal yang punya baris petugas
+    // (tanggal >= hari ini). Null bila belum ada data petugas sama sekali.
+    // Khutbah mulai = Dzuhur pada tanggal petugas itu (dihitung dari
+    // koordinat + koreksi, bukan Dzuhur hari ini).
+    let petugasJumat = null;
+    const ptgRows = ptg.data || [];
+    if (ptgRows.length) {
+      const tglPetugas = ptgRows[0].tanggal;
+      const byPeran = {};
+      ptgRows
+        .filter((r) => r.tanggal === tglPetugas)
+        .forEach((r) => {
+          byPeran[r.peran] = r.nama;
+        });
+      let khutbahMulai = null;
+      const tp = String(tglPetugas).split("-");
+      const jadwalTgl = hitungJadwalSholat({
+        lat: masjid.koordinat_lat === null ? null : Number(masjid.koordinat_lat),
+        lng: masjid.koordinat_lng === null ? null : Number(masjid.koordinat_lng),
+        tanggal: { tahun: +tp[0], bulan: +tp[1], hari: +tp[2] },
+        koreksiMenit: settings.koreksi_menit,
+      });
+      if (jadwalTgl) {
+        const dz = jadwalTgl.find((w) => w.nama === "Dzuhur");
+        if (dz) khutbahMulai = dz.jam;
+      }
+      petugasJumat = {
+        tanggal: tglPetugas,
+        khutbah_mulai: khutbahMulai,
+        khatib: byPeran.khatib || null,
+        imam: byPeran.imam || null,
+        muadzin: byPeran.muadzin || null,
+      };
+    }
+
     ok(res, {
       masjid: {
         nama: masjid.nama,
@@ -129,6 +167,7 @@ module.exports = async (req, res) => {
       event: events,
       countdown_berikutnya: countdownBerikutnya,
       kajian,
+      petugas_jumat: petugasJumat,
       murotal: mur.data || null,
       tanggal: {
         masehi: formatTanggalId(hariIni),

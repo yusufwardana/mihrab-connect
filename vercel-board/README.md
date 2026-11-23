@@ -57,10 +57,16 @@ terbaca, countdown jalan. Fixture: `/tmp/mock-api.mjs` + `/tmp/shot-board.mjs`
   passed tema terang (5,90:1) ikut dibawa.
 - Pola geometris Islami halus (opacity ~5%) + siluet lengkung mihrab di
   kartu hero + ornamen pembatas emas di bawah nama masjid.
-- **Dihapus mengikuti layout baru:** rotasi slide (poster pengumuman,
-  petugas Jumat, kajian) — data kajian tetap masuk payload tapi tidak
-  dirender. Label kejujuran "Nama kerja — branding belum final" di bawah
-  logo juga tidak ada di layout baru.
+- **Dihapus mengikuti layout baru:** slide poster pengumuman (pengumuman
+  sudah tampil di ticker marquee). Label kejujuran "Nama kerja — branding
+  belum final" di bawah logo juga tidak ada di layout baru.
+- **Slide dikembalikan 23 Nov 2026 (23:xx WIB, belum deploy):** strip slide
+  berotasi di antara kolom utama dan ticker (`src/components/SlideStage.jsx`,
+  rotasi 9 detik + dot, jeda saat mode sholat) — slide KAJIAN BERIKUTNYA
+  (hanya bila ada kajian tayang) dan slide PETUGAS JUMAT (tanggal +
+  khutbah mulai + khatib/imam/muadzin dari `petugas_jumat` di payload;
+  empty state "Belum ada petugas Jumat" bila data kosong). Strip setinggi
+  `clamp(96px, 13.5vh, 152px)`; ketiga kolom tetap utuh, tanpa scroll.
 - Mode sholat: layar meredup + hero menampilkan status (overlay penuh
   lama diganti peredupan saja). Mode Jumat (Dzuhur → Jumat, khutbah)
   dipertahankan.
@@ -96,6 +102,7 @@ Board live tidak memakainya.
   "event": [{ "id", "nama", "tanggal": "YYYY-MM-DD" }],
   "countdown_berikutnya": { "id", "nama", "tanggal" } | null,
   "kajian": [{ "id", "judul", "tanggal": "YYYY-MM-DD", "waktu": "HH:MM" | null, "pemateri": "…" | null }],
+  "petugas_jumat": { "tanggal": "YYYY-MM-DD", "khutbah_mulai": "HH:MM" | null, "khatib": "…" | null, "imam": "…" | null, "muadzin": "…" | null } | null,
   "murotal": { "surah", "qari", "durasi_menit", "volume", "aktif" } | null,
   "tanggal": { "masehi": "…", "hijriyah": "…" }
 }
@@ -114,8 +121,8 @@ Board live tidak memakainya.
 
 ## Aturan tayang yang dipertahankan
 
-- Hanya pengumuman berstatus **tayang** yang tampil (ticker + slide
-  poster). Bila tidak ada, ticker menampilkan satu baris netral
+- Hanya pengumuman berstatus **tayang** yang tampil di ticker. Bila tidak
+  ada, ticker menampilkan satu baris netral
   `Mihrab Connect Board — <nama masjid>` (bukan teks karangan).
 - **Bila `jadwal.waktu` null** (koordinat masjid belum diisi di Admin):
   jadwal, hero hitung mundur, dan jendela murotal menampilkan
@@ -129,14 +136,16 @@ Board live tidak memakainya.
 - Murotal: status saja, tanpa audio asli. Jendela 10 menit sebelum
   Subuh & Maghrib, surah/qari dari pengaturan Admin; bila murotal
   nonaktif, status **NONAKTIF**.
-- Slide poster memakai pengumuman tayang pertama (judul = baris pertama
-  `isi`, maks 80 karakter). Bila tidak ada, slide menampilkan nama
-  masjid + “Belum ada pengumuman tayang.”
 - **Slide kajian:** hanya kajian status `tayang` dengan tanggal hari ini
   atau sesudahnya (maks 5) yang masuk payload `kajian`. Slide menampilkan
-  kajian terdekat (judul, tanggal, jam, pemateri) dan hanya ada di rotasi
-  bila daftar tidak kosong — bila kosong, rotasi tetap 3 slide dan tidak
-  ada teks contoh yang tampil.
+  kajian terdekat (judul, tanggal, jam, pemateri, "+N kajian lagi") dan
+  hanya ada di rotasi bila daftar tidak kosong — bila kosong, slide +
+  dot-nya hilang dan rotasi hanya 1 slide (petugas).
+- **Slide petugas Jumat:** payload `petugas_jumat` = tanggal petugas
+  terdekat (tanggal >= hari ini) + khutbah mulai (Dzuhur pada tanggal
+  itu, dihitung) + nama khatib/imam/muadzin. Peran yang belum diisi
+  tampil "—". Bila belum ada data petugas sama sekali (`null`), slide
+  menampilkan empty state "Belum ada petugas Jumat".
 
 ## Cara deploy
 
@@ -144,7 +153,7 @@ Board live tidak memakainya.
 
 1. Import repo GitHub `yusufwardana/mihrab-connect` sebagai proyek baru
    (mis. `mihrab-connect-board`), **Root Directory: `vercel-board`**.
-2. Framework Preset: **Other**. Build Command: kosong. Output: `public`.
+2. Framework Preset: **Vite**. Build Command: `npm run build`. Output Directory: `dist` (sudah diatur di `vercel.json`).
 3. Tambah Environment Variables `SUPABASE_URL` dan
    `SUPABASE_SERVICE_ROLE_KEY` (Production) — sama seperti proyek Admin.
 4. Deploy. Board tampil di `/`.

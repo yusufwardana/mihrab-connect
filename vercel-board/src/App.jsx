@@ -4,6 +4,7 @@ import Header from "./components/Header.jsx";
 import PrayerSchedule from "./components/PrayerSchedule.jsx";
 import HeroCountdown, { EventMurotal } from "./components/HeroCountdown.jsx";
 import FinancePanel from "./components/FinancePanel.jsx";
+import SlideStage from "./components/SlideStage.jsx";
 import Ticker from "./components/Ticker.jsx";
 
 const API_URL = "/api/board"; // same-origin: function sendiri (api/board.js)
@@ -108,6 +109,9 @@ export default function App() {
 
         <FinancePanel financeData={model.financeData} qrisItems={model.qrisItems} />
       </main>
+
+      {/* Strip slide berotasi: kajian berikutnya + petugas Jumat. */}
+      <SlideStage kajian={model.kajianBerikutnya} petugasJumat={model.petugasJumat} sholatMode={model.sholatMode} />
 
       <Ticker announcements={model.announcements} />
 
