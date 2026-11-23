@@ -214,7 +214,9 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
 - Keputusan terbuka: brand final.
 - Menunggu / belum dikerjakan: instalasi TV
   Board di Masjid Al Furqon (masjid setuju pasang, belum tercatat
-  terpasang); celah bukti validasi (satu contoh insiden tercatat,
+  terpasang; rencana perangkat: STB — analisis 23 Nov 2026: Board
+  ringan dan ramah STB, perlu browser Chrome/kiosk + jam NTP sinkron
+  + auto-start); celah bukti validasi (satu contoh insiden tercatat,
   lingkari LOLOS PILOT di formulir, tanggal tanda tangan Sarino,
   fitur paling dibutuhkan + keberatan terbesar).
 - Selesai 23 Nov 2026: login Admin per pengurus terverifikasi live
