@@ -214,10 +214,9 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
 - Keputusan terbuka: brand final.
 - Menunggu / belum dikerjakan: instalasi TV
   Board di Masjid Al Furqon (masjid setuju pasang, belum tercatat
-  terpasang; rencana perangkat: STB ZTE B860H (versi + status unlock
-  belum diketahui; analisis 23 Nov 2026: layak, utamakan RAM 2 GB,
-  WebView bawaan Android 6 perlu di-update atau Board perlu fallback
-  CSS, beli yang sudah root+unlock); celah bukti validasi (satu contoh insiden tercatat,
+  terpasang; rencana perangkat: STB ZTE B860H v2.1 sudah unlock
+  (RAM belum diketahui; analisis 23 Nov 2026: layak, WebView bawaan
+  Android 6 perlu di-update atau Board perlu fallback CSS); celah bukti validasi (satu contoh insiden tercatat,
   lingkari LOLOS PILOT di formulir, tanggal tanda tangan Sarino,
   fitur paling dibutuhkan + keberatan terbesar).
 - Selesai 23 Nov 2026: login Admin per pengurus terverifikasi live
