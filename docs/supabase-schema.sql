@@ -188,50 +188,42 @@ alter table arsip enable row level security;
 alter table log_aktivitas enable row level security;
 alter table serah_terima enable row level security;
 
--- Policy starter: semua tabel boleh dibaca/ditulis oleh pengguna login.
--- Kencangkan per-peran sebelum pilot dengan jamaah nyata.
+-- Policy least-privilege (migrasi 003, 23 Nov 2026; menggantikan starter).
+-- Role anon: TIDAK ADA policy -> ditolak penuh.
+-- Role authenticated: HANYA SELECT konten publik; TIDAK ADA tulis.
+-- Tanpa policy (= ditolak penuh): pengurus, kas_transaksi,
+-- jadwal_petugas, log_aktivitas, serah_terima, arsip.
+-- Admin/Board memakai service_role lewat API dan melewati RLS.
 drop policy if exists starter_authenticated_all on masjid;
-create policy starter_authenticated_all on masjid
-  for all to authenticated using (true) with check (true);
 drop policy if exists starter_authenticated_all on pengurus;
-create policy starter_authenticated_all on pengurus
-  for all to authenticated using (true) with check (true);
 drop policy if exists starter_authenticated_all on jadwal_settings;
-create policy starter_authenticated_all on jadwal_settings
-  for all to authenticated using (true) with check (true);
 drop policy if exists starter_authenticated_all on iqomah_durations;
-create policy starter_authenticated_all on iqomah_durations
-  for all to authenticated using (true) with check (true);
 drop policy if exists starter_authenticated_all on jadwal_petugas;
-create policy starter_authenticated_all on jadwal_petugas
-  for all to authenticated using (true) with check (true);
 drop policy if exists starter_authenticated_all on kajian;
-create policy starter_authenticated_all on kajian
-  for all to authenticated using (true) with check (true);
 drop policy if exists starter_authenticated_all on pengumuman;
-create policy starter_authenticated_all on pengumuman
-  for all to authenticated using (true) with check (true);
 drop policy if exists starter_authenticated_all on kas_kategori;
-create policy starter_authenticated_all on kas_kategori
-  for all to authenticated using (true) with check (true);
 drop policy if exists starter_authenticated_all on kas_transaksi;
-create policy starter_authenticated_all on kas_transaksi
-  for all to authenticated using (true) with check (true);
 drop policy if exists starter_authenticated_all on event;
-create policy starter_authenticated_all on event
-  for all to authenticated using (true) with check (true);
 drop policy if exists starter_authenticated_all on murotal_settings;
-create policy starter_authenticated_all on murotal_settings
-  for all to authenticated using (true) with check (true);
 drop policy if exists starter_authenticated_all on arsip;
-create policy starter_authenticated_all on arsip
-  for all to authenticated using (true) with check (true);
 drop policy if exists starter_authenticated_all on log_aktivitas;
-create policy starter_authenticated_all on log_aktivitas
-  for all to authenticated using (true) with check (true);
 drop policy if exists starter_authenticated_all on serah_terima;
-create policy starter_authenticated_all on serah_terima
-  for all to authenticated using (true) with check (true);
+create policy rls_baca_masjid on masjid
+  for select to authenticated using (true);
+create policy rls_baca_jadwal_settings on jadwal_settings
+  for select to authenticated using (true);
+create policy rls_baca_iqomah on iqomah_durations
+  for select to authenticated using (true);
+create policy rls_baca_murotal on murotal_settings
+  for select to authenticated using (true);
+create policy rls_baca_kas_kategori on kas_kategori
+  for select to authenticated using (true);
+create policy rls_baca_kajian_tayang on kajian
+  for select to authenticated using (status = 'tayang');
+create policy rls_baca_pengumuman_tayang on pengumuman
+  for select to authenticated using (status = 'tayang');
+create policy rls_baca_event_countdown on event
+  for select to authenticated using (tampil_countdown = true);
 
 -- ============ 13. Data contoh (sekali saja; guard NOT EXISTS) ============
 insert into masjid (nama, alamat)
