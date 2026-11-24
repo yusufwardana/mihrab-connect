@@ -47,7 +47,7 @@ Palet: hijau gelap, emas lembut, putih hangat.
 | `docs/hasil-validasi-al-furqon.md` | Transkripsi setia hasil validasi di Masjid Al Furqon (22 Nov 2026). |
 | `docs/supabase-schema.sql` | Skema Supabase (Postgres) dari spek backend — 14 tabel, RLS least-privilege (migrasi 003), data contoh. |
 | `vercel-admin/` | Kode Admin live (Vercel, root `vercel-admin`): 12 file `api/`, 3 file `lib/`, `public/index.html`, `vercel.json`, README dengan daftar deviasi. |
-| `vercel-board/` | Kode Board live (Vercel, root `vercel-board`, React 19 + Vite 8 + Tailwind 4 sejak 23 Nov 2026): `api/board.js`, `lib/`, `src/`, `index.html`, `vercel.json`. Build: `npm run build` → `dist/`. |
+| `vercel-board/` | Kode Board live (Vercel, root `vercel-board`, vanilla: `public/index.html` satu file + `api/board.js` + `lib/`, `vercel.json`; React sempat dipakai 23 Nov 2026 lalu di-rollback ke vanilla). |
 | `frontend/masjid-board.html` | Export landing page Masjid Board v2, satu file (gambar inline; font masih dari Google, fallback bila offline). |
 | `frontend/mihrab-connect-board.html` | Export prototipe Board P0, satu file mandiri penuh (font & gambar inline, tanpa dependensi eksternal). |
 | `frontend/mihrab-connect-admin.html` | Export prototipe Admin P0, satu file (font masih dari Google, fallback bila offline; tanpa backend nyata). |
@@ -103,6 +103,17 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   `petugas_jumat` di API ikut kembali ke versi lama (tidak ada di
   payload — slide petugas Jumat tampil kosong seperti sebelumnya).
   History redesign tetap tersimpan (e7551d02, 9cd4af6b).
+- Board: DESAIN VANILLA ikut mockup hijau-emas 24 Nov 2026 21:17 WIB
+  (commit e25a7722, terverifikasi live) — pola geometris Islami halus
+  di header + kartu countdown, bingkai lengkung mihrab di countdown,
+  ornamen emas di bawah nama masjid, strip status jadi 3 pil (mode,
+  murotal, koneksi), baris sholat berikutnya + Total Saldo lebih
+  menonjol. Angka kas/QRIS mockup TIDAK dipakai (kas tetap `Rp —`).
+  Perbaikan lanjutan 21:25 WIB (commit 110f0d60, terverifikasi live):
+  teks baris sholat berikutnya putih terang di tema gelap (sebelumnya
+  emas pucat di atas wash emas, terbaca redup). 4 tema + fallback CSS
+  WebView lama tetap utuh; dot slide hanya indikator (tidak bisa
+  diklik), rotasi 9 detik dan berhenti saat mode sholat.
 - Kiosk APK sendiri (Mihrab Kiosk v1.0.0, 24 Nov 2026): app Android
   (Kotlin, minSdk 23) untuk STB — autostart + Home, fullscreen,
   config URL dari HP + perintah remote via Supabase (migrasi 004:
