@@ -103,6 +103,14 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   `petugas_jumat` di API ikut kembali ke versi lama (tidak ada di
   payload — slide petugas Jumat tampil kosong seperti sebelumnya).
   History redesign tetap tersimpan (e7551d02, 9cd4af6b).
+- Kiosk APK sendiri (Mihrab Kiosk v1.0.0, 24 Nov 2026): app Android
+  (Kotlin, minSdk 23) untuk STB — autostart + Home, fullscreen,
+  config URL dari HP + perintah remote via Supabase (migrasi 004:
+  kiosk_config/kiosk_status/kiosk_commands), watchdog, offline cache,
+  auto refresh, branding COSMICLABS; tanpa lisensi per perangkat.
+  APK release terverifikasi (apksigner VERIFIED, 630 KB, package
+  id.cosmiclabs.mihrabkiosk); source di `kiosk-app/`; keystore hanya
+  lokal (tidak di repo). Uji di STB masih menunggu.
 - Spesifikasi backend selesai (10 halaman).
 - Kit validasi untuk Masjid Al Furqon disetujui founder 22 Nov 2026.
 - Validasi 22 Nov 2026: 4/4 kriteria pilot "Ya", persetujuan pilot

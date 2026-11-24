@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mihrab Kiosk</string>
+    <string name="settings_title">Pengaturan Kiosk</string>
+    <string name="settings_subtitle">Pengaturan lokal di perangkat ini. Perubahan URL dari HP (Supabase) tetap berlaku bila kolom URL di sini dikosongkan.</string>
+    <string name="offline_banner">OFFLINE — menampilkan data terakhir</string>
+    <string name="memuat_board">Memuat Board…</string>
+
+    <string name="pin_title">Masukkan PIN pengaturan</string>
+    <string name="pin_hint">PIN (default 123456)</string>
+    <string name="pin_ok">Buka</string>
+    <string name="pin_salah">PIN salah</string>
+    <string name="pin_minimal">PIN baru minimal 4 digit</string>
+    <string name="batal">Batal</string>
+
+    <string name="label_url">URL Board (kosongkan = ikut pengaturan dari HP)</string>
+    <string name="hint_url">https://…</string>
+    <string name="help_url">Bila diisi, URL ini dipakai dan pengaturan URL dari HP (Supabase) diabaikan sampai kolom dikosongkan lagi.</string>
+    <string name="label_refresh">Auto refresh (detik)</string>
+    <string name="hint_refresh">Kosong = ikut server (300)</string>
+    <string name="help_refresh">60–3600 detik. Kosongkan untuk kembali memakai nilai dari server.</string>
+    <string name="label_pin">Ganti PIN pengaturan</string>
+    <string name="hint_pin_lama">PIN lama (isi bila mau ganti PIN)</string>
+    <string name="hint_pin_baru">PIN baru (minimal 4 digit)</string>
+
+    <string name="simpan">Simpan</string>
+    <string name="muat_ulang_board">Muat Ulang Board</string>
+    <string name="reboot_perangkat">Reboot Perangkat</string>
+    <string name="kembali">Kembali ke Board</string>
+    <string name="pengaturan_disimpan">Pengaturan disimpan</string>
+    <string name="board_dimuat_ulang">Board akan dimuat ulang</string>
+    <string name="url_tidak_valid">URL harus diawali http:// atau https://</string>
+    <string name="refresh_tidak_valid">Refresh harus 60–3600 detik</string>
+
+    <string name="reboot_title">Reboot perangkat?</string>
+    <string name="reboot_message">STB akan mati dan menyala lagi, lalu Board tampil kembali otomatis.</string>
+    <string name="reboot_ya">Ya, reboot</string>
+    <string name="reboot_gagal">Reboot gagal (perangkat mungkin belum root): %1$s</string>
+</resources>

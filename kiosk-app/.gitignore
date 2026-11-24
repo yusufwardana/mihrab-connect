@@ -1,0 +1,9 @@
+# Build outputs (jangan masuk repo)
+build/
+.gradle/
+local.properties
+*.iml
+
+# Keystore + password — RAHASIA, hanya lokal, jangan pernah masuk repo
+keystore.jks
+keystore-password.txt
