@@ -140,6 +140,18 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   juga diperbaiki jadi cross-fade sejati (dulu slide lama hilang instan
   sementara slide baru masih opacity 0, panel tampak kosong ~0,7 dtk tiap
   9 dtk). Layout TV, 4 tema, dan fallback WebView lama tidak berubah.
+- Board: komposisi font TV 25 Nov 2026 — skala font dasar TV naik dari
+  0,81vw ke 0,95vw (1366px: ~11px → ~13px; 1920px: ~15,5px → ~18px) dan
+  override TV yang dulu mengecilkan font dibalik: countdown 4,1em → 5,2em,
+  nama sholat 2,5em → 3,1em, jam 3em → 3,4em, angka mini 1,7em → 2,2em,
+  tanggal 1,08em → 1,25em; baris jadwal non-berikutnya dicerahkan
+  (nama jadi `var(--warm)`, passed .48 → .68), teks murotal/kas/petugas/
+  catatan slide dicerahkan dan diperbesar, padding `.b-main`/hero/mini
+  dilegakan supaya strip kosong di kolom tengah terisi. Slide Jumat
+  isinya dipusatkan vertikal; slide poster kosong tampil sebagai kartu
+  judul di tengah (aturan `:has(#posterMeta:empty)`, browser modern saja,
+  WebView lama tetap cap bawah). Layout ponsel, urutan cascade
+  (fallback → TV → responsif), 4 tema, dan cross-fade tidak berubah.
 - Kiosk APK sendiri (Mihrab Kiosk v1.0.0, 24 Nov 2026): app Android
   (Kotlin, minSdk 23) untuk STB — autostart + Home, fullscreen,
   config URL dari HP + perintah remote via Supabase (migrasi 004:

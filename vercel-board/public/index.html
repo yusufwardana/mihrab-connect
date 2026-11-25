@@ -292,7 +292,7 @@
         margin-top:.2em; font-size:1.08em; color:var(--gold-soft);
         font-weight:600; white-space:nowrap;
       }
-      .date-hijri small{ display:block; font-size:.78em; color:var(--warm-dim); font-weight:500; letter-spacing:.05em; margin-top:.15em; }
+      .date-hijri small{ display:block; font-size:.85em; color:var(--warm-dim); font-weight:500; letter-spacing:.05em; margin-top:.15em; }
 
       /* --- Strip status --- */
       .b-status{
@@ -326,7 +326,7 @@
         position:relative; z-index:2;
       }
       .col-title{
-        font-size:.86em; font-weight:800; letter-spacing:.26em;
+        font-size:.95em; font-weight:800; letter-spacing:.26em;
         color:var(--gold-soft); margin:0 0 .8em;
         display:flex; align-items:center; gap:.7em;
       }
@@ -340,11 +340,11 @@
         flex:1; display:flex; align-items:center; justify-content:space-between;
         gap:.8em; padding:.3em .85em;
         border:1px solid transparent; border-radius:.55em;
-        background:rgba(247,241,227,.045);
+        background:rgba(247,241,227,.06);
         min-height:0;
       }
-      .sched-row .nm{ font-size:1.28em; font-weight:600; color:var(--warm-dim); display:flex; align-items:baseline; gap:.55em; }
-      .sched-row .iq{ font-size:.82em; font-weight:600; color:var(--warm-dim); opacity:.85; letter-spacing:.03em; }
+      .sched-row .nm{ font-size:1.28em; font-weight:600; color:var(--warm); display:flex; align-items:baseline; gap:.55em; }
+      .sched-row .iq{ font-size:.88em; font-weight:600; color:var(--warm-dim); opacity:1; letter-spacing:.03em; }
       .sched-row .tm{
         font-size:1.62em; font-weight:800; font-variant-numeric:tabular-nums; color:var(--warm);
       }
@@ -356,7 +356,7 @@
       .sched-row.next .nm{ color:var(--warm); font-weight:800; }
       .sched-row.next .tm{ color:var(--warm); }
       .sched-row.next .iq{ color:var(--warm); opacity:1; }
-      .sched-row.passed{ opacity:.48; }
+      .sched-row.passed{ opacity:.68; }
       .sched-note{ margin-top:.7em; font-size:.8em; line-height:1.5; color:var(--warm-dim); }
 
       /* Tengah: hitung mundur */
@@ -388,7 +388,7 @@
         opacity:.25;
       }
       .hero-label{
-        font-size:.92em; font-weight:800; letter-spacing:.3em; color:var(--gold-soft);
+        font-size:1em; font-weight:800; letter-spacing:.3em; color:var(--gold-soft);
       }
       .hero-name{
         font-size:2.9em; font-weight:600; line-height:1.05; margin:.08em 0 .02em; color:var(--warm);
@@ -397,7 +397,7 @@
         font-size:4.6em; font-weight:800; line-height:1.02;
         font-variant-numeric:tabular-nums; color:var(--warm); letter-spacing:.01em;
       }
-      .hero-sub{ font-size:1em; color:var(--warm-dim); margin-top:.35em; line-height:1.5; }
+      .hero-sub{ font-size:1.1em; color:var(--warm); margin-top:.35em; line-height:1.5; }
       .hero-sub b{ color:var(--gold-soft); }
       .hero-bar{
         height:.42em; border-radius:999px; background:rgba(247,241,227,.12);
@@ -411,13 +411,13 @@
         display:flex; flex-direction:column; justify-content:space-between; min-height:0;
       }
       .mini h3{
-        margin:0 0 .5em; font-size:.82em; font-weight:800; letter-spacing:.24em; color:var(--gold-soft);
+        margin:0 0 .5em; font-size:.92em; font-weight:800; letter-spacing:.24em; color:var(--gold-soft);
       }
-      .mini .big{ font-size:1.9em; font-weight:700; line-height:1.12; color:var(--warm); }
+      .mini .big{ font-size:2.05em; font-weight:700; line-height:1.12; color:var(--warm); }
       .mini .big .serif{ font-weight:600; }
-      .mini #eventDays{ font-size:1.3em; font-weight:800; }
-      .mini p{ margin:.45em 0 0; font-size:.88em; line-height:1.55; color:var(--warm-dim); }
-      .mini p b{ color:var(--warm); }
+      .mini #eventDays{ font-size:1.45em; font-weight:800; }
+      .mini p{ margin:.45em 0 0; font-size:.95em; line-height:1.55; color:var(--warm); }
+      .mini p b{ color:var(--gold-soft); }
       .murotal-state{ display:flex; align-items:center; gap:.55em; font-size:1.02em; font-weight:800; letter-spacing:.05em; }
       .murotal-state .dot{ width:.62em; height:.62em; border-radius:50%; background:#5E7267; flex:0 0 auto; }
       .murotal-state.on{ color:#9BD8A6; }
@@ -451,18 +451,27 @@
         position:absolute; top:0; right:0; bottom:0; left:0; inset:0; /* fallback WebView lama: tanpa inset */
         background:linear-gradient(180deg, rgba(5,26,19,.18) 30%, rgba(5,26,19,.93) 78%);
       }
-      .slide-poster .cap{ position:relative; margin-top:auto; padding:1.1em 1.25em; }
+      .slide-poster .cap{ position:relative; margin-top:auto; padding:1.5em 1.4em; }
       .slide-poster .cap .tag{ margin-bottom:.7em; }
-      .slide-poster h3{ margin:0; font-size:2.15em; font-weight:600; line-height:1.08; color:var(--warm); }
-      .slide-poster p{ margin:.45em 0 0; font-size:1em; line-height:1.5; color:var(--warm); }
+      .slide-poster h3{ margin:0; font-size:2.5em; font-weight:600; line-height:1.08; color:var(--warm); }
+      .slide-poster p{ margin:.45em 0 0; font-size:1.15em; line-height:1.5; color:var(--warm); }
       .slide-poster p small{ color:var(--gold-soft); font-weight:700; letter-spacing:.08em; }
+      /* Poster kosong (tanpa pengumuman tayang): kartu judul di tengah, bukan
+         catatan kecil di bawah ruang kosong. :has() hanya didukung browser
+         modern; WebView lama mengabaikan aturan ini dan tetap memakai cap
+         bawah seperti biasa. */
+      .slide-poster:has(#posterMeta:empty){ justify-content:center; }
+      .slide-poster:has(#posterMeta:empty) .veil{ background:linear-gradient(180deg, rgba(5,26,19,.62), rgba(5,26,19,.9)); }
+      .slide-poster:has(#posterMeta:empty) .cap{ margin-top:0; text-align:center; padding:1.6em 1.5em; }
+      .slide-poster:has(#posterMeta:empty) .cap .tag{ margin-left:auto; margin-right:auto; }
+      .slide-poster:has(#posterMeta:empty) h3{ font-size:2.7em; }
       /* slide kas */
       .kas-rows{ margin-top:.9em; display:flex; flex-direction:column; }
       .kas-row{
         display:flex; justify-content:space-between; align-items:baseline; gap:1em;
-        padding:.52em 0; border-bottom:1px dashed var(--line-soft); font-size:1.12em;
+        padding:.6em 0; border-bottom:1px dashed var(--line-soft); font-size:1.2em;
       }
-      .kas-row span{ color:var(--warm-dim); }
+      .kas-row span{ color:var(--warm); }
       .kas-row b{ font-variant-numeric:tabular-nums; color:var(--warm); font-weight:700; }
       .kas-row.total{ border:1px solid var(--gold); border-radius:.5em; margin-top:.55em; padding:.6em .8em; background:var(--gold); }
       .kas-row.total span{ color:var(--on-gold); font-weight:800; letter-spacing:.05em; }
@@ -476,17 +485,17 @@
       .qris-box svg{ width:100%; max-width:5.2em; height:auto; display:block; }
       .qris-cell p{ margin:.45em 0 0; font-size:.8em; font-weight:700; letter-spacing:.06em; color:var(--warm); line-height:1.35; }
       .qris-cell p small{ display:block; color:var(--warm-dim); font-weight:600; letter-spacing:.1em; font-size:.82em; }
-      .slide-note{ margin-top:.8em; font-size:.8em; line-height:1.5; color:var(--warm-dim); }
+      .slide-note{ margin-top:.8em; font-size:.88em; line-height:1.5; color:var(--warm); }
       /* slide kajian */
       .slide-kajian h3{ margin:.55em 0 0; font-size:1.7em; font-weight:600; line-height:1.15; color:var(--warm); }
-      .slide-kajian .kaj-meta{ margin-top:.6em; font-size:1.05em; line-height:1.55; color:var(--warm-dim); }
+      .slide-kajian .kaj-meta{ margin-top:.6em; font-size:1.15em; line-height:1.55; color:var(--warm); }
       /* slide jumat */
       .petugas{ margin-top:.9em; display:flex; flex-direction:column; }
       .petugas-row{
         display:flex; justify-content:space-between; gap:1em; align-items:baseline;
-        padding:.55em 0; border-bottom:1px dashed var(--line-soft); font-size:1.1em;
+        padding:.7em 0; border-bottom:1px dashed var(--line-soft); font-size:1.2em;
       }
-      .petugas-row span{ color:var(--warm-dim); letter-spacing:.04em; }
+      .petugas-row span{ color:var(--warm); letter-spacing:.04em; }
       .petugas-row b{ color:var(--warm); font-weight:700; text-align:right; }
       .slide-dots{ display:flex; gap:.5em; justify-content:center; padding-top:.75em; }
       .slide-dots i{ width:2.1em; height:.32em; border-radius:999px; background:rgba(247,241,227,.22); }
@@ -590,24 +599,45 @@
         padding:27px 48px; gap:12px;
       }
       .stage-wrap{ flex:1 1 auto; min-height:0; display:flex; }
-      .board{ height:100%; font-size:11px; /* fallback WebView lama: =0.81vw pada 1366px */ font-size:clamp(7.8px, 0.81vw, 17px); border-radius:10px; }
+      .board{ height:100%; font-size:13px; /* fallback WebView lama: =0.95vw pada 1366px */ font-size:clamp(9px, 0.95vw, 19px); border-radius:10px; }
       .board::before{ top:6px; right:6px; bottom:6px; left:6px; inset:6px; } /* fallback WebView lama: tanpa inset */
       .brand-note,
       .sched-note{ display:none; }
-      .b-head{ padding:1.1em 1.9em .6em; }
-      .mosque h1{ font-size:2.7em; }
-      .clock{ font-size:3em; }
-      .b-status{ padding:.45em 1.9em; }
-      .b-main{ padding:.9em 1.9em .8em; gap:1.1em; }
-      .hero{ padding:.8em 1.1em .9em; }
-      .hero-name{ font-size:2.5em; }
-      .hero-count{ font-size:4.1em; }
-      .mini{ padding:.8em 1em; }
-      .mini .big{ font-size:1.7em; }
-      .mini p{ font-size:.84em; }
+      .b-head{ padding:1.2em 2em .7em; }
+      .mosque h1{ font-size:3em; }
+      .clock{ font-size:3.4em; }
+      .date-greg, .date-hijri{ font-size:1.25em; }
+      .b-status{ padding:.5em 2em; }
+      .b-main{ padding:1.1em 2em 1em; gap:1.4em; }
+      .center{ gap:1.2em; }
+      .col-title{ font-size:1em; }
+      .col-title .col-note{ font-size:.9em; }
+      .sched-row{ padding:.45em .9em; }
+      .sched-row .iq{ font-size:.95em; opacity:1; }
+      .hero{ padding:1.3em 1.4em 1.2em; }
+      .hero-label{ font-size:1.05em; }
+      .hero-name{ font-size:3.1em; }
+      .hero-count{ font-size:5.2em; }
+      .hero-sub{ font-size:1.15em; }
+      .hero-bar{ margin-top:1.1em; height:.5em; }
+      .mini{ padding:1.15em 1.25em; }
+      .mini h3{ font-size:.95em; }
+      .mini .big{ font-size:2.2em; }
+      .mini p{ font-size:1.02em; }
+      .kas-row{ font-size:1.25em; }
+      .petugas-row{ font-size:1.3em; padding:.8em 0; }
+      .slide-note{ font-size:.95em; }
+      .slide-kajian h3{ font-size:1.9em; }
+      .slide-kajian .kaj-meta{ font-size:1.2em; }
+      .qris-cell p{ font-size:.95em; }
+      .qris-box .qris-none{ font-size:.95em; }
+      .sched-empty{ font-size:.95em; }
+      .ticker-label{ font-size:1em; }
+      #slideFriday{ justify-content:center; }
+      #slideFriday .petugas{ margin-top:1.2em; }
       /* Di TV, running text menjadi rotasi pesan di tempat (tidak keluar bingkai) */
       .ticker-track{ animation:none; display:block; width:100%; white-space:normal; }
-      .ticker-track span{ display:none; white-space:nowrap; padding-right:0; font-size:1.12em; }
+      .ticker-track span{ display:none; white-space:nowrap; padding-right:0; font-size:1.25em; }
       .ticker-track span.show{ display:block; }
       /* Fokus awal D-pad di TV: cincin emas pada bingkai Board */
       .board:focus{ outline:3px solid var(--gold-soft); outline-offset:3px; }
