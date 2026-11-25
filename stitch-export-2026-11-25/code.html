@@ -1,0 +1,487 @@
+<!DOCTYPE html><html lang="id"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mihrab Connect Board — Masjid Jami&#39; Abdul Latief Al Furqon</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <script id="tailwind-config">/** @type {import('tailwindcss').Config} */
+globalThis.tailwind = globalThis.tailwind || {};
+globalThis.tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        'deep-green': '#051F16',
+        'on-deep-green': '#F7F1E3',
+        'green-surface': '#082A1E',
+        'on-green-surface': '#F7F1E3',
+        'green-raised': '#0E3B2C',
+        'on-green-raised': '#F7F1E3',
+        'gold': '#C9A962',
+        'on-gold': '#051F16',
+        'gold-soft': '#E3CD96',
+        'gold-border': '#5E5030',
+        'warm-white': '#F7F1E3',
+        'warm-dim': '#CFC7AE',
+        'status-online': '#4ADE80',
+      },
+      borderRadius: {
+        'sm': '4px',
+        'DEFAULT': '8px',
+        'md': '12px',
+        'lg': '16px',
+        'full': '9999px',
+      },
+      spacing: {
+        'gutter-xs': '4px',
+        'gutter-sm': '8px',
+        'gutter-md': '12px',
+        'gutter-lg': '16px',
+        'gutter-xl': '24px',
+        'page-margin': '24px',
+      },
+      fontFamily: {
+        'display': ['"Plus Jakarta Sans"', 'sans-serif'],
+        'headline': ['"Cormorant Garamond"', 'sans-serif'],
+        'title': ['"Plus Jakarta Sans"', 'sans-serif'],
+        'body': ['"Plus Jakarta Sans"', 'sans-serif'],
+        'label': ['"Plus Jakarta Sans"', 'sans-serif'],
+      },
+      fontSize: {
+        'display-xl': ['64px', { lineHeight: '72px', letterSpacing: '-1px', fontWeight: '700' }],
+        'display-xl-mobile': ['32px', { lineHeight: '36px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'display-lg': ['40px', { lineHeight: '44px', letterSpacing: '-0.5px', fontWeight: '700' }],
+        'display-lg-mobile': ['28px', { lineHeight: '32px', letterSpacing: '-0.25px', fontWeight: '700' }],
+        'headline-lg': ['34px', { lineHeight: '40px', letterSpacing: '0.5px', fontWeight: '600' }],
+        'headline-lg-mobile': ['24px', { lineHeight: '28px', letterSpacing: '0.25px', fontWeight: '600' }],
+        'headline-md': ['28px', { lineHeight: '34px', letterSpacing: '0.5px', fontWeight: '600' }],
+        'title-lg': ['22px', { lineHeight: '28px', fontWeight: '600' }],
+        'title-md': ['16px', { lineHeight: '22px', fontWeight: '600' }],
+        'body-md': ['14px', { lineHeight: '20px', fontWeight: '400' }],
+        'label-lg': ['13px', { lineHeight: '18px', letterSpacing: '0.8px', fontWeight: '600' }],
+        'label-sm': ['12px', { lineHeight: '16px', fontWeight: '500' }],
+      },
+      transitionDuration: {
+        'state-change': '200ms',
+        'progress-tick': '1000ms',
+      },
+      transitionDelay: {
+        'state-change': '0ms',
+        'progress-tick': '0ms',
+      },
+      transitionTimingFunction: {
+        'state-change': 'ease-out',
+        'progress-tick': 'linear',
+      },
+    },
+  },
+};
+if (typeof module !== 'undefined') module.exports = globalThis.tailwind.config;
+</script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <style>
+    .geometric-pattern {
+      background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23C9A962' stroke-width='0.75' stroke-opacity='0.10'%3E%3Cpolygon points='40,4 50,30 76,40 50,50 40,76 30,50 4,40 30,30'/%3E%3Crect x='18' y='18' width='44' height='44'/%3E%3Crect x='18' y='18' width='44' height='44' transform='rotate(45 40 40)'/%3E%3Ccircle cx='40' cy='40' r='10'/%3E%3C/g%3E%3C/svg%3E");
+      background-size: 80px 80px;
+    }
+  </style>
+</head>
+<body class="bg-deep-green text-on-deep-green font-body antialiased selection:bg-gold selection:text-on-gold">
+  <div class="min-h-[1024px] w-full bg-deep-green geometric-pattern flex flex-col justify-between p-gutter-xl gap-gutter-lg" data-stitch-vh="min-h-[1024px]===min-h-screen">
+
+    <!-- HEADER -->
+    <header class="grid grid-cols-1 lg:grid-cols-12 items-center gap-gutter-lg pb-gutter-lg border-b border-gold-border">
+
+      <!-- Left: Brand & Status Pills -->
+      <div class="lg:col-span-3 flex flex-col gap-gutter-sm">
+        <div class="flex items-center gap-gutter-md">
+          <svg class="w-10 h-10 shrink-0 text-gold" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+            <path d="M24 4C18 10 12 14 12 24V42H36V24C36 14 30 10 24 4Z" stroke="currentColor" stroke-width="1.75"></path>
+            <path d="M24 10C20 14 17 17 17 24V38H31V24C31 17 28 14 24 10Z" stroke="currentColor" stroke-width="1.25"></path>
+            <path d="M8 42H40" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"></path>
+            <circle cx="24" cy="21" r="2.5" fill="currentColor"></circle>
+          </svg>
+          <div class="flex flex-col">
+            <span data-design-text-token="label-lg" class="font-label text-label-lg uppercase text-gold-soft tracking-widest">MIHRAB CONNECT</span>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm uppercase text-warm-dim tracking-widest">BOARD</span>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-gutter-sm">
+          <!-- COMPONENT: chip-action -->
+          <span data-component-id="chip-action" data-component-type="chip" data-component-variant="action" class="inline-flex items-center gap-gutter-xs bg-green-raised text-warm-white border border-gold-border rounded-full px-gutter-md py-gutter-xs">
+            <span class="w-2 h-2 rounded-full bg-status-online" aria-hidden="true"></span>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm uppercase">MODE NORMAL</span>
+          </span>
+
+          <!-- COMPONENT: chip-with-icon -->
+          <span data-component-id="chip-with-icon" data-component-type="chip" data-component-variant="with-icon" class="inline-flex items-center gap-gutter-xs bg-green-raised text-gold-soft border border-gold-border rounded-full px-gutter-md py-gutter-xs">
+            <span class="w-2 h-2 rounded-full bg-gold" aria-hidden="true"></span>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm uppercase">MUROTAL SIAGA</span>
+          </span>
+
+          <!-- COMPONENT: chip-action -->
+          <span data-component-id="chip-action" data-component-type="chip" data-component-variant="action" class="inline-flex items-center gap-gutter-xs bg-green-raised text-warm-white border border-gold-border rounded-full px-gutter-md py-gutter-xs">
+            <span class="w-2 h-2 rounded-full bg-status-online" aria-hidden="true"></span>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm uppercase">ONLINE</span>
+          </span>
+        </div>
+      </div>
+
+      <!-- Center: Mosque Name, Gold Ornament Divider & Address -->
+      <div class="lg:col-span-6 flex flex-col items-center text-center gap-gutter-xs">
+        <h1 data-component-id="typography-headline" data-component-type="typography" data-component-variant="headline" data-design-text-token="headline-lg" class="font-headline text-headline-lg-mobile lg:text-headline-lg text-gold-soft uppercase text-balance">MASJID JAMI&#39; ABDUL LATIEF AL FURQON</h1>
+
+        <!-- Small Gold Ornament Divider -->
+        <div class="flex items-center justify-center gap-gutter-md w-full max-w-md my-gutter-xs" aria-hidden="true">
+          <div class="h-px flex-1 bg-gold-border"></div>
+          <svg class="w-16 h-4 text-gold" viewBox="0 0 64 16" fill="none">
+            <path d="M2 8H24M40 8H62" stroke="currentColor" stroke-width="1"></path>
+            <polygon points="32,2 35,8 32,14 29,8" fill="currentColor"></polygon>
+            <circle cx="24" cy="8" r="1.5" fill="currentColor"></circle>
+            <circle cx="40" cy="8" r="1.5" fill="currentColor"></circle>
+          </svg>
+          <div class="h-px flex-1 bg-gold-border"></div>
+        </div>
+
+        <p data-component-id="typography-body" data-component-type="typography" data-component-variant="body" data-design-text-token="body-md" class="font-body text-body-md text-warm-dim">Ploso, Mlopoharjo, Wuryantoro, Wonogiri 57661</p>
+      </div>
+
+      <!-- Right: Live Clock & Dates -->
+      <div class="lg:col-span-3 flex flex-col items-start lg:items-end text-left lg:text-right gap-gutter-xs">
+        <div id="live-clock" data-design-text-token="display-lg" class="font-display text-display-lg-mobile lg:text-display-lg text-warm-white tabular-nums">20:22:59</div>
+        <div id="live-date" data-design-text-token="body-md" class="font-body text-body-md text-warm-white">Senin, 23 November 2026</div>
+        <div class="inline-flex items-center gap-gutter-xs text-gold-soft">
+          <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12.5 3a9 9 0 1 0 8.5 11.9A7.2 7.2 0 0 1 12.5 3Z"></path>
+          </svg>
+          <span id="live-hijri" data-design-text-token="label-sm" class="font-label text-label-sm">12 Jumadil Akhir 1448 H</span>
+        </div>
+      </div>
+
+    </header>
+
+    <!-- MAIN 3-COLUMN BOARD -->
+    <main class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-gutter-lg items-stretch">
+
+      <!-- LEFT COLUMN: PRAYER SCHEDULE -->
+      <section data-component-id="card-elevated" data-component-type="card" data-component-variant="outlined" class="lg:col-span-3 bg-green-surface text-on-green-surface border border-gold-border rounded-md p-gutter-lg flex flex-col gap-gutter-md">
+        <header class="flex items-center justify-between border-b border-gold-border pb-gutter-sm">
+          <div class="flex items-center gap-gutter-sm">
+            <svg class="w-4 h-4 text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <polygon points="12,2 14.9,8.6 22,9.3 16.6,14 18.2,21 12,17.3 5.8,21 7.4,14 2,9.3 9.1,8.6"></polygon>
+            </svg>
+            <h2 data-design-text-token="label-lg" class="font-label text-label-lg uppercase text-gold-soft">JADWAL SHOLAT</h2>
+          </div>
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-warm-dim">WIB</span>
+        </header>
+
+        <div class="flex-1 flex flex-col justify-between gap-gutter-sm">
+          <!-- Next Prayer Row (Brightest with Gold Border) -->
+          <div data-component-id="card-action" data-component-type="card" data-component-variant="highlighted" class="bg-green-raised text-on-green-raised border border-gold rounded px-gutter-md py-gutter-sm flex items-center justify-between">
+            <div class="flex flex-col">
+              <span data-design-text-token="title-md" class="font-title text-title-md text-gold-soft">Subuh</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-warm-dim">Iqomah +10 mnt</span>
+            </div>
+            <span data-design-text-token="title-lg" class="font-title text-title-lg text-warm-white tabular-nums">03:46</span>
+          </div>
+
+          <div class="bg-green-surface border border-gold-border rounded px-gutter-md py-gutter-sm flex items-center justify-between">
+            <div class="flex flex-col">
+              <span data-design-text-token="title-md" class="font-title text-title-md text-warm-white">Terbit</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-warm-dim">Iqomah +10 mnt</span>
+            </div>
+            <span data-design-text-token="title-lg" class="font-title text-title-lg text-warm-white tabular-nums">05:08</span>
+          </div>
+
+          <div class="bg-green-surface border border-gold-border rounded px-gutter-md py-gutter-sm flex items-center justify-between">
+            <div class="flex flex-col">
+              <span data-design-text-token="title-md" class="font-title text-title-md text-warm-white">Dzuhur</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-warm-dim">Iqomah +10 mnt</span>
+            </div>
+            <span data-design-text-token="title-lg" class="font-title text-title-lg text-warm-white tabular-nums">11:25</span>
+          </div>
+
+          <div class="bg-green-surface border border-gold-border rounded px-gutter-md py-gutter-sm flex items-center justify-between">
+            <div class="flex flex-col">
+              <span data-design-text-token="title-md" class="font-title text-title-md text-warm-white">Ashar</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-warm-dim">Iqomah +10 mnt</span>
+            </div>
+            <span data-design-text-token="title-lg" class="font-title text-title-lg text-warm-white tabular-nums">14:48</span>
+          </div>
+
+          <div class="bg-green-surface border border-gold-border rounded px-gutter-md py-gutter-sm flex items-center justify-between">
+            <div class="flex flex-col">
+              <span data-design-text-token="title-md" class="font-title text-title-md text-warm-white">Maghrib</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-warm-dim">Iqomah +10 mnt</span>
+            </div>
+            <span data-design-text-token="title-lg" class="font-title text-title-lg text-warm-white tabular-nums">17:40</span>
+          </div>
+
+          <div class="bg-green-surface border border-gold-border rounded px-gutter-md py-gutter-sm flex items-center justify-between">
+            <div class="flex flex-col">
+              <span data-design-text-token="title-md" class="font-title text-title-md text-warm-white">Isya</span>
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-warm-dim">Iqomah +10 mnt</span>
+            </div>
+            <span data-design-text-token="title-lg" class="font-title text-title-lg text-warm-white tabular-nums">18:55</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- CENTER COLUMN: MIHRAB COUNTDOWN & TWO MINI CARDS -->
+      <section class="lg:col-span-5 flex flex-col gap-gutter-lg">
+
+        <!-- Large Countdown Card with Thin Gold Mihrab Arch -->
+        <article class="flex-1 relative bg-green-surface geometric-pattern border border-gold rounded-md p-gutter-xl flex flex-col items-center justify-between overflow-hidden">
+          <!-- Thin Gold Mihrab Arch SVG Frame -->
+          <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 600 420" preserveAspectRatio="none" fill="none" aria-hidden="true">
+            <path d="M 48 418 L 48 210 Q 48 95 300 22 Q 552 95 552 210 L 552 418" stroke="#C9A962" stroke-width="1.5" stroke-opacity="0.7"></path>
+            <path d="M 64 418 L 64 214 Q 64 110 300 40 Q 536 110 536 214 L 536 418" stroke="#C9A962" stroke-width="0.9" stroke-opacity="0.4"></path>
+          </svg>
+
+          <div class="relative z-10 flex-1 flex flex-col items-center justify-center text-center gap-gutter-sm py-gutter-lg">
+            <span data-design-text-token="label-lg" class="font-label text-label-lg uppercase text-gold-soft tracking-widest">MENUJU ADZAN</span>
+            <h2 data-design-text-token="headline-lg" class="font-headline text-headline-lg-mobile lg:text-headline-lg text-warm-white uppercase tracking-wider">SUBUH</h2>
+            <div id="countdown-timer" data-component-id="typography-display" data-component-type="typography" data-component-variant="display" data-design-text-token="display-xl" class="font-display text-display-xl-mobile lg:text-display-xl text-warm-white tabular-nums my-gutter-xs">07:23:00</div>
+            <p data-design-text-token="body-md" class="font-body text-body-md text-warm-dim">
+              Adzan pukul 03:46, Iqomah +10 menit setelah adzan
+            </p>
+          </div>
+
+          <!-- Thin Gold Progress Bar at Base -->
+          <div class="relative z-10 w-full flex flex-col gap-gutter-xs">
+            <div class="w-full h-1.5 bg-green-raised rounded-full overflow-hidden border border-gold-border">
+              <div id="countdown-progress" class="h-full bg-gold rounded-full" style="width: 34%;"></div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Two Filled Mini Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-gutter-lg items-stretch">
+          <!-- Mini Card 1: Countdown Hari Besar -->
+          <article data-component-id="card-elevated" data-component-type="card" data-component-variant="outlined" class="h-full bg-green-surface border border-gold-border rounded-md p-gutter-lg flex flex-col justify-between gap-gutter-sm">
+            <header class="flex items-center justify-between">
+              <span data-design-text-token="label-lg" class="font-label text-label-lg uppercase text-gold-soft">COUNTDOWN HARI BESAR</span>
+              <svg class="w-4 h-4 text-gold shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12.5 3a9 9 0 1 0 8.5 11.9A7.2 7.2 0 0 1 12.5 3Z"></path>
+              </svg>
+            </header>
+            <div class="flex flex-col gap-gutter-xs">
+              <div data-design-text-token="title-md" class="font-title text-title-md text-warm-white">Ramadan 1448 H</div>
+              <div data-design-text-token="headline-md" class="font-headline text-headline-md text-gold-soft tabular-nums">H-86</div>
+              <div data-design-text-token="body-md" class="font-body text-body-md text-warm-dim">Kamis, 18 Februari 2027</div>
+            </div>
+          </article>
+
+          <!-- Mini Card 2: Murotal Otomatis -->
+          <article data-component-id="card-elevated" data-component-type="card" data-component-variant="outlined" class="h-full bg-green-surface border border-gold-border rounded-md p-gutter-lg flex flex-col justify-between gap-gutter-sm">
+            <header class="flex items-center justify-between">
+              <span data-design-text-token="label-lg" class="font-label text-label-lg uppercase text-gold-soft">MUROTAL OTOMATIS</span>
+              <svg class="w-4 h-4 text-gold shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+            </header>
+            <div class="flex flex-col items-start gap-gutter-sm">
+              <span class="inline-flex items-center gap-gutter-xs bg-green-raised text-gold-soft border border-gold-border rounded-full px-gutter-md py-gutter-xs">
+                <span class="w-2 h-2 rounded-full bg-gold" aria-hidden="true"></span>
+                <span data-design-text-token="label-sm" class="font-label text-label-sm uppercase">SIAGA</span>
+              </span>
+              <p data-design-text-token="body-md" class="font-body text-body-md text-warm-dim">
+                Aktif 10 menit sebelum Subuh
+              </p>
+            </div>
+          </article>
+        </div>
+
+      </section>
+
+      <!-- RIGHT COLUMN: FINANCE PANEL & QRIS -->
+      <section data-component-id="card-elevated" data-component-type="card" data-component-variant="outlined" class="lg:col-span-4 bg-green-surface text-on-green-surface border border-gold-border rounded-md p-gutter-lg flex flex-col justify-between gap-gutter-md">
+        <header class="flex items-center justify-between border-b border-gold-border pb-gutter-sm">
+          <div class="flex items-center gap-gutter-sm">
+            <svg class="w-4 h-4 text-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <polygon points="12,2 14.9,8.6 22,9.3 16.6,14 18.2,21 12,17.3 5.8,21 7.4,14 2,9.3 9.1,8.6"></polygon>
+            </svg>
+            <h2 data-design-text-token="label-lg" class="font-label text-label-lg uppercase text-gold-soft">KAS &amp; INFO MASJID</h2>
+          </div>
+          <span data-design-text-token="label-sm" class="font-label text-label-sm text-warm-dim">Transparansi</span>
+        </header>
+
+        <!-- Cash Rows (Empty State: Rp —) -->
+        <div class="flex flex-col gap-gutter-sm">
+          <div class="bg-green-raised border border-gold-border rounded px-gutter-md py-gutter-md flex items-center justify-between">
+            <span data-design-text-token="title-md" class="font-title text-title-md text-warm-white">Pembangunan</span>
+            <span data-design-text-token="title-md" class="font-title text-title-md text-warm-dim tabular-nums">Rp —</span>
+          </div>
+          <div class="bg-green-raised border border-gold-border rounded px-gutter-md py-gutter-md flex items-center justify-between">
+            <span data-design-text-token="title-md" class="font-title text-title-md text-warm-white">TPQ</span>
+            <span data-design-text-token="title-md" class="font-title text-title-md text-warm-dim tabular-nums">Rp —</span>
+          </div>
+          <div class="bg-green-raised border border-gold-border rounded px-gutter-md py-gutter-md flex items-center justify-between">
+            <span data-design-text-token="title-md" class="font-title text-title-md text-warm-white">Infaq Umum</span>
+            <span data-design-text-token="title-md" class="font-title text-title-md text-warm-dim tabular-nums">Rp —</span>
+          </div>
+        </div>
+
+        <!-- Prominent Gold Total Saldo Bar (Dark Text on Gold Fill) -->
+        <div data-component-id="card-interactive" data-component-type="card" data-component-variant="filled" class="bg-gold text-on-gold rounded px-gutter-md py-gutter-md flex items-center justify-between">
+          <span data-design-text-token="title-md" class="font-title text-title-md">Total Saldo</span>
+          <span data-design-text-token="title-lg" class="font-title text-title-lg tabular-nums">Rp —</span>
+        </div>
+
+        <!-- Three Empty QRIS Placeholder Boxes -->
+        <div class="grid grid-cols-3 gap-gutter-md">
+          <div class="bg-green-raised border border-gold-border rounded p-gutter-sm flex flex-col items-center gap-gutter-xs text-center">
+            <div class="w-full aspect-square rounded-sm border border-dashed border-gold-border bg-deep-green flex items-center justify-center">
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-warm-dim">QRIS</span>
+            </div>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-gold-soft uppercase">PEMBANGUNAN</span>
+          </div>
+
+          <div class="bg-green-raised border border-gold-border rounded p-gutter-sm flex flex-col items-center gap-gutter-xs text-center">
+            <div class="w-full aspect-square rounded-sm border border-dashed border-gold-border bg-deep-green flex items-center justify-center">
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-warm-dim">QRIS</span>
+            </div>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-gold-soft uppercase">TPQ</span>
+          </div>
+
+          <div class="bg-green-raised border border-gold-border rounded p-gutter-sm flex flex-col items-center gap-gutter-xs text-center">
+            <div class="w-full aspect-square rounded-sm border border-dashed border-gold-border bg-deep-green flex items-center justify-center">
+              <span data-design-text-token="label-sm" class="font-label text-label-sm text-warm-dim">QRIS</span>
+            </div>
+            <span data-design-text-token="label-sm" class="font-label text-label-sm text-gold-soft uppercase">INFAQ UMUM</span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- BOTTOM TICKER BAR -->
+    <footer class="bg-green-surface border border-gold-border rounded-md px-gutter-lg py-gutter-sm flex items-center gap-gutter-md">
+      <span data-design-text-token="label-lg" class="bg-gold text-on-gold rounded-sm px-gutter-md py-gutter-xs font-label text-label-lg uppercase shrink-0">PENGUMUMAN</span>
+      <p data-design-text-token="body-md" class="font-body text-body-md text-warm-white">
+        Selamat datang di Masjid Jami&#39; Abdul Latief Al Furqon
+      </p>
+    </footer>
+
+  </div>
+
+  <script>
+    (function () {
+      var clockEl = document.getElementById('live-clock');
+      var dateEl = document.getElementById('live-date');
+      var hijriEl = document.getElementById('live-hijri');
+      var countdownEl = document.getElementById('countdown-timer');
+      var progressEl = document.getElementById('countdown-progress');
+
+      var daysId = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+      var monthsId = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      ];
+      var hijriMonthsId = [
+        'Muharram', 'Safar', 'Rabiul Awal', 'Rabiul Akhir',
+        'Jumadil Awal', 'Jumadil Akhir', 'Rajab', "Sya'ban",
+        'Ramadan', 'Syawal', "Dzulqa'dah", 'Dzulhijjah'
+      ];
+
+      function pad(n) {
+        return n < 10 ? '0' + n : String(n);
+      }
+
+      function formatHMS(totalSec) {
+        var s = Math.max(0, Math.floor(totalSec));
+        var h = Math.floor(s / 3600);
+        var m = Math.floor((s % 3600) / 60);
+        var sec = s % 60;
+        return pad(h) + ':' + pad(m) + ':' + pad(sec);
+      }
+
+      function getHijriString(now) {
+        try {
+          var fmt = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric'
+          });
+          var parts = fmt.formatToParts(now);
+          var hDay = null;
+          var hMonth = null;
+          var hYear = null;
+          for (var i = 0; i < parts.length; i++) {
+            if (parts[i].type === 'day') hDay = parseInt(parts[i].value, 10);
+            if (parts[i].type === 'month') hMonth = parseInt(parts[i].value, 10);
+            if (parts[i].type === 'year') hYear = parseInt(parts[i].value, 10);
+          }
+          if (hDay && hMonth >= 1 && hMonth <= 12 && hYear) {
+            return hDay + ' ' + hijriMonthsId[hMonth - 1] + ' ' + hYear + ' H';
+          }
+        } catch (e) {}
+
+        // Fallback tabular Islamic calendar
+        var d = now.getDate();
+        var m = now.getMonth() + 1;
+        var y = now.getFullYear();
+        if (m < 3) {
+          y -= 1;
+          m += 12;
+        }
+        var a = Math.floor(y / 100);
+        var b = 2 - a + Math.floor(a / 4);
+        var jd = Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + b - 1524;
+        var l = jd - 1948440 + 10632;
+        var n = Math.floor((l - 1) / 10631);
+        l = l - 10631 * n + 354;
+        var j = (Math.floor((10985 - l) / 5316)) * (Math.floor((50 * l) / 17719)) +
+                (Math.floor(l / 5670)) * (Math.floor((43 * l) / 15238));
+        l = l - (Math.floor((30 - j) / 15)) * (Math.floor((17719 * j) / 50)) -
+            (Math.floor(j / 16)) * (Math.floor((15238 * j) / 43)) + 29;
+        var hM = Math.floor((24 * l) / 709);
+        var hD = l - Math.floor((709 * hM) / 24);
+        var hY = 30 * n + j - 30;
+        return hD + ' ' + hijriMonthsId[(hM - 1 + 12) % 12] + ' ' + hY + ' H';
+      }
+
+      var totalWindowSeconds = 8 * 3600 + 51 * 60; // Isya (18:55) to Subuh (03:46)
+
+      function updateBoard() {
+        var now = new Date();
+        var h = now.getHours();
+        var m = now.getMinutes();
+        var s = now.getSeconds();
+
+        if (clockEl) {
+          clockEl.textContent = pad(h) + ':' + pad(m) + ':' + pad(s);
+        }
+        if (dateEl) {
+          dateEl.textContent = daysId[now.getDay()] + ', ' + now.getDate() + ' ' + monthsId[now.getMonth()] + ' ' + now.getFullYear();
+        }
+        if (hijriEl) {
+          hijriEl.textContent = getHijriString(now);
+        }
+
+        // Countdown toward Subuh 03:46:00
+        var target = new Date(now.getTime());
+        target.setHours(3, 46, 0, 0);
+        if (now.getTime() >= target.getTime()) {
+          target.setDate(target.getDate() + 1);
+        }
+        var diffSeconds = Math.max(0, Math.floor((target.getTime() - now.getTime()) / 1000));
+
+        if (countdownEl) {
+          countdownEl.textContent = formatHMS(diffSeconds);
+        }
+        if (progressEl) {
+          var elapsed = Math.max(0, totalWindowSeconds - diffSeconds);
+          var pct = Math.min(100, Math.max(2, Math.round((elapsed / totalWindowSeconds) * 100)));
+          progressEl.style.width = pct + '%';
+        }
+      }
+
+      updateBoard();
+      setInterval(updateBoard, 1000);
+    })();
+  </script>
+
+
+</body></html>

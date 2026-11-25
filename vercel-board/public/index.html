@@ -89,6 +89,7 @@
         --line-soft:rgba(201,169,98,.18);
         --gold:#C9A962;
         --gold-soft:#E3CD96;
+        --on-gold:#051F16;
         --warm:#F7F1E3;
         --warm-dim:#CFC7AE;
         --alert:#E8B4A0;
@@ -138,6 +139,7 @@
         --line-soft:rgba(138,109,47,.25);
         --gold:#75591F;
         --gold-soft:#7A5E24;
+        --on-gold:#F7F1E3;
         --warm:#17352A;
         --warm-dim:#4A5D54;
         --alert:#A34A28;
@@ -187,6 +189,7 @@
         --line-soft:rgba(232,200,106,.22);
         --gold:#E8C86A;
         --gold-soft:#F6DE9A;
+        --on-gold:#051F16;
         --warm:#FBF3DC;
         --warm-dim:#E0D3AC;
         --alert:#E8B4A0;
@@ -213,6 +216,7 @@
         --line-soft:rgba(201,169,98,.18);
         --gold:#C9A962;
         --gold-soft:#E3CD96;
+        --on-gold:#051F16;
         --warm:#F4F1E6;
         --warm-dim:#C3CBD8;
         --alert:#E8B4A0;
@@ -327,6 +331,7 @@
         display:flex; align-items:center; gap:.7em;
       }
       .col-title::after{ content:""; flex:1; height:1px; background:var(--line-soft); }
+      .col-title .col-note{ order:1; font-size:.82em; letter-spacing:.3em; color:var(--warm-dim); font-weight:600; white-space:nowrap; }
 
       /* Jadwal */
       .sched{ display:flex; flex-direction:column; min-height:0; }
@@ -371,6 +376,15 @@
         border-radius:999px 999px .6em .6em;
         pointer-events:none;
       }
+      /* Lengkung mihrab dalam kedua, konsentris dengan lengkung luar. */
+      .hero::after{
+        content:"";
+        position:absolute; top:.9em; right:1.5em; bottom:.9em; left:1.5em;
+        border:1px solid var(--gold);
+        border-radius:999px 999px .6em .6em;
+        pointer-events:none;
+        opacity:.25;
+      }
       .hero-label{
         font-size:.92em; font-weight:800; letter-spacing:.3em; color:var(--gold-soft);
       }
@@ -392,13 +406,14 @@
       .mini{
         border:1px solid var(--line-soft); border-radius:.8em;
         background:rgba(4,22,16,.42); padding:.95em 1.15em;
-        display:flex; flex-direction:column; min-height:0;
+        display:flex; flex-direction:column; justify-content:space-between; min-height:0;
       }
       .mini h3{
         margin:0 0 .5em; font-size:.82em; font-weight:800; letter-spacing:.24em; color:var(--gold-soft);
       }
       .mini .big{ font-size:1.9em; font-weight:700; line-height:1.12; color:var(--warm); }
       .mini .big .serif{ font-weight:600; }
+      .mini #eventDays{ font-size:1.3em; font-weight:800; }
       .mini p{ margin:.45em 0 0; font-size:.88em; line-height:1.55; color:var(--warm-dim); }
       .mini p b{ color:var(--warm); }
       .murotal-state{ display:flex; align-items:center; gap:.55em; font-size:1.02em; font-weight:800; letter-spacing:.05em; }
@@ -447,9 +462,9 @@
       }
       .kas-row span{ color:var(--warm-dim); }
       .kas-row b{ font-variant-numeric:tabular-nums; color:var(--warm); font-weight:700; }
-      .kas-row.total{ border:1px solid var(--gold); border-radius:.5em; margin-top:.55em; padding:.6em .8em; background:linear-gradient(90deg, rgba(201,169,98,.16), rgba(201,169,98,.05)); }
-      .kas-row.total span{ color:var(--gold-soft); font-weight:800; letter-spacing:.05em; }
-      .kas-row.total b{ color:var(--gold-soft); font-size:1.25em; }
+      .kas-row.total{ border:1px solid var(--gold); border-radius:.5em; margin-top:.55em; padding:.6em .8em; background:var(--gold); }
+      .kas-row.total span{ color:var(--on-gold); font-weight:800; letter-spacing:.05em; }
+      .kas-row.total b{ color:var(--on-gold); font-size:1.25em; }
       .qris-row{ margin-top:auto; display:flex; gap:.9em; }
       .qris-cell{ flex:1; text-align:center; }
       .qris-box{
@@ -621,6 +636,8 @@
       .board:focus{ outline:3px solid var(--gold-soft); outline-offset:3px; }
       .qris-box img{ width:100%; height:100%; object-fit:contain; display:block; }
       .qris-box .qris-none{ font-size:.85em; color:var(--warm-dim); padding:1em .4em; display:block; text-align:center; }
+      .qris-box.empty{ border-style:dashed; }
+      .qris-box.empty .qris-none{ font-weight:700; letter-spacing:.12em; }
       .sched-empty{ margin-top:.7em; font-size:.85em; line-height:1.5; color:var(--warm-dim); }
     </style>
   </head>
@@ -664,7 +681,7 @@
           <div class="b-main">
             <!-- Jadwal sholat -->
             <div class="sched">
-              <h2 class="col-title">JADWAL SHOLAT</h2>
+              <h2 class="col-title">JADWAL SHOLAT <span class="col-note">WIB</span></h2>
               <div class="sched-list" id="schedList"></div>
               <p class="sched-note" id="schedNote">Jadwal dihitung dari koordinat masjid. Iq. = iqomah.</p>
             </div>
@@ -694,7 +711,7 @@
 
             <!-- Slide berotasi -->
             <div class="slides">
-              <h2 class="col-title">INFO MASJID</h2>
+              <h2 class="col-title">INFO MASJID <span class="col-note">Transparansi</span></h2>
               <div class="slide-stage" id="slideStage">
                 <!-- Slide 1: poster -->
                 <article class="slide slide-poster active" aria-label="Slide poster kajian">
@@ -988,12 +1005,12 @@
           if (item.qris_url){
             html += '<div class="qris-box"><img class="qris-img" src="' + esc(item.qris_url) + '" alt="QRIS ' + esc(item.kategori) + '" /></div>';
           } else {
-            html += '<div class="qris-box"><span class="qris-none">QRIS belum tersedia</span></div>';
+            html += '<div class="qris-box empty"><span class="qris-none">QRIS</span></div>';
           }
           html += "<p>" + esc(String(item.kategori || "").toUpperCase()) + "<small>QRIS</small></p></div>";
         });
         if (!q.length){
-          html = '<div class="qris-cell"><div class="qris-box"><span class="qris-none">QRIS belum tersedia</span></div><p><small>QRIS</small></p></div>';
+          html = '<div class="qris-cell"><div class="qris-box empty"><span class="qris-none">QRIS</span></div><p><small>QRIS</small></p></div>';
         }
         $("qrisRow").innerHTML = html;
       }

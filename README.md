@@ -114,6 +114,16 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   emas pucat di atas wash emas, terbaca redup). 4 tema + fallback CSS
   WebView lama tetap utuh; dot slide hanya indikator (tidak bisa
   diklik), rotasi 9 detik dan berhenti saat mode sholat.
+- Board: adaptasi 5 ide Google Stitch 25 Nov 2026 (terverifikasi live) —
+  Total Saldo jadi bar emas isi penuh dengan teks gelap (terang: teks
+  warm white di atas emas gelap, kontras 5,82:1; gelap/biru-malam
+  7,69:1; emas 10,63:1), label "WIB" di header jadwal dan
+  "Transparansi" di header Info Masjid, kartu mini event/murotal
+  mengisi ruang bawah (angka H- diperbesar), QRIS belum dikonfigurasi
+  tampil sebagai placeholder garis putus-putus, lengkung mihrab ganda
+  di kartu countdown. Export Stitch tersimpan di
+  `stitch-export-2026-11-25/code.html` (referensi saja, tidak disalin
+  ke Board); token desain di `docs/DESIGN.md`.
 - Kiosk APK sendiri (Mihrab Kiosk v1.0.0, 24 Nov 2026): app Android
   (Kotlin, minSdk 23) untuk STB — autostart + Home, fullscreen,
   config URL dari HP + perintah remote via Supabase (migrasi 004:
