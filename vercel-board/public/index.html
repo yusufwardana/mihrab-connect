@@ -367,6 +367,8 @@
         background-color:rgba(4,22,16,.5);
         background-image:var(--pattern);
         padding:1em 1.3em 1.1em; text-align:center;
+        flex:1 1 auto; min-height:0;
+        display:flex; flex-direction:column; justify-content:center;
       }
       /* Bingkai lengkung mihrab di kartu countdown (ornamen saja). */
       .hero::before{
@@ -402,7 +404,7 @@
         margin-top:.8em; overflow:hidden;
       }
       .hero-bar i{ display:block; height:100%; width:0%; background:var(--gold); border-radius:999px; transition:width 1s linear; }
-      .duo{ display:grid; grid-template-columns:1fr 1fr; gap:1em; flex:1; min-height:0; }
+      .duo{ display:grid; grid-template-columns:1fr 1fr; gap:1em; flex:0 0 auto; min-height:0; }
       .mini{
         border:1px solid var(--line-soft); border-radius:.8em;
         background:rgba(4,22,16,.42); padding:.95em 1.15em;

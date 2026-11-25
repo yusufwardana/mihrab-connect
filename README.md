@@ -124,6 +124,11 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   di kartu countdown. Export Stitch tersimpan di
   `stitch-export-2026-11-25/code.html` (referensi saja, tidak disalin
   ke Board); token desain di `docs/DESIGN.md`.
+- Board: kartu mini 25 Nov 2026 — `.duo` diubah dari `flex:1` menjadi
+  tinggi-isi (`flex:0 0 auto`) dan ruang bebasnya diberikan ke kartu
+  countdown `.hero` (isi hero kini terpusat vertikal), supaya kartu
+  mini event/murotal memeluk isinya dan tidak lagi tampak kosong di
+  bawah; cek visual live masih menunggu parent.
 - Kiosk APK sendiri (Mihrab Kiosk v1.0.0, 24 Nov 2026): app Android
   (Kotlin, minSdk 23) untuk STB — autostart + Home, fullscreen,
   config URL dari HP + perintah remote via Supabase (migrasi 004:
