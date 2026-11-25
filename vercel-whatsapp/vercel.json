@@ -1,0 +1,1 @@
+{"$schema":"https://openapi.vercel.sh/vercel.json","rewrites":[{"destination":"/api/whatsapp?aksi=kiriman","source":"/whatsapp/kiriman"},{"destination":"/api/whatsapp?aksi=status&id=:id","source":"/whatsapp/status/:id"},{"destination":"/api/whatsapp?aksi=notifikasi","source":"/whatsapp/notifikasi"}]}
