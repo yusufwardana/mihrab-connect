@@ -128,7 +128,18 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   tinggi-isi (`flex:0 0 auto`) dan ruang bebasnya diberikan ke kartu
   countdown `.hero` (isi hero kini terpusat vertikal), supaya kartu
   mini event/murotal memeluk isinya dan tidak lagi tampak kosong di
-  bawah; cek visual live masih menunggu parent.
+  bawah; terverifikasi live 25 Nov 12:37–12:41 WIB (tema default + terang).
+- Board: layout ponsel 25 Nov 2026 — teks menumpuk di layar ≤900px karena
+  blok TV (di akhir stylesheet) menimpa media query: `.board height:100%`
+  + `.page height:100dvh; overflow:hidden` mengunci Board setinggi viewport
+  dan `.board font-size` jatuh ke 7,8px (bukan 14px). Perbaikan: blok
+  `@media (max-width:900px)` dipindah ke SETELAH blok TV supaya menang,
+  ditambah `height:auto` + `overflow:visible` di `.page`/`.board`,
+  `.stage-wrap` jadi `display:block`, `.hero` tinggi-isi, dan header
+  diperkecil (nama masjid 2em, jam 2,4em, countdown 3,2em). Transisi slide
+  juga diperbaiki jadi cross-fade sejati (dulu slide lama hilang instan
+  sementara slide baru masih opacity 0, panel tampak kosong ~0,7 dtk tiap
+  9 dtk). Layout TV, 4 tema, dan fallback WebView lama tidak berubah.
 - Kiosk APK sendiri (Mihrab Kiosk v1.0.0, 24 Nov 2026): app Android
   (Kotlin, minSdk 23) untuk STB — autostart + Home, fullscreen,
   config URL dari HP + perintah remote via Supabase (migrasi 004:
