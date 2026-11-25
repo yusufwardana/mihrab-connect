@@ -56,8 +56,8 @@ jangan tambah beban di sana). Satu Serverless Function: `api/whatsapp.js`
 
 | Var | Status | Dari mana |
 | --- | --- | --- |
-| `SUPABASE_URL` | Diatur (disalin dari proyek Admin) | Proyek Supabase yang sama (`mihrab-connect`) |
-| `SUPABASE_SERVICE_ROLE_KEY` | Diatur (disalin dari proyek Admin) | Proyek Supabase yang sama — JANGAN pernah tulis nilainya di file/chat |
+| `SUPABASE_URL` | Diatur 25 Nov 2026 | Proyek Supabase yang sama (`mihrab-connect`) |
+| `SUPABASE_SERVICE_ROLE_KEY` | **BELUM DIATUR** — salin manual (lihat bawah) | Proyek Supabase yang sama — JANGAN pernah tulis nilainya di file/chat |
 | `META_VERIFY_TOKEN` | **BELUM ADA** | Dibuat sendiri (string acak) saat mendaftarkan webhook di Meta Developer Console → App → WhatsApp → Configuration → Webhook → Verify token |
 | `META_APP_SECRET` | **BELUM ADA** | Meta Developer Console → App → Settings → Basic → App Secret |
 | `META_ACCESS_TOKEN` | **BELUM ADA** | Meta Developer Console → App → WhatsApp → API Setup → Temporary access token (24 jam, untuk uji) atau System User + token permanen (untuk produksi) |
@@ -99,18 +99,30 @@ tetap jalan tapi fail-closed: verify → 403, webhook → 403/401, notifikasi �
 
 ## Deploy (Vercel)
 
-Proyek: `mihrab-connect-whatsapp`, team "0x's projects", git-linked ke
-repo `yusufwardana/mihrab-connect`, root directory `vercel-whatsapp`.
-Webhook URL (untuk didaftarkan di Meta): `https://<domain-proyek>/api/whatsapp`.
+Proyek: `mihrab-connect-whatsapp` (`prj_Bt92jZqeqmZmKXtO54hrQwlD8A1l`),
+team "0x's projects", git-linked ke repo `yusufwardana/mihrab-connect`,
+root directory `vercel-whatsapp`. Deployment pertama READY 25 Nov 2026
+(`dpl_GWrc9o8ysvrLyDuPPfivAJfU5YV8`, commit bc1855e7).
+URL produksi: `https://mihrab-connect-whatsapp-0xs-projects-798a67b4.vercel.app`
+Webhook URL (untuk didaftarkan di Meta):
+`https://mihrab-connect-whatsapp-0xs-projects-798a67b4.vercel.app/api/whatsapp`.
+SSO/Vercel Authentication DIMATIKAN (webhook Meta harus bisa dijangkau
+publik; akses dikontrol signature + internal secret, bukan SSO).
+Fail-closed terverifikasi live 25 Nov 2026: GET verify → 403,
+POST webhook tanpa signature → 403, POST notifikasi tanpa secret → 503.
 
-Langkah manual bila pembuatan proyek tidak lewat tool:
-1. Vercel Dashboard → Add New → Project → Import `yusufwardana/mihrab-connect`.
-2. Root Directory: `vercel-whatsapp`. Framework Preset: Other.
-3. Environment Variables (Production + Preview): isi `SUPABASE_URL` dan
-   `SUPABASE_SERVICE_ROLE_KEY` dengan nilai yang sama seperti di proyek
-   `mihrab-connect-admin`. Env Meta JANGAN diisi dulu (belum ada).
-4. Deploy. Cek `GET /api/whatsapp?hub.mode=subscribe&hub.verify_token=x&hub.challenge=1`
-   harus 403 (bukti fail-closed: `META_VERIFY_TOKEN` belum diatur).
+Langkah manual yang masih tertunda — salin `SUPABASE_SERVICE_ROLE_KEY`
+(nilai TIDAK bisa dibaca lewat tool Vercel; `get_project_env` hanya
+mengembalikan metadata, `decrypted: false`):
+1. Vercel Dashboard → proyek `mihrab-connect-admin` → Settings →
+   Environment Variables → `SUPABASE_SERVICE_ROLE_KEY` → Reveal/Copy nilainya.
+2. Vercel Dashboard → proyek `mihrab-connect-whatsapp` → Settings →
+   Environment Variables → Add New: key `SUPABASE_SERVICE_ROLE_KEY`,
+   type Sensitive, target Production + Preview, tempel nilainya → Save.
+3. Deployments → deployment terbaru → ⋯ → Redeploy (env var baru hanya
+   berlaku untuk deployment yang dibuat setelah env diset).
+4. Cek `GET /api/whatsapp?aksi=status&id=<id-pengumuman>` tidak lagi 500.
+   Env Meta JANGAN diisi dulu (belum ada).
 
 ## Uji lokal
 

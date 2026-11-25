@@ -246,9 +246,17 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   uji Rp1.000 dihapus.
 - WhatsApp: penyedia dikunci 22 Nov 2026 (Meta Cloud API langsung,
   resmi; Rp0 di volume pilot) — lihat "Keputusan izin" di atas.
-  Nomor HP baru khusus masjid BELUM ADA (per 22 Nov 2026 21:30 WIB);
-  webhook + endpoint intake/notifikasi belum dibangun, menunggu nomor
-  + akun Meta Business + kartu pembayaran. Perhatian saat beli SIM:
+  Backend webhook + intake + status + notifikasi SELESAI 25 Nov 2026
+  (service Vercel baru `mihrab-connect-whatsapp`, root
+  `vercel-whatsapp`, commit bc1855e7, deploy READY, webhook
+  https://mihrab-connect-whatsapp-0xs-projects-798a67b4.vercel.app/api/whatsapp
+  — fail-closed terverifikasi live: verify 403, webhook 403,
+  notifikasi 503). BELUM BISA dipakai end-to-end: nomor HP baru
+  khusus masjid BELUM ADA (per 22 Nov 2026 21:30 WIB), akun Meta
+  Business + kartu pembayaran belum ada, dan env
+  `SUPABASE_SERVICE_ROLE_KEY` belum disalin ke proyek baru (nilai
+  tidak bisa dibaca lewat tool — salin manual dari proyek Admin,
+  lihat `vercel-whatsapp/README.md`). Perhatian saat beli SIM:
   jangan didaftarkan di aplikasi WhatsApp biasa (nomor Cloud API
   harus belum pernah terdaftar di WA).
 - Community DILEWATI user 22 Nov 2026 20:22 WIB ("Lewati Community,
