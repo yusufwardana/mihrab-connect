@@ -152,6 +152,7 @@ sumber Markdown-nya agar bisa diedit dan dilacak perubahannya.
   judul di tengah (aturan `:has(#posterMeta:empty)`, browser modern saja,
   WebView lama tetap cap bawah). Layout ponsel, urutan cascade
   (fallback → TV → responsif), 4 tema, dan cross-fade tidak berubah.
+- Board: selaraskan skala prototipe P0 25 Nov 2026 — skala dasar TV naik ke 1,02vw (ikut prototipe; 1366px ~13,9px, 1920px tetap cap 19px), nama masjid TV 3,0em → 3,1em; jam sholat 1,62em dan jam 3,4em ternyata sudah sama dengan prototipe, countdown 5,2em tetap (lebih besar dari prototipe 4,6em); tidak ada aturan pengecil TV ala prototipe (`data-hatch-target`) di Board live. Nama event di kartu mini diperkecil ke 0,8em supaya 'Ramadan 1448 H' tidak membungkus jadi 'H' sendirian di 1920px. Slide Jumat diubah dari center menjadi space-between (pemusatan ternyata masih menyisakan ruang kosong di bawah) + baris petugas lebih lega. Tidak ada konten contoh prototipe yang disalin; layout ponsel, urutan cascade, 4 tema, dan cross-fade tidak berubah.
 - Kiosk APK sendiri (Mihrab Kiosk v1.0.0, 24 Nov 2026): app Android
   (Kotlin, minSdk 23) untuk STB — autostart + Home, fullscreen,
   config URL dari HP + perintah remote via Supabase (migrasi 004:

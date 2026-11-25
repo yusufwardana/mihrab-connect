@@ -599,12 +599,12 @@
         padding:27px 48px; gap:12px;
       }
       .stage-wrap{ flex:1 1 auto; min-height:0; display:flex; }
-      .board{ height:100%; font-size:13px; /* fallback WebView lama: =0.95vw pada 1366px */ font-size:clamp(9px, 0.95vw, 19px); border-radius:10px; }
+      .board{ height:100%; font-size:13px; /* fallback WebView lama: =1.02vw pada 1366px */ font-size:clamp(9px, 1.02vw, 19px); border-radius:10px; }
       .board::before{ top:6px; right:6px; bottom:6px; left:6px; inset:6px; } /* fallback WebView lama: tanpa inset */
       .brand-note,
       .sched-note{ display:none; }
       .b-head{ padding:1.2em 2em .7em; }
-      .mosque h1{ font-size:3em; }
+      .mosque h1{ font-size:3.1em; }
       .clock{ font-size:3.4em; }
       .date-greg, .date-hijri{ font-size:1.25em; }
       .b-status{ padding:.5em 2em; }
@@ -623,9 +623,10 @@
       .mini{ padding:1.15em 1.25em; }
       .mini h3{ font-size:.95em; }
       .mini .big{ font-size:2.2em; }
+      .mini .big .serif{ font-size:.8em; }
       .mini p{ font-size:1.02em; }
       .kas-row{ font-size:1.25em; }
-      .petugas-row{ font-size:1.3em; padding:.8em 0; }
+      .petugas-row{ font-size:1.3em; padding:1em 0; }
       .slide-note{ font-size:.95em; }
       .slide-kajian h3{ font-size:1.9em; }
       .slide-kajian .kaj-meta{ font-size:1.2em; }
@@ -633,7 +634,7 @@
       .qris-box .qris-none{ font-size:.95em; }
       .sched-empty{ font-size:.95em; }
       .ticker-label{ font-size:1em; }
-      #slideFriday{ justify-content:center; }
+      #slideFriday{ justify-content:space-between; }
       #slideFriday .petugas{ margin-top:1.2em; }
       /* Di TV, running text menjadi rotasi pesan di tempat (tidak keluar bingkai) */
       .ticker-track{ animation:none; display:block; width:100%; white-space:normal; }
